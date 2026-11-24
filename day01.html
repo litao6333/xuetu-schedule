@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>学途卫士 · 天津高考英语长难句意群闯关</title>
+    <style>
+        :root {
+            --navy-dark: #08182B;
+            --navy-mid: #11294D;
+            --academy-blue: #2C55A0;
+            --gold: #E2C08D;
+            --gold-dark: #B68B4C;
+            --bg-page: #F4F6FA;
+            --card-bg: #FFFFFF;
+            --text-main: #1E293B;
+            --text-sub: #64748B;
+            --border: #E2E8F0;
+            --emerald: #059669;
+            --emerald-bg: #ECFDF5;
+            --crimson: #DC2626;
+            --crimson-bg: #FEF2F2;
+            --amber: #D97706;
+            --amber-bg: #FFFBEB;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Inter", sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 手机竖屏黄金比例容器 */
+        .app-shell {
+            width: 100%;
+            max-width: 520px;
+            min-height: 100vh;
+            background-color: var(--bg-page);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 40px rgba(8, 24, 43, 0.08);
+        }
+
+        /* 顶部品牌导航栏 */
+        .topbar {
+            background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-mid) 100%);
+            color: #FFFFFF;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            border-bottom: 1px solid rgba(226, 192, 141, 0.25);
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-badge {
+            background: linear-gradient(135deg, #EDD5AE, #CFA668);
+            color: var(--navy-dark);
+            font-weight: 900;
+            font-size: 11px;
+            padding: 3px 7px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-title {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-pill {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(226, 192, 141, 0.35);
+            color: var(--gold);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 9px;
+            border-radius: 99px;
+            display: none;
+        }
+
+        .teacher-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #E2E8F0;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .teacher-btn:active {
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* 卡片通用样式 */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 18px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+        }
+
+        /* 阶段 1：实名登录入口 */
+        .hero-banner {
+            background: linear-gradient(145deg, var(--navy-dark), var(--navy-mid));
+            color: #FFFFFF;
+            border-radius: 18px;
+            padding: 22px 20px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(226, 192, 141, 0.3);
+        }
+
+        .hero-banner::after {
+            content: "";
+            position: absolute;
+            right: -30px;
+            top: -30px;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(226, 192, 141, 0.18) 0%, transparent 70%);
+        }
+
+        .hero-sub {
+            color: var(--gold);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+
+        .hero-heading {
+            font-size: 21px;
+            font-weight: 900;
+            line-height: 1.35;
+            margin-bottom: 10px;
+        }
+
+        .hero-desc {
+            font-size: 13px;
+            color: #CBD5E1;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--navy-dark);
+            background: #F8FAFC;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: var(--academy-blue);
+            background: #FFFFFF;
+        }
+
+        .primary-btn {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: none;
+            background: linear-gradient(135deg, var(--navy-mid), var(--academy-blue));
+            color: #FFFFFF;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(44, 85, 160, 0.25);
+            transition: transform 0.12s, opacity 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .primary-btn:active {
+            transform: scale(0.98);
+        }
+
+        .gold-btn {
+            background: linear-gradient(135deg, #E8C996, #CFA362);
+            color: var(--navy-dark);
+            box-shadow: 0 6px 16px rgba(182, 139, 76, 0.28);
+        }
+
+        /* 阶段 2：意群切分交互区 */
+        .progress-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .step-badge {
+            background: var(--navy-dark);
+            color: var(--gold);
+            font-size: 12px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        .source-tag {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--academy-blue);
+            background: #EFF6FF;
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background: #E2E8F0;
+            border-radius: 99px;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--academy-blue), var(--gold-dark));
+            border-radius: 99px;
+            transition: width 0.3s ease;
+        }
+
+        .instruction-tip {
+            background: #F8FAFC;
+            border-left: 3.5px solid var(--gold-dark);
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            color: #475569;
+            margin-bottom: 14px;
+        }
+
+        /* 英文单词与可点击切分间隙容器 */
+        .sentence-stage {
+            background: #FFFFFF;
+            border: 1.5px solid #CBD5E1;
+            border-radius: 14px;
+            padding: 18px 14px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            row-gap: 14px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .word-token {
+            font-family: "Georgia", "Times New Roman", "Inter", serif;
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--navy-dark);
+            padding: 3px 2px;
+            letter-spacing: 0.2px;
+        }
+
+        /* 单词间的可点触切分槽（增大拇指热区） */
+        .gap-slot {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 18px;
+            height: 34px;
+            padding: 0 3px;
+            cursor: pointer;
+            position: relative;
+            border-radius: 6px;
+            transition: background-color 0.15s;
+        }
+
+        .gap-slot:active {
+            background-color: rgba(226, 192, 141, 0.25);
+        }
+
+        /* 默认轻微提示点 */
+        .gap-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: #CBD5E1;
+            transition: all 0.15s;
+        }
+
+        /* 用户点击切下的一刀（金色竖线） */
+        .gap-slot.active .gap-dot {
+            width: 3.5px;
+            height: 26px;
+            border-radius: 3px;
+            background-color: var(--gold-dark);
+            box-shadow: 0 0 0 2px rgba(226, 192, 141, 0.45);
+        }
+
+        /* 判分状态下的间隙样式 */
+        .gap-slot.correct .gap-dot {
+            width: 4px;
+            height: 28px;
+            border-radius: 3px;
+            background-color: var(--emerald);
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.25);
+        }
+
+        .gap-slot.missed .gap-dot {
+            width: 3px;
+            height: 28px;
+            border-radius: 2px;
+            background: repeating-linear-gradient(
+                to bottom,
+                var(--crimson) 0px,
+                var(--crimson) 4px,
+                transparent 4px,
+                transparent 7px
+            );
+        }
+
+        .gap-slot.extra .gap-dot {
+            width: 3.5px;
+            height: 26px;
+            border-radius: 2px;
+            background-color: var(--crimson);
+            opacity: 0.65;
+            transform: rotate(14deg);
+        }
+
+        .gap-tag {
+            position: absolute;
+            top: -12px;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 1px 4px;
+            border-radius: 4px;
+            white-space: nowrap;
+            line-height: 1.1;
+        }
+
+        .gap-slot.correct .gap-tag {
+            background: var(--emerald);
+            color: #fff;
+        }
+
+        .gap-slot.missed .gap-tag {
+            background: var(--crimson);
+            color: #fff;
+        }
+
+        .gap-slot.extra .gap-tag {
+            background: #FEE2E2;
+            color: var(--crimson);
+            border: 1px solid var(--crimson);
+        }
+
+        /* 诊断反馈面板 */
+        .feedback-panel {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            animation: slideUp 0.25s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-banner {
+            padding: 12px 14px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .score-banner.perfect {
+            background: var(--emerald-bg);
+            color: var(--emerald);
+            border: 1px solid #A7F3D0;
+        }
+
+        .score-banner.good {
+            background: var(--amber-bg);
+            color: var(--amber);
+            border: 1px solid #FDE68A;
+        }
+
+        .score-banner.needs-work {
+            background: var(--crimson-bg);
+            color: var(--crimson);
+            border: 1px solid #FECACA;
+        }
+
+        .detail-block {
+            background: #FFFFFF;
+            border-radius: 14px;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+        }
+
+        .detail-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--navy-dark);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .detail-title::before {
+            content: "";
+            width: 4px;
+            height: 14px;
+            border-radius: 2px;
+            background: var(--gold-dark);
+        }
+
+        .chunk-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chunk-item {
+            background: #F8FAFC;
+            border-radius: 10px;
+            padding: 9px 11px;
+            border-left: 3px solid var(--academy-blue);
+        }
+
+        .chunk-en {
+            font-family: "Georgia", serif;
+            font-size: 14.5px;
+            font-weight: 700;
+            color: var(--navy-dark);
+            margin-bottom: 3px;
+        }
+
+        .chunk-role {
+            display: inline-block;
+            font-size: 10.5px;
+            font-weight: 800;
+            color: var(--academy-blue);
+            background: #DBEAFE;
+            padding: 1px 6px;
+            border-radius: 4px;
+            margin-right: 6px;
+        }
+
+        .chunk-zh {
+            font-size: 13px;
+            color: #334155;
+            font-weight: 500;
+        }
+
+        .vocab-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .vocab-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            padding: 7px 10px;
+            background: #F8FAFC;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .vocab-word {
+            font-weight: 800;
+            color: var(--navy-dark);
+            font-family: "Inter", sans-serif;
+        }
+
+        .vocab-pos {
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-left: 4px;
+        }
+
+        .vocab-meaning {
+            font-weight: 700;
+            color: var(--academy-blue);
+        }
+
+        /* 阶段 3：最终战报图展示区 */
+        .report-stage {
+            display: none;
+            flex-direction: column;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .report-tip {
+            background: var(--emerald-bg);
+            color: var(--emerald);
+            border: 1px solid #A7F3D0;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            width: 100%;
+        }
+
+        .poster-preview-img {
+            width: 100%;
+            max-width: 420px;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 12px 32px rgba(8, 24, 43, 0.18);
+            border: 1px solid #CBD5E1;
+            display: block;
+        }
+
+        /* 老师快捷改题弹窗 */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(8, 24, 43, 0.72);
+            backdrop-filter: blur(3px);
+            z-index: 50;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+        }
+
+        .modal-card {
+            background: #FFFFFF;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: var(--navy-dark);
+            color: #FFFFFF;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-body {
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .teacher-q-box {
+            background: #F8FAFC;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .teacher-textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #CBD5E1;
+            font-size: 13px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            padding: 12px 16px;
+            background: #F8FAFC;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* 隐藏离屏高清画布 */
+        #reportCanvas {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+    <!-- 顶部品牌栏 -->
+    <header class="topbar">
+        <div class="brand-box">
+            <span class="brand-badge">XUETU</span>
+            <span class="brand-title" id="topTaskTitle">长难句意群闯关 · Day 01</span>
+        </div>
+        <div class="topbar-right">
+            <span class="timer-pill" id="liveTimerPill">00:00</span>
+            <button class="teacher-btn" onclick="openTeacherModal()">⚙️ 老师改题</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- 阶段 1：实名登录入口 -->
+        <section id="entryStage" style="display: flex; flex-direction: column; gap: 14px;">
+            <div class="hero-banner">
+                <div class="hero-sub">XUETU GUARD · 天津高考英语专项</div>
+                <h1 class="hero-heading">真题长难句意群切分与顺句直译训练</h1>
+                <p class="hero-desc">
+                    告别“看懂单词却读不懂整句”。用手指在单词间点击切分意群，系统将实时诊断句法断点，通关后自动生成带耗时与正确率的打卡战报图发群交作业。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="form-group">
+                    <label class="form-label" for="studentNameInput">学员姓名（必填，将显示在战报图上）</label>
+                    <input type="text" id="studentNameInput" class="form-input" placeholder="例如：张同学" maxlength="16">
+                </div>
+                <div class="form-group" style="margin-bottom: 18px;">
+                    <label class="form-label" for="studentClassSelect">所在班型 / 年级</label>
+                    <select id="studentClassSelect" class="form-select">
+                        <option value="高一核心基础班">高一核心基础班</option>
+                        <option value="高二高考强化班" selected>高二高考强化班</option>
+                        <option value="高三冲刺特训营">高三冲刺特训营</option>
+                        <option value="1对1 VIP 定制班">1对1 VIP 定制班</option>
+                    </select>
+                </div>
+                <button class="primary-btn" onclick="startPractice()">
+                    <span>开始今日 5 句意群闯关</span>
+                    <span>→</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 阶段 2：逐句切分训练区 -->
+        <section id="practiceStage" style="display: none; flex-direction: column; gap: 14px;">
+            <div class="card">
+                <div class="progress-header">
+                    <span class="step-badge" id="stepCounterBadge">第 1 / 5 句</span>
+                    <span class="source-tag" id="sentenceSourceTag">天津高考真题 · 阅读理解</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressBarFill" style="width: 20%;"></div>
+                </div>
+
+                <div class="instruction-tip" id="instructionText">
+                    💡 <strong>任务：</strong>点击单词之间的小圆点切出意群边界（如主谓宾主干后、从句引导词前、非谓语短语前），再次点击可取消。
+                </div>
+
+                <!-- 交互式句子画布 -->
+                <div class="sentence-stage" id="sentenceStage"></div>
+
+                <div style="margin-top: 16px;">
+                    <button class="primary-btn" id="submitSliceBtn" onclick="submitCurrentSentence()">
+                        确认提交本句切分
+                    </button>
+                    <button class="primary-btn gold-btn" id="nextSentenceBtn" style="display: none;" onclick="goToNextSentence()">
+                        进入下一句 →
+                    </button>
+                </div>
+            </div>
+
+            <!-- 即时诊断与逐句直译解锁区 -->
+            <div class="feedback-panel" id="feedbackPanel">
+                <div class="score-banner" id="scoreBanner">
+                    <span id="scoreSummaryText">切分诊断结果</span>
+                    <span id="scorePercentText">100%</span>
+                </div>
+
+                <!-- 1. 标准意群与顺句直译 -->
+                <div class="detail-block">
+                    <div class="detail-title">标准意群切分与顺句直译</div>
+                    <div class="chunk-list" id="chunkBreakdownList"></div>
+                </div>
+
+                <!-- 2. 真题核心词汇精解 -->
+                <div class="detail-block">
+                    <div class="detail-title">本句天津高考高频核心词</div>
+                    <div class="vocab-grid" id="vocabBreakdownList"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 阶段 3：高清战报图生成区 -->
+        <section class="report-stage" id="reportStage">
+            <div class="report-tip">
+                🎉 今日 5 句长难句全部通关！长按下方战报图即可直接保存或发送至微信学习群打卡
+            </div>
+
+            <img id="finalReportImg" class="poster-preview-img" alt="学途卫士英语打卡战报">
+
+            <div style="width: 100%; display: flex; gap: 10px;">
+                <a id="downloadReportLink" class="primary-btn gold-btn" style="text-decoration: none; flex: 2;" download="学途卫士_长难句打卡战报.png">
+                    📥 保存高清战报图片
+                </a>
+                <button class="primary-btn" style="flex: 1; background: #475569;" onclick="resetAllAndRetry()">
+                    再练一遍
+                </button>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- 离屏高清 Canvas 绘图板 -->
+<canvas id="reportCanvas" width="750" height="1180"></canvas>
+
+<!-- 老师可视化改题后台弹窗 -->
+<div class="modal-backdrop" id="teacherModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <span style="font-weight: 800; font-size: 15px;">⚙️ 老师快捷改题与导出工作台</span>
+            <button onclick="closeTeacherModal()" style="background:none; border:none; color:#CBD5E1; font-size:20px; cursor:pointer;">✕</button>
+        </div>
+        <div class="modal-body">
+            <div style="background:#FFFBEB; border:1px solid #FDE68A; padding:10px 12px; border-radius:10px; font-size:12px; color:#92400E;">
+                <strong>使用说明：</strong>在英文句子中直接用斜杠 <code>/</code> 标出标准意群切分位置（如 <code>The students / who work hard / will succeed.</code>）。改完后点击底部<strong>「导出新版 HTML」</strong>即可下载新文件上传到 GitHub 仓库作为次日作业！
+            </div>
+            <div>
+                <label class="form-label">今日打卡任务标题</label>
+                <input type="text" id="teacherTitleInput" class="form-input" style="padding:8px 12px; font-size:14px;">
+            </div>
+            <div id="teacherQuestionsContainer" style="display:flex; flex-direction:column; gap:12px;"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-sm" style="background:#E2E8F0; color:#334155;" onclick="applyTeacherChangesOnly()">仅在当前预览</button>
+            <button class="btn-sm" style="background:var(--navy-dark); color:var(--gold);" onclick="exportStandaloneHtml()">📦 导出新版 HTML 文件</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/**
+ * ============================================================================
+ * 预置题库配置区（天津高考真题长难句精选 5 句）
+ * 老师亦可通过页面右上角「老师改题」按钮可视化修改并一键导出新 HTML 文件
+ * ============================================================================
+ */
+let TASK_CONFIG = {
+    taskTitle: "长难句意群闯关 · Day 01",
+    questions: [
+        {
+            source: "天津高考真题 · 阅读理解 C篇",
+            slashedSentence: "The researchers / who conducted the study / found / that people / living near green spaces / experienced significantly lower stress levels.",
+            chunks: [
+                { en: "The researchers", role: "主语", zh: "这些研究人员" },
+                { en: "who conducted the study", role: "定语从句", zh: "（他们）开展了这项研究的" },
+                { en: "found", role: "主干谓语", zh: "发现" },
+                { en: "that people", role: "宾语从句主语", zh: "人们" },
+                { en: "living near green spaces", role: "现在分词作定语", zh: "居住在绿地附近的" },
+                { en: "experienced significantly lower stress levels.", role: "从句谓语+宾语", zh: "经历了明显更低的压力水平。" }
+            ],
+            vocab: [
+                { word: "conduct", pos: "v.", meaning: "实施；执行；引导" },
+                { word: "significantly", pos: "adv.", meaning: "显著地；大幅地" }
+            ]
+        },
+        {
+            source: "天津高考真题 · 完形填空语境句",
+            slashedSentence: "Although the technology / was originally designed / to assist doctors in remote areas, / it has quickly found its way / into everyday households.",
+            chunks: [
+                { en: "Although the technology", role: "让步状语从句", zh: "尽管这项技术" },
+                { en: "was originally designed", role: "被动谓语", zh: "最初被设计" },
+                { en: "to assist doctors in remote areas,", role: "目的状语", zh: "用来协助偏远地区的医生，" },
+                { en: "it has quickly found its way", role: "主句主干", zh: "它已经迅速进入（找到路径）" },
+                { en: "into everyday households.", role: "方向状语", zh: "寻常百姓家。" }
+            ],
+            vocab: [
+                { word: "originally", pos: "adv.", meaning: "起初；原本" },
+                { word: "assist", pos: "v.", meaning: "协助；帮助" },
+                { word: "household", pos: "n.", meaning: "家庭；住户" }
+            ]
+        },
+        {
+            source: "天津高考真题 · 阅读理解 D篇",
+            slashedSentence: "What makes this ancient building / truly remarkable / is its ability / to withstand strong earthquakes / without using a single nail.",
+            chunks: [
+                { en: "What makes this ancient building", role: "主语从句", zh: "使得这座古建筑" },
+                { en: "truly remarkable", role: "宾语补足语", zh: "真正非凡卓越的（东西）" },
+                { en: "is its ability", role: "主句系表", zh: "是它的能力" },
+                { en: "to withstand strong earthquakes", role: "不定式作后置定语", zh: "抵御强烈地震的" },
+                { en: "without using a single nail.", role: "方式状语", zh: "而不用一颗钉子。" }
+            ],
+            vocab: [
+                { word: "remarkable", pos: "adj.", meaning: "非凡的；引人注目的" },
+                { word: "withstand", pos: "v.", meaning: "承受；抵挡住" }
+            ]
+        },
+        {
+            source: "天津高考真题 · 阅读表达精选",
+            slashedSentence: "Faced with mounting pressure / from both work and family, / many young adults / are turning to traditional crafts / to seek inner peace.",
+            chunks: [
+                { en: "Faced with mounting pressure", role: "过去分词作状语", zh: "面对日益增长的压力" },
+                { en: "from both work and family,", role: "后置定语", zh: "来自工作和家庭双方面的，" },
+                { en: "many young adults", role: "主句主语", zh: "许多年轻人" },
+                { en: "are turning to traditional crafts", role: "主句谓宾", zh: "正在转向传统手工艺" },
+                { en: "to seek inner peace.", role: "目的状语", zh: "以寻求内心的平静。" }
+            ],
+            vocab: [
+                { word: "mounting", pos: "adj.", meaning: "逐步增加的；上升的" },
+                { word: "turn to", pos: "phr.", meaning: "求助于；转向" }
+            ]
+        },
+        {
+            source: "天津高考真题 · 读后续写高分句型",
+            slashedSentence: "Not until she stepped onto the stage / and saw the encouraging smiles / in the audience / did she realize / how much progress she had made.",
+            chunks: [
+                { en: "Not until she stepped onto the stage", role: "否定词前置状语", zh: "直到她踏上舞台" },
+                { en: "and saw the encouraging smiles", role: "并列谓宾", zh: "并看到鼓励的微笑" },
+                { en: "in the audience", role: "地点定语", zh: "观众席上的" },
+                { en: "did she realize", role: "部分倒装主干", zh: "她才意识到" },
+                { en: "how much progress she had made.", role: "宾语从句", zh: "她已经取得了多大的进步。" }
+            ],
+            vocab: [
+                { word: "audience", pos: "n.", meaning: "观众；听众" },
+                { word: "progress", pos: "n.", meaning: "进步；进展" }
+            ]
+        }
+    ]
+};
+
+/**
+ * ============================================================================
+ * 运行时状态管理
+ * ============================================================================
+ */
+let runtimeState = {
+    studentName: "",
+    studentClass: "",
+    startTimeMs: 0,
+    elapsedSeconds: 0,
+    timerInterval: null,
+    currentIndex: 0,
+    userSelectedGaps: new Set(),
+    isSubmittedCurrent: false,
+    results: [] // 每题记录: { accuracy, missedCount, extraCount, correctCount, totalExpected }
+};
+
+// 初始化页面标题与历史填写记忆
+window.onload = function() {
+    document.getElementById("topTaskTitle").textContent = TASK_CONFIG.taskTitle;
+    const savedName = localStorage.getItem("xuetu_en_student_name");
+    const savedClass = localStorage.getItem("xuetu_en_student_class");
+    if (savedName) document.getElementById("studentNameInput").value = savedName;
+    if (savedClass) document.getElementById("studentClassSelect").value = savedClass;
+};
+
+/**
+ * 解析带 `/` 的标准句子，拆分为纯单词数组与标准切分间隙索引集合
+ */
+function parseSlashedSentence(slashedText) {
+    const rawTokens = slashedText.trim().split(/\s+/);
+    const words = [];
+    const expectedGapIndices = new Set();
+
+    rawTokens.forEach(tok => {
+        if (tok === "/") {
+            if (words.length > 0) {
+                expectedGapIndices.add(words.length - 1);
+            }
+        } else {
+            // 处理单词紧贴斜杠的情况，如 "word/" 或 "/word"
+            let clean = tok;
+            if (clean.startsWith("/")) {
+                if (words.length > 0) expectedGapIndices.add(words.length - 1);
+                clean = clean.replace(/^\/+/, "");
+            }
+            const hasTrailingSlash = clean.endsWith("/");
+            clean = clean.replace(/\/+$/, "");
+            if (clean.length > 0) {
+                words.push(clean);
+                if (hasTrailingSlash) {
+                    expectedGapIndices.add(words.length - 1);
+                }
+            }
+        }
+    });
+
+    // 最后一个词后面不需要切分刀
+    expectedGapIndices.delete(words.length - 1);
+    return { words, expectedGapIndices };
+}
+
+/**
+ * 开始闯关
+ */
+function startPractice() {
+    const nameInput = document.getElementById("studentNameInput").value.trim();
+    if (!nameInput) {
+        alertBox("请先输入你的姓名再开始打卡哦！");
+        document.getElementById("studentNameInput").focus();
+        return;
+    }
+
+    const classSelect = document.getElementById("studentClassSelect").value;
+    localStorage.setItem("xuetu_en_student_name", nameInput);
+    localStorage.setItem("xuetu_en_student_class", classSelect);
+
+    runtimeState.studentName = nameInput;
+    runtimeState.studentClass = classSelect;
+    runtimeState.currentIndex = 0;
+    runtimeState.results = [];
+    runtimeState.startTimeMs = Date.now();
+    runtimeState.elapsedSeconds = 0;
+
+    document.getElementById("entryStage").style.display = "none";
+    document.getElementById("reportStage").style.display = "none";
+    document.getElementById("practiceStage").style.display = "flex";
+
+    const timerPill = document.getElementById("liveTimerPill");
+    timerPill.style.display = "inline-block";
+    clearInterval(runtimeState.timerInterval);
+    runtimeState.timerInterval = setInterval(() => {
+        runtimeState.elapsedSeconds = Math.floor((Date.now() - runtimeState.startTimeMs) / 1000);
+        timerPill.textContent = formatSecondsMMSS(runtimeState.elapsedSeconds);
+    }, 1000);
+
+    renderCurrentQuestion();
+}
+
+function formatSecondsMMSS(sec) {
+    const m = String(Math.floor(sec / 60)).padStart(2, "0");
+    const s = String(sec % 60).padStart(2, "0");
+    return `${m}:${s}`;
+}
+
+function formatSecondsChinese(sec) {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    if (m === 0) return `${s}秒`;
+    return `${m}分${String(s).padStart(2, "0")}秒`;
+}
+
+/**
+ * 渲染当前句子的可点触切分舞台
+ */
+function renderCurrentQuestion() {
+    const total = TASK_CONFIG.questions.length;
+    const idx = runtimeState.currentIndex;
+    const q = TASK_CONFIG.questions[idx];
+
+    runtimeState.userSelectedGaps = new Set();
+    runtimeState.isSubmittedCurrent = false;
+
+    document.getElementById("stepCounterBadge").textContent = `第 ${idx + 1} / ${total} 句`;
+    document.getElementById("sentenceSourceTag").textContent = q.source;
+    document.getElementById("progressBarFill").style.width = `${((idx + 1) / total) * 100}%`;
+
+    document.getElementById("submitSliceBtn").style.display = "flex";
+    document.getElementById("nextSentenceBtn").style.display = "none";
+    document.getElementById("feedbackPanel").style.display = "none";
+
+    const stage = document.getElementById("sentenceStage");
+    stage.innerHTML = "";
+
+    const { words } = parseSlashedSentence(q.slashedSentence);
+
+    words.forEach((word, wIdx) => {
+        const wordSpan = document.createElement("span");
+        wordSpan.className = "word-token";
+        wordSpan.textContent = word;
+        stage.appendChild(wordSpan);
+
+        // 在每两个单词之间插入可点击切分间隙
+        if (wIdx < words.length - 1) {
+            const gapDiv = document.createElement("div");
+            gapDiv.className = "gap-slot";
+            gapDiv.dataset.gapIdx = String(wIdx);
+            gapDiv.innerHTML = `<span class="gap-dot"></span>`;
+            gapDiv.onclick = () => toggleGapSlash(wIdx, gapDiv);
+            stage.appendChild(gapDiv);
+        }
+    });
+}
+
+function toggleGapSlash(gapIdx, gapEl) {
+    if (runtimeState.isSubmittedCurrent) return;
+    if (runtimeState.userSelectedGaps.has(gapIdx)) {
+        runtimeState.userSelectedGaps.delete(gapIdx);
+        gapEl.classList.remove("active");
+    } else {
+        runtimeState.userSelectedGaps.add(gapIdx);
+        gapEl.classList.add("active");
+    }
+}
+
+/**
+ * 提交本句切分并生成即时结构诊断
+ */
+function submitCurrentSentence() {
+    if (runtimeState.isSubmittedCurrent) return;
+    runtimeState.isSubmittedCurrent = true;
+
+    const q = TASK_CONFIG.questions[runtimeState.currentIndex];
+    const { expectedGapIndices } = parseSlashedSentence(q.slashedSentence);
+    const userSet = runtimeState.userSelectedGaps;
+
+    let correctCount = 0;
+    let missedCount = 0;
+    let extraCount = 0;
+
+    // 标出所有间隙的对错状态
+    const gapEls = document.querySelectorAll("#sentenceStage .gap-slot");
+    gapEls.forEach(el => {
+        const gIdx = parseInt(el.dataset.gapIdx, 10);
+        const isExpected = expectedGapIndices.has(gIdx);
+        const isChosen = userSet.has(gIdx);
+
+        el.classList.remove("active");
+
+        if (isExpected && isChosen) {
+            correctCount++;
+            el.classList.add("correct");
+            el.innerHTML = `<span class="gap-tag">✓</span><span class="gap-dot"></span>`;
+        } else if (isExpected && !isChosen) {
+            missedCount++;
+            el.classList.add("missed");
+            el.innerHTML = `<span class="gap-tag">漏切</span><span class="gap-dot"></span>`;
+        } else if (!isExpected && isChosen) {
+            extraCount++;
+            el.classList.add("extra");
+            el.innerHTML = `<span class="gap-tag">多切</span><span class="gap-dot"></span>`;
+        }
+    });
+
+    // 计算单句精准度（命中数 / (标准断点 + 多切惩罚)）
+    const denominator = Math.max(expectedGapIndices.size + extraCount, 1);
+    const accuracy = Math.round((correctCount / denominator) * 100);
+
+    runtimeState.results.push({
+        accuracy,
+        correctCount,
+        missedCount,
+        extraCount,
+        totalExpected: expectedGapIndices.size
+    });
+
+    // 渲染结果 Banner
+    const banner = document.getElementById("scoreBanner");
+    const summaryText = document.getElementById("scoreSummaryText");
+    const percentText = document.getElementById("scorePercentText");
+
+    banner.className = "score-banner";
+    if (accuracy === 100) {
+        banner.classList.add("perfect");
+        summaryText.textContent = "🎯 意群切分完全精准！句法结构一目了然";
+    } else if (accuracy >= 60) {
+        banner.classList.add("good");
+        summaryText.textContent = `👍 命中 ${correctCount}/${expectedGapIndices.size} 处（漏切 ${missedCount} 处，多切 ${extraCount} 处）`;
+    } else {
+        banner.classList.add("needs-work");
+        summaryText.textContent = `💡 关注红标断点：漏切 ${missedCount} 处，多切 ${extraCount} 处`;
+    }
+    percentText.textContent = `${accuracy}%`;
+
+    // 渲染标准意群与顺句直译卡片
+    const chunkListEl = document.getElementById("chunkBreakdownList");
+    chunkListEl.innerHTML = "";
+    q.chunks.forEach(ch => {
+        const div = document.createElement("div");
+        div.className = "chunk-item";
+        div.innerHTML = `
+            <div class="chunk-en">${ch.en}</div>
+            <div><span class="chunk-role">${ch.role}</span><span class="chunk-zh">${ch.zh}</span></div>
+        `;
+        chunkListEl.appendChild(div);
+    });
+
+    // 渲染核心词汇卡片
+    const vocabListEl = document.getElementById("vocabBreakdownList");
+    vocabListEl.innerHTML = "";
+    q.vocab.forEach(v => {
+        const row = document.createElement("div");
+        row.className = "vocab-row";
+        row.innerHTML = `
+            <div><span class="vocab-word">${v.word}</span><span class="vocab-pos">${v.pos}</span></div>
+            <div class="vocab-meaning">${v.meaning}</div>
+        `;
+        vocabListEl.appendChild(row);
+    });
+
+    document.getElementById("submitSliceBtn").style.display = "none";
+    const nextBtn = document.getElementById("nextSentenceBtn");
+    nextBtn.style.display = "flex";
+    nextBtn.textContent = (runtimeState.currentIndex === TASK_CONFIG.questions.length - 1)
+        ? "🎉 完成闯关，生成打卡战报图 →"
+        : "继续下一句 →";
+
+    document.getElementById("feedbackPanel").style.display = "flex";
+}
+
+function goToNextSentence() {
+    if (runtimeState.currentIndex < TASK_CONFIG.questions.length - 1) {
+        runtimeState.currentIndex++;
+        renderCurrentQuestion();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+        finishAllAndGeneratePoster();
+    }
+}
+
+/**
+ * ============================================================================
+ * 原生 HTML5 Canvas 2D 高清战报图绘制引擎（绝无 DOM 截图文字裁切或基线偏移）
+ * ============================================================================
+ */
+function finishAllAndGeneratePoster() {
+    clearInterval(runtimeState.timerInterval);
+    document.getElementById("liveTimerPill").style.display = "none";
+    document.getElementById("practiceStage").style.display = "none";
+    document.getElementById("reportStage").style.display = "flex";
+
+    const canvas = document.getElementById("reportCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const W = 750;
+    const qCount = runtimeState.results.length;
+    const H = 680 + qCount * 76 + 150;
+    canvas.width = W;
+    canvas.height = H;
+
+    // 1. 整体浅灰底色
+    ctx.fillStyle = "#F4F6FA";
+    ctx.fillRect(0, 0, W, H);
+
+    // 2. 顶部深海蓝学院风横幅
+    const headerH = 270;
+    const grad = ctx.createLinearGradient(0, 0, W, headerH);
+    grad.addColorStop(0, "#08182B");
+    grad.addColorStop(1, "#132F5B");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, headerH);
+
+    // 装饰金色光圈
+    ctx.fillStyle = "rgba(226, 192, 141, 0.08)";
+    ctx.beginPath();
+    ctx.arc(W - 60, 40, 140, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 品牌胶囊徽章（textBaseline = middle 绝对居中）
+    drawPillBadge(ctx, 44, 42, 176, 34, 8, "#E2C08D", "#08182B", "XUETU GUARD", "bold 15px sans-serif");
+
+    ctx.fillStyle = "#EDD5AE";
+    ctx.font = "600 18px sans-serif";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "left";
+    ctx.fillText("学途卫士 · 高中英语真题专项打卡", 236, 59);
+
+    // 主标题
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "900 34px sans-serif";
+    ctx.fillText(TASK_CONFIG.taskTitle, 44, 122);
+
+    // 完成时间戳
+    const now = new Date();
+    const dateStamp = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    ctx.fillStyle = "#94A3B8";
+    ctx.font = "500 18px sans-serif";
+    ctx.fillText(`打卡完成时间：${dateStamp}`, 44, 168);
+
+    // 学员名牌条
+    roundRectPath(ctx, 44, 196, W - 88, 52, 12);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(226, 192, 141, 0.35)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "800 21px sans-serif";
+    ctx.fillText(`学员：${runtimeState.studentName}`, 64, 222);
+
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#E2C08D";
+    ctx.font = "700 19px sans-serif";
+    ctx.fillText(runtimeState.studentClass, W - 64, 222);
+    ctx.textAlign = "left";
+
+    // 3. 核心战绩三宫格卡片
+    const avgAccuracy = Math.round(
+        runtimeState.results.reduce((sum, r) => sum + r.accuracy, 0) / Math.max(qCount, 1)
+    );
+    const totalTimeStr = formatSecondsChinese(runtimeState.elapsedSeconds);
+    const rankTitle = avgAccuracy >= 90 ? "意群大师" : (avgAccuracy >= 75 ? "稳步进阶" : "勤思笃行");
+
+    const statsY = headerH + 24;
+    const statsH = 148;
+    roundRectPath(ctx, 36, statsY, W - 72, statsH, 18);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fill();
+    ctx.strokeStyle = "#E2E8F0";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    const colW = (W - 72) / 3;
+    const metrics = [
+        { label: "首轮切分准确率", val: `${avgAccuracy}%`, color: "#2C55A0" },
+        { label: "专注思考总耗时", val: totalTimeStr, color: "#08182B" },
+        { label: "今日句法评级", val: rankTitle, color: "#B68B4C" }
+    ];
+
+    metrics.forEach((m, i) => {
+        const cx = 36 + colW * i + colW / 2;
+        if (i > 0) {
+            ctx.strokeStyle = "#E2E8F0";
+            ctx.beginPath();
+            ctx.moveTo(36 + colW * i, statsY + 28);
+            ctx.lineTo(36 + colW * i, statsY + statsH - 28);
+            ctx.stroke();
+        }
+        ctx.textAlign = "center";
+        ctx.fillStyle = m.color;
+        ctx.font = "900 32px sans-serif";
+        ctx.fillText(m.val, cx, statsY + 58);
+
+        ctx.fillStyle = "#64748B";
+        ctx.font = "600 17px sans-serif";
+        ctx.fillText(m.label, cx, statsY + 106);
+    });
+    ctx.textAlign = "left";
+
+    // 4. 逐句闯关明细列表
+    const listStartY = statsY + statsH + 24;
+    const listH = 74 + qCount * 76;
+    roundRectPath(ctx, 36, listStartY, W - 72, listH, 18);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fill();
+    ctx.strokeStyle = "#E2E8F0";
+    ctx.stroke();
+
+    ctx.fillStyle = "#08182B";
+    ctx.font = "800 22px sans-serif";
+    ctx.fillText("逐句意群切分诊断明细", 62, listStartY + 38);
+
+    runtimeState.results.forEach((res, idx) => {
+        const rowY = listStartY + 68 + idx * 76;
+        const q = TASK_CONFIG.questions[idx];
+
+        roundRectPath(ctx, 58, rowY, W - 116, 62, 12);
+        ctx.fillStyle = "#F8FAFC";
+        ctx.fill();
+
+        // 题号胶囊
+        drawPillBadge(ctx, 72, rowY + 15, 76, 32, 8, "#08182B", "#E2C08D", `第 ${idx + 1} 句`, "800 16px sans-serif");
+
+        // 题目来源
+        ctx.fillStyle = "#334155";
+        ctx.font = "600 18px sans-serif";
+        const shortSource = q.source.length > 16 ? q.source.slice(0, 16) + "..." : q.source;
+        ctx.fillText(shortSource, 164, rowY + 31);
+
+        // 右侧得分胶囊
+        const isPass = res.accuracy >= 80;
+        const badgeBg = isPass ? "#ECFDF5" : "#FFFBEB";
+        const badgeText = isPass ? "#059669" : "#D97706";
+        const label = res.accuracy === 100 ? "100% 精准" : `${res.accuracy}% (漏${res.missedCount}/多${res.extraCount})`;
+        drawPillBadge(ctx, W - 245, rowY + 15, 172, 32, 8, badgeBg, badgeText, label, "800 16px sans-serif");
+    });
+
+    // 5. 底部老师寄语与落款
+    const footerY = listStartY + listH + 26;
+    drawPillBadge(ctx, 36, footerY, 108, 34, 8, "#08182B", "#E2C08D", "教研点评", "800 16px sans-serif");
+
+    ctx.fillStyle = "#475569";
+    ctx.font = "600 18px sans-serif";
+    const comment = avgAccuracy >= 85
+        ? "意群边界敏感度极佳！坚持每天5句，阅读速度与长难句理解将实现质的飞跃。"
+        : "已解锁全部句子结构拆解，建议把红标漏切处朗读三遍，培养英文意群停顿语感。";
+    wrapCanvasText(ctx, comment, 158, footerY + 12, W - 196, 26);
+
+    ctx.fillStyle = "#94A3B8";
+    ctx.font = "600 16px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("学途卫士高中英语教研组 · 让每一分钟课后复习都有迹可循", W / 2, H - 30);
+
+    // 输出高清 PNG 图片
+    const dataUrl = canvas.toDataURL("image/png", 1.0);
+    document.getElementById("finalReportImg").src = dataUrl;
+    const safeName = runtimeState.studentName.replace(/[\\/:*?"<>|]/g, "_");
+    const dlLink = document.getElementById("downloadReportLink");
+    dlLink.href = dataUrl;
+    dlLink.download = `学途卫士_长难句打卡_${safeName}.png`;
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function drawPillBadge(ctx, x, y, w, h, r, bgColor, textColor, text, fontSpec) {
+    roundRectPath(ctx, x, y, w, h, r);
+    ctx.fillStyle = bgColor;
+    ctx.fill();
+
+    ctx.save();
+    ctx.fillStyle = textColor;
+    ctx.font = fontSpec;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, x + w / 2, y + h / 2 + 1);
+    ctx.restore();
+}
+
+function roundRectPath(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+}
+
+function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight) {
+    let line = "";
+    let currY = y;
+    for (let i = 0; i < text.length; i++) {
+        const testLine = line + text[i];
+        if (ctx.measureText(testLine).width > maxWidth && i > 0) {
+            ctx.fillText(line, x, currY);
+            line = text[i];
+            currY += lineHeight;
+        } else {
+            line = testLine;
+        }
+    }
+    ctx.fillText(line, x, currY);
+}
+
+function resetAllAndRetry() {
+    document.getElementById("reportStage").style.display = "none";
+    document.getElementById("entryStage").style.display = "flex";
+}
+
+function alertBox(msg) {
+    const toast = document.createElement("div");
+    toast.style.cssText = "position:fixed; top:72px; left:50%; transform:translateX(-50%); background:#08182B; color:#E2C08D; padding:10px 18px; border-radius:12px; font-size:13px; font-weight:700; z-index:99; box-shadow:0 8px 24px rgba(0,0,0,0.25); border:1px solid rgba(226,192,141,0.4);";
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2400);
+}
+
+/**
+ * ============================================================================
+ * 老师可视化改题与一键生成新单文件 HTML
+ * ============================================================================
+ */
+function openTeacherModal() {
+    document.getElementById("teacherTitleInput").value = TASK_CONFIG.taskTitle;
+    const container = document.getElementById("teacherQuestionsContainer");
+    container.innerHTML = "";
+
+    TASK_CONFIG.questions.forEach((q, idx) => {
+        const box = document.createElement("div");
+        box.className = "teacher-q-box";
+        const zhFull = q.chunks.map(c => c.zh).join(" / ");
+        const vocabFull = q.vocab.map(v => `${v.word} (${v.pos}) ${v.meaning}`).join("；");
+
+        box.innerHTML = `
+            <div style="font-weight:800; font-size:13px; color:var(--navy-dark);">第 ${idx + 1} 句配置</div>
+            <input type="text" class="form-input t-source" style="padding:6px 10px; font-size:12px;" value="${q.source}" placeholder="真题来源标签">
+            <textarea rows="2" class="teacher-textarea t-slashed" placeholder="用 / 标出标准意群切分点">${q.slashedSentence}</textarea>
+            <textarea rows="2" class="teacher-textarea t-zh" placeholder="对应各段顺句直译（用 / 分隔）">${zhFull}</textarea>
+            <input type="text" class="form-input t-vocab" style="padding:6px 10px; font-size:12px;" value="${vocabFull}" placeholder="核心词汇：词 (词性) 释义；词 (词性) 释义">
+        `;
+        container.appendChild(box);
+    });
+
+    document.getElementById("teacherModal").style.display = "flex";
+}
+
+function closeTeacherModal() {
+    document.getElementById("teacherModal").style.display = "none";
+}
+
+function collectTeacherConfigFromModal() {
+    const newTitle = document.getElementById("teacherTitleInput").value.trim() || "长难句意群闯关";
+    const boxes = document.querySelectorAll("#teacherQuestionsContainer .teacher-q-box");
+    const newQuestions = [];
+
+    boxes.forEach((box, idx) => {
+        const source = box.querySelector(".t-source").value.trim() || "高考真题精选";
+        const slashedSentence = box.querySelector(".t-slashed").value.trim();
+        const zhParts = box.querySelector(".t-zh").value.split("/").map(s => s.trim());
+        const enParts = slashedSentence.split("/").map(s => s.trim()).filter(Boolean);
+
+        const chunks = enParts.map((enStr, cIdx) => ({
+            en: enStr,
+            role: `意群 ${cIdx + 1}`,
+            zh: zhParts[cIdx] || "（请对照英文意群顺句理解）"
+        }));
+
+        const vocabRaw = box.querySelector(".t-vocab").value.split(/[；;]/).map(s => s.trim()).filter(Boolean);
+        const vocab = vocabRaw.map(item => {
+            const match = item.match(/^([a-zA-Z\s-]+)\s*\(([^)]+)\)\s*(.+)$/);
+            if (match) {
+                return { word: match[1].trim(), pos: match[2].trim(), meaning: match[3].trim() };
+            }
+            return { word: item, pos: "", meaning: "核心考点词" };
+        });
+
+        newQuestions.push({
+            source,
+            slashedSentence,
+            chunks: chunks.length > 0 ? chunks : TASK_CONFIG.questions[idx].chunks,
+            vocab: vocab.length > 0 ? vocab : TASK_CONFIG.questions[idx].vocab
+        });
+    });
+
+    TASK_CONFIG = {
+        taskTitle: newTitle,
+        questions: newQuestions
+    };
+    document.getElementById("topTaskTitle").textContent = TASK_CONFIG.taskTitle;
+}
+
+function applyTeacherChangesOnly() {
+    collectTeacherConfigFromModal();
+    closeTeacherModal();
+    alertBox("✓ 已更新当前页面题库！");
+}
+
+function exportStandaloneHtml() {
+    collectTeacherConfigFromModal();
+    const fullDocHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    // 将当前页面源码中的 TASK_CONFIG 替换为老师刚编辑好的最新 JSON
+    const updatedHtml = fullDocHtml.replace(
+        /let TASK_CONFIG = \{[\s\S]*?\n\};/,
+        `let TASK_CONFIG = ${JSON.stringify(TASK_CONFIG, null, 4)};`
+    );
+
+    const blob = new Blob([updatedHtml], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "english_chunking_new.html";
+    a.click();
+    URL.revokeObjectURL(url);
+    closeTeacherModal();
+    alertBox("✓ 新版 HTML 已下载！直接上传到 GitHub 仓库即可");
+}
+</script>
+</body>
+</html>
