@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>学途卫士 · 多科课时与晚辅结余通知单</title>
+  <style>
+    :root {
+      --navy-dark: #08182B;
+      --navy-mid: #11294D;
+      --academy-blue: #2C55A0;
+      --gold: #E2C08D;
+      --gold-dark: #B68B4C;
+      --bg-page: #F2F4F8;
+      --card-bg: #FFFFFF;
+      --text-main: #1E293B;
+      --text-sub: #64748B;
+      --border: #E2E8F0;
+      --danger: #DC2626;
+      --warning: #D97706;
+      --success: #059669;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 84px;
+    }
+
+    .topbar {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-mid) 100%);
+      color: #fff;
+      padding: 14px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(8, 24, 43, 0.25);
+    }
+
+    .topbar-title {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar-title h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+    }
+
+    .topbar-title span {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.78);
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-top {
+      background: rgba(226, 192, 141, 0.16);
+      border: 1px solid rgba(226, 192, 141, 0.45);
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 900px) {
+      .container {
+        grid-template-columns: 1.15fr 0.85fr;
+        align-items: start;
+      }
+      body {
+        padding-bottom: 24px;
+      }
+    }
+
+    .panel {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+      border: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy-dark);
+      margin: 0 0 12px 0;
+      padding-left: 9px;
+      border-left: 3.5px solid var(--gold-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .field {
+      margin-bottom: 10px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sub);
+      margin-bottom: 4px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #CBD5E1;
+      border-radius: 7px;
+      font-size: 14px;
+      color: var(--text-main);
+      background: #fff;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--academy-blue);
+      box-shadow: 0 0 0 2px rgba(44, 85, 160, 0.12);
+    }
+
+    .quick-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .tag-btn {
+      background: #F1F5F9;
+      border: 1px solid #CBD5E1;
+      color: var(--navy-dark);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .tag-btn:active {
+      background: var(--navy-dark);
+      color: var(--gold);
+    }
+
+    .subject-card {
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+      background: #FAFCFF;
+      position: relative;
+    }
+
+    .subject-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed #CBD5E1;
+    }
+
+    .subject-badge {
+      background: var(--navy-dark);
+      color: var(--gold);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    .btn-del {
+      background: #FEE2E2;
+      color: var(--danger);
+      border: none;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .date-logger {
+      background: #fff;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 8px;
+    }
+
+    .date-logger-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .date-logger-row input[type="date"] {
+      flex: 1;
+      min-width: 130px;
+      padding: 6px 8px;
+      font-size: 13px;
+    }
+
+    .btn-add-consumed {
+      background: var(--academy-blue);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-add-leave {
+      background: #FEF3C7;
+      color: #92400E;
+      border: 1px solid #F59E0B;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .chips-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-weight: 500;
+    }
+
+    .chip-consumed {
+      background: #EFF6FF;
+      color: #1D4ED8;
+      border: 1px solid #BFDBFE;
+    }
+
+    .chip-leave {
+      background: #FFFBEB;
+      color: #B45309;
+      border: 1px solid #FDE68A;
+    }
+
+    .chip button {
+      background: none;
+      border: none;
+      color: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0 2px;
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .summary-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #E2E8F0;
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
+    .summary-strip strong {
+      color: var(--navy-dark);
+      font-size: 13px;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #F8FAFC;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #E2E8F0;
+      margin-bottom: 10px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #CBD5E1;
+      transition: .2s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .2s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--navy-dark);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* 预览卡片样式（所见即所得） */
+    .preview-wrapper {
+      position: sticky;
+      top: 66px;
+    }
+
+    .notice-card {
+      background: #FFFFFF;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 28px rgba(8, 24, 43, 0.14);
+      border: 1px solid #DCE3EC;
+    }
+
+    .nc-header {
+      background: linear-gradient(135deg, #08182B 0%, #11294D 100%);
+      padding: 18px 18px 16px;
+      color: #fff;
+      position: relative;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .nc-brand {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .nc-title {
+      font-size: 19px;
+      font-weight: 800;
+      margin: 0 0 10px 0;
+      letter-spacing: 0.5px;
+    }
+
+    .nc-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      font-size: 12.5px;
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.08);
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .nc-body {
+      padding: 16px;
+    }
+
+    .nc-item {
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+      background: #FBFDFF;
+    }
+
+    .nc-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .nc-item-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--navy-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nc-item-tag {
+      font-size: 11px;
+      background: #EEF2FF;
+      color: var(--academy-blue);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .nc-item-bal {
+      text-align: right;
+    }
+
+    .nc-item-bal .money {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--navy-dark);
+    }
+
+    .nc-item-bal .rem {
+      font-size: 11.5px;
+      color: var(--success);
+      font-weight: 700;
+    }
+
+    .nc-item-bal .rem.low {
+      color: var(--danger);
+    }
+
+    .nc-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: #F1F5F9;
+      border-radius: 7px;
+      padding: 7px 4px;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .nc-stat-cell span {
+      display: block;
+      font-size: 10.5px;
+      color: var(--text-sub);
+    }
+
+    .nc-stat-cell strong {
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    .nc-dates {
+      font-size: 12px;
+      color: #334155;
+      line-height: 1.6;
+      padding-top: 4px;
+    }
+
+    .nc-dates-row {
+      margin-top: 3px;
+    }
+
+    .nc-dates-label {
+      font-weight: 700;
+      color: var(--navy-mid);
+    }
+
+    .nc-dates-label.leave {
+      color: #B45309;
+    }
+
+    .nc-total-box {
+      background: linear-gradient(135deg, #08182B 0%, #16335B 100%);
+      color: #fff;
+      border-radius: 10px;
+      padding: 13px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .nc-total-left {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .nc-total-left strong {
+      display: block;
+      font-size: 14px;
+      color: var(--gold);
+      margin-bottom: 2px;
+    }
+
+    .nc-total-right {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--gold);
+    }
+
+    .nc-remark {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #475569;
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      padding: 9px 11px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+    }
+
+    .nc-footer {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed #CBD5E1;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #64748B;
+    }
+
+    /* 底部固定操作栏 */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid #CBD5E1;
+      padding: 10px 14px;
+      display: flex;
+      gap: 10px;
+      z-index: 45;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-primary {
+      flex: 1;
+      background: linear-gradient(135deg, #08182B 0%, #1E3A6E 100%);
+      color: var(--gold);
+      border: none;
+      border-radius: 9px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(8, 24, 43, 0.22);
+    }
+
+    .btn-secondary {
+      background: #F1F5F9;
+      color: var(--navy-dark);
+      border: 1px solid #CBD5E1;
+      border-radius: 9px;
+      padding: 12px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* 弹窗 */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 24, 43, 0.78);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 14px;
+      max-width: 460px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .modal-box h3 {
+      margin: 0 0 6px 0;
+      font-size: 16px;
+      color: var(--navy-dark);
+    }
+
+    .modal-tip {
+      font-size: 12.5px;
+      color: var(--danger);
+      font-weight: 600;
+      margin-bottom: 10px;
+      background: #FEF2F2;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+
+    .modal-box img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid #CBD5E1;
+      display: block;
+    }
+
+    .archive-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-title">
+      <h1>学途卫士 · 课时费用核销单</h1>
+      <span>多科4次预收 + 晚辅10次预收 · 精确消课日期</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn-top" onclick="saveCurrentStudent()">💾 保存学员</button>
+      <button class="btn-top" onclick="openArchiveModal()">📂 档案库</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- 左侧编辑区 -->
+    <div>
+      <div class="panel" style="margin-bottom: 14px;">
+        <h2 class="section-title">1. 学员与机构基础信息</h2>
+        <div class="grid-2">
+          <div class="field">
+            <label>学生姓名</label>
+            <input type="text" id="studentName" value="陈乐遥" oninput="renderAll()" />
+          </div>
+          <div class="field">
+            <label>所在年级 / 班型</label>
+            <input type="text" id="studentGrade" value="高二 · 5人小组课" oninput="renderAll()" />
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="field">
+            <label>机构名称</label>
+            <input type="text" id="orgName" value="学途卫士" oninput="renderAll()" />
+          </div>
+          <div class="field">
+            <label>通知日期</label>
+            <input type="date" id="reportDate" onchange="renderAll()" />
+          </div>
+          <div class="field">
+            <label>卡片日期格式</label>
+            <select id="dateFormat" onchange="renderAll()">
+              <option value="full">2026年11月2日</option>
+              <option value="short">11月2日</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 多科目正课区 -->
+      <div class="panel" style="margin-bottom: 14px;">
+        <h2 class="section-title">
+          <span>2. 正课科目（每次预收 4 次）</span>
+          <span style="font-size:11px;font-weight:500;color:#64748B;">点击下方快速加科</span>
+        </h2>
+
+        <div class="quick-tags">
+          <button class="tag-btn" onclick="addSubject('数学', '浩然老师', 400)">+ 数学(浩然)</button>
+          <button class="tag-btn" onclick="addSubject('物理', '郭超老师', 400)">+ 物理(郭超)</button>
+          <button class="tag-btn" onclick="addSubject('化学', '杨老师', 400)">+ 化学(杨老师)</button>
+          <button class="tag-btn" onclick="addSubject('英语', '董老师', 400)">+ 英语(董老师)</button>
+          <button class="tag-btn" onclick="addSubject('英语', '姚老师', 400)">+ 英语(姚老师)</button>
+          <button class="tag-btn" onclick="addSubject('自定义科目', '', 400)">+ 其他科目</button>
+        </div>
+
+        <div id="subjectsContainer"></div>
+      </div>
+
+      <!-- 晚辅模块 -->
+      <div class="panel" style="margin-bottom: 14px;">
+        <div class="toggle-row" style="margin-bottom: 0;">
+          <div>
+            <strong style="font-size:14px;color:var(--navy-dark);">3. 晚间自习答疑（每次预收 10 次）</strong>
+            <div style="font-size:11.5px;color:var(--text-sub);">开启后可单独记录晚辅签到与请假日期</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="enableEvening" checked onchange="renderAll()" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div id="eveningEditor" style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #CBD5E1;">
+          <div class="grid-3">
+            <div class="field">
+              <label>晚辅项目名称</label>
+              <input type="text" id="evTitle" value="高中数理晚间自习答疑" oninput="renderAll()" />
+            </div>
+            <div class="field">
+              <label>本次预收次数</label>
+              <input type="number" id="evTotal" value="10" min="1" oninput="renderAll()" />
+            </div>
+            <div class="field">
+              <label>每次晚辅费用(元)</label>
+              <input type="number" id="evPrice" value="100" min="0" oninput="renderAll()" />
+            </div>
+          </div>
+
+          <div class="date-logger">
+            <div class="date-logger-row">
+              <input type="date" id="evDatePicker" />
+              <button class="btn-add-consumed" onclick="addEveningLog('consumed')">+ 记1次已消晚辅</button>
+              <button class="btn-add-leave" onclick="addEveningLog('leave')">+ 记1次请假顺延</button>
+            </div>
+            <div id="evChips" class="chips-area"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 备注与落款 -->
+      <div class="panel">
+        <h2 class="section-title">4. 温馨提示与校区落款</h2>
+        <div class="field">
+          <label>给家长的温馨提示（请假顺延规则/续费提醒）</label>
+          <textarea id="remarkText" rows="2" oninput="renderAll()">注：正课按每4次为一期预收，晚辅按每10次为一期预收；学员提前请假均已顺延不扣费。如剩余课时不足1次，请提前联系教务老师办理续费衔接。</textarea>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>校区地址 / 落款</label>
+          <input type="text" id="campusInfo" value="天津 · 小白楼国贸A座2506 · 专注天津高中5人小组课" oninput="renderAll()" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧实时预览区 -->
+    <div class="preview-wrapper">
+      <div style="font-size:12px;color:#64748B;margin-bottom:8px;display:flex;justify-content:space-between;">
+        <span>👇 家长端效果实时预览</span>
+        <span>点击下方按钮生成高清图</span>
+      </div>
+
+      <div class="notice-card" id="previewCard">
+        <div class="nc-header">
+          <div class="nc-brand" id="pvOrg">学途卫士 · 教务核销单</div>
+          <h3 class="nc-title">课时费用消课与结余明细</h3>
+          <div class="nc-meta">
+            <span>学员：<strong id="pvName">陈乐遥</strong></span>
+            <span>班型：<strong id="pvGrade">高二 · 5人小组课</strong></span>
+            <span>统计截止：<strong id="pvDate">2026年11月23日</strong></span>
+          </div>
+        </div>
+
+        <div class="nc-body">
+          <div id="pvList"></div>
+
+          <div class="nc-total-box">
+            <div class="nc-total-left">
+              <strong>当前账户总计结余费用</strong>
+              <span id="pvTotalSub">含各科正课及晚辅剩余费用</span>
+            </div>
+            <div class="nc-total-right" id="pvTotalMoney">¥2,800</div>
+          </div>
+
+          <div class="nc-remark" id="pvRemark"></div>
+
+          <div class="nc-footer">
+            <span id="pvCampus">天津 · 小白楼国贸A座2506</span>
+            <span>核对无误请惠存</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部固定按钮 -->
+  <div class="bottom-bar">
+    <button class="btn-secondary" onclick="resetDemo()">重置示例</button>
+    <button class="btn-primary" onclick="generateImage()">📸 一键生图发家长（100%离线可用）</button>
+  </div>
+
+  <!-- 高清截图预览弹窗 -->
+  <div class="modal" id="imgModal">
+    <div class="modal-box">
+      <h3>高清通知单已生成</h3>
+      <div class="modal-tip">📱 手机端请【长按下方图片】→ 选择“保存到手机”或“发送给朋友”</div>
+      <img id="generatedImg" alt="课时费用结余通知单" />
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <button class="btn-secondary" style="flex:1;" onclick="closeModal('imgModal')">返回修改</button>
+        <a id="downloadLink" class="btn-primary" style="flex:1;text-decoration:none;display:inline-block;" download="课时费用结余明细.png">下载原图</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 学员档案弹窗 -->
+  <div class="modal" id="archiveModal">
+    <div class="modal-box">
+      <h3>本地学员档案库</h3>
+      <p style="font-size:12px;color:#64748B;margin:0 0 12px 0;">数据保存在本机浏览器中，下次上课直接点开微调即可</p>
+      <div id="archiveList"></div>
+      <button class="btn-secondary" style="width:100%;margin-top:8px;" onclick="closeModal('archiveModal')">关闭</button>
+    </div>
+  </div>
+
+  <script>
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    let state = {
+      subjects: [
+        {
+          id: 'sub_1',
+          name: '数学',
+          teacher: '浩然老师',
+          total: 4,
+          price: 400,
+          pickerDate: todayStr,
+          logs: [
+            { date: '2026-11-01', type: 'consumed' },
+            { date: '2026-11-08', type: 'leave' },
+            { date: '2026-11-15', type: 'consumed' }
+          ]
+        },
+        {
+          id: 'sub_2',
+          name: '物理',
+          teacher: '郭超老师',
+          total: 4,
+          price: 400,
+          pickerDate: todayStr,
+          logs: [
+            { date: '2026-11-02', type: 'consumed' }
+          ]
+        }
+      ],
+      eveningLogs: [
+        { date: '2026-11-04', type: 'consumed' },
+        { date: '2026-11-11', type: 'consumed' },
+        { date: '2026-11-18', type: 'leave' }
+      ]
+    };
+
+    document.getElementById('reportDate').value = todayStr;
+    document.getElementById('evDatePicker').value = todayStr;
+
+    function formatCNDate(isoStr) {
+      if (!isoStr) return '';
+      const parts = isoStr.split('-');
+      if (parts.length !== 3) return isoStr;
+      const y = parseInt(parts[0], 10);
+      const m = parseInt(parts[1], 10);
+      const d = parseInt(parts[2], 10);
+      const fmt = document.getElementById('dateFormat').value;
+      return fmt === 'short' ? `${m}月${d}日` : `${y}年${m}月${d}日`;
+    }
+
+    function formatFullCNDate(isoStr) {
+      if (!isoStr) return '';
+      const parts = isoStr.split('-');
+      if (parts.length !== 3) return isoStr;
+      return `${parseInt(parts[0], 10)}年${parseInt(parts[1], 10)}月${parseInt(parts[2], 10)}日`;
+    }
+
+    function sortLogs(logs) {
+      return logs.sort((a, b) => a.date.localeCompare(b.date));
+    }
+
+    function addSubject(name, teacher, price) {
+      state.subjects.push({
+        id: 'sub_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        name: name,
+        teacher: teacher,
+        total: 4,
+        price: price,
+        pickerDate: document.getElementById('reportDate').value || todayStr,
+        logs: []
+      });
+      renderAll();
+    }
+
+    function removeSubject(id) {
+      state.subjects = state.subjects.filter(s => s.id !== id);
+      renderAll();
+    }
+
+    function updateSubjectField(id, field, val) {
+      const sub = state.subjects.find(s => s.id === id);
+      if (!sub) return;
+      if (field === 'total' || field === 'price') {
+        sub[field] = Math.max(0, Number(val) || 0);
+      } else {
+        sub[field] = val;
+      }
+      renderPreviewOnly();
+    }
+
+    function addSubjectLog(id, type) {
+      const sub = state.subjects.find(s => s.id === id);
+      if (!sub) return;
+      const dateInput = document.getElementById('picker_' + id);
+      const d = (dateInput && dateInput.value) ? dateInput.value : todayStr;
+      sub.pickerDate = d;
+      sub.logs.push({ date: d, type: type });
+      sortLogs(sub.logs);
+      renderAll();
+    }
+
+    function removeSubjectLog(id, idx) {
+      const sub = state.subjects.find(s => s.id === id);
+      if (!sub) return;
+      sub.logs.splice(idx, 1);
+      renderAll();
+    }
+
+    function addEveningLog(type) {
+      const d = document.getElementById('evDatePicker').value || todayStr;
+      state.eveningLogs.push({ date: d, type: type });
+      sortLogs(state.eveningLogs);
+      renderAll();
+    }
+
+    function removeEveningLog(idx) {
+      state.eveningLogs.splice(idx, 1);
+      renderAll();
+    }
+
+    function renderEditors() {
+      const container = document.getElementById('subjectsContainer');
+      if (state.subjects.length === 0) {
+        container.innerHTML = `<div style="text-align:center;padding:16px;color:#94A3B8;font-size:13px;border:1px dashed #CBD5E1;border-radius:8px;">暂无正课科目，请点击上方科目按钮添加</div>`;
+      } else {
+        container.innerHTML = state.subjects.map((sub, index) => {
+          const consumedCount = sub.logs.filter(l => l.type === 'consumed').length;
+          const leaveCount = sub.logs.filter(l => l.type === 'leave').length;
+          const remCount = Math.max(0, sub.total - consumedCount);
+          const remMoney = remCount * sub.price;
+
+          const chipsHtml = sub.logs.map((l, i) => `
+            <span class="chip ${l.type === 'consumed' ? 'chip-consumed' : 'chip-leave'}">
+              ${l.type === 'consumed' ? '✓ 消课' : '⏸ 请假'} ${formatFullCNDate(l.date)}
+              <button onclick="removeSubjectLog('${sub.id}', ${i})" title="删除">×</button>
+            </span>
+          `).join('');
+
+          return `
+            <div class="subject-card">
+              <div class="subject-header">
+                <span class="subject-badge">科目 ${index + 1} · ${sub.name || '未命名'}</span>
+                <button class="btn-del" onclick="removeSubject('${sub.id}')">删除科目</button>
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label>科目名称</label>
+                  <input type="text" value="${sub.name}" oninput="updateSubjectField('${sub.id}', 'name', this.value)" />
+                </div>
+                <div class="field">
+                  <label>任课教师</label>
+                  <input type="text" value="${sub.teacher}" placeholder="如：浩然老师" oninput="updateSubjectField('${sub.id}', 'teacher', this.value)" />
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label>本期预收次数</label>
+                  <input type="number" value="${sub.total}" min="1" oninput="updateSubjectField('${sub.id}', 'total', this.value)" />
+                </div>
+                <div class="field">
+                  <label>单次课时费(元)</label>
+                  <input type="number" value="${sub.price}" min="0" oninput="updateSubjectField('${sub.id}', 'price', this.value)" />
+                </div>
+              </div>
+              <div class="date-logger">
+                <div class="date-logger-row">
+                  <input type="date" id="picker_${sub.id}" value="${sub.pickerDate || todayStr}" onchange="updateSubjectField('${sub.id}', 'pickerDate', this.value)" />
+                  <button class="btn-add-consumed" onclick="addSubjectLog('${sub.id}', 'consumed')">+ 记1次已消课</button>
+                  <button class="btn-add-leave" onclick="addSubjectLog('${sub.id}', 'leave')">+ 记1次请假</button>
+                </div>
+                <div class="chips-area">${chipsHtml || '<span style="font-size:11.5px;color:#94A3B8;">选择日期后点击上方按钮记录消课或请假</span>'}</div>
+              </div>
+              <div class="summary-strip">
+                <span>预收 ¥${(sub.total * sub.price).toLocaleString()} · 已消 ${consumedCount} 次 / 请假 ${leaveCount} 次</span>
+                <span>剩余 <strong>${remCount} 次 (¥${remMoney.toLocaleString()})</strong></span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 晚辅编辑器显隐与标签
+      const evEnabled = document.getElementById('enableEvening').checked;
+      document.getElementById('eveningEditor').style.display = evEnabled ? 'block' : 'none';
+      const evChips = document.getElementById('evChips');
+      evChips.innerHTML = state.eveningLogs.map((l, i) => `
+        <span class="chip ${l.type === 'consumed' ? 'chip-consumed' : 'chip-leave'}">
+          ${l.type === 'consumed' ? '✓ 晚辅' : '⏸ 请假'} ${formatFullCNDate(l.date)}
+          <button onclick="removeEveningLog(${i})" title="删除">×</button>
+        </span>
+      `).join('') || '<span style="font-size:11.5px;color:#94A3B8;">选择日期后点击上方按钮记录晚辅消课或请假</span>';
+    }
+
+    function getComputedData() {
+      const items = [];
+      let grandTotalBalance = 0;
+
+      state.subjects.forEach(sub => {
+        const consumedDates = sub.logs.filter(l => l.type === 'consumed').map(l => formatCNDate(l.date));
+        const leaveDates = sub.logs.filter(l => l.type === 'leave').map(l => formatCNDate(l.date));
+        const consumedCount = consumedDates.length;
+        const leaveCount = leaveDates.length;
+        const remCount = Math.max(0, sub.total - consumedCount);
+        const totalPaid = sub.total * sub.price;
+        const consumedMoney = consumedCount * sub.price;
+        const remMoney = remCount * sub.price;
+
+        grandTotalBalance += remMoney;
+
+        items.push({
+          title: sub.name || '正课',
+          tag: sub.teacher ? `${sub.teacher} · 预收${sub.total}次` : `正课 · 预收${sub.total}次`,
+          totalCount: sub.total,
+          price: sub.price,
+          totalPaid,
+          consumedCount,
+          consumedMoney,
+          leaveCount,
+          remCount,
+          remMoney,
+          consumedDates,
+          leaveDates
+        });
+      });
+
+      if (document.getElementById('enableEvening').checked) {
+        const evTitle = document.getElementById('evTitle').value || '晚间自习答疑';
+        const evTotal = Math.max(1, Number(document.getElementById('evTotal').value) || 10);
+        const evPrice = Math.max(0, Number(document.getElementById('evPrice').value) || 0);
+        const consumedDates = state.eveningLogs.filter(l => l.type === 'consumed').map(l => formatCNDate(l.date));
+        const leaveDates = state.eveningLogs.filter(l => l.type === 'leave').map(l => formatCNDate(l.date));
+        const consumedCount = consumedDates.length;
+        const leaveCount = leaveDates.length;
+        const remCount = Math.max(0, evTotal - consumedCount);
+        const totalPaid = evTotal * evPrice;
+        const consumedMoney = consumedCount * evPrice;
+        const remMoney = remCount * evPrice;
+
+        grandTotalBalance += remMoney;
+
+        items.push({
+          title: evTitle,
+          tag: `晚辅专项 · 预收${evTotal}次`,
+          totalCount: evTotal,
+          price: evPrice,
+          totalPaid,
+          consumedCount,
+          consumedMoney,
+          leaveCount,
+          remCount,
+          remMoney,
+          consumedDates,
+          leaveDates
+        });
+      }
+
+      return {
+        orgName: document.getElementById('orgName').value || '学途卫士',
+        studentName: document.getElementById('studentName').value || '学员',
+        studentGrade: document.getElementById('studentGrade').value || '',
+        reportDate: formatFullCNDate(document.getElementById('reportDate').value || todayStr),
+        remark: document.getElementById('remarkText').value.trim(),
+        campus: document.getElementById('campusInfo').value.trim(),
+        items,
+        grandTotalBalance
+      };
+    }
+
+    function renderPreviewOnly() {
+      const data = getComputedData();
+      document.getElementById('pvOrg').textContent = `${data.orgName} · 教务核销单`;
+      document.getElementById('pvName').textContent = data.studentName;
+      document.getElementById('pvGrade').textContent = data.studentGrade;
+      document.getElementById('pvDate').textContent = data.reportDate;
+      document.getElementById('pvTotalMoney').textContent = `¥${data.grandTotalBalance.toLocaleString()}`;
+      document.getElementById('pvTotalSub').textContent = `共 ${data.items.length} 个在读项目 · 结余总金额`;
+      document.getElementById('pvCampus').textContent = data.campus;
+
+      const remarkEl = document.getElementById('pvRemark');
+      if (data.remark) {
+        remarkEl.style.display = 'block';
+        remarkEl.textContent = data.remark;
+      } else {
+        remarkEl.style.display = 'none';
+      }
+
+      const listEl = document.getElementById('pvList');
+      listEl.innerHTML = data.items.map(item => `
+        <div class="nc-item">
+          <div class="nc-item-top">
+            <div class="nc-item-name">
+              <span>${item.title}</span>
+              <span class="nc-item-tag">${item.tag}</span>
+            </div>
+            <div class="nc-item-bal">
+              <div class="money">结余 ¥${item.remMoney.toLocaleString()}</div>
+              <div class="rem ${item.remCount <= 1 ? 'low' : ''}">剩余 ${item.remCount} 次${item.remCount <= 1 ? '（建议续费）' : ''}</div>
+            </div>
+          </div>
+          <div class="nc-stats">
+            <div class="nc-stat-cell"><span>预收金额</span><strong>¥${item.totalPaid.toLocaleString()}</strong></div>
+            <div class="nc-stat-cell"><span>单次费用</span><strong>¥${item.price}</strong></div>
+            <div class="nc-stat-cell"><span>已消课时/费</span><strong>${item.consumedCount}次 / ¥${item.consumedMoney}</strong></div>
+            <div class="nc-stat-cell"><span>请假顺延</span><strong>${item.leaveCount}次(不扣费)</strong></div>
+          </div>
+          <div class="nc-dates">
+            <div class="nc-dates-row">
+              <span class="nc-dates-label">已消日期：</span>
+              <span>${item.consumedDates.length ? item.consumedDates.join('、') : '暂未消课'}</span>
+            </div>
+            ${item.leaveDates.length ? `
+              <div class="nc-dates-row">
+                <span class="nc-dates-label leave">请假日期：</span>
+                <span>${item.leaveDates.join('、')}（已顺延）</span>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderAll() {
+      renderEditors();
+      renderPreviewOnly();
+    }
+
+    // 100% 离线原生 Canvas 高清渲染引擎（无任何外部网络依赖）
+    function wrapTextLines(ctx, text, maxWidth) {
+      const lines = [];
+      const paragraphs = text.split('\n');
+      paragraphs.forEach(p => {
+        let currentLine = '';
+        for (let i = 0; i < p.length; i++) {
+          const ch = p[i];
+          const testLine = currentLine + ch;
+          if (ctx.measureText(testLine).width > maxWidth && currentLine !== '') {
+            lines.push(currentLine);
+            currentLine = ch;
+          } else {
+            currentLine = testLine;
+          }
+        }
+        if (currentLine) lines.push(currentLine);
+      });
+      return lines;
+    }
+
+    function drawRoundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function generateImage() {
+      const data = getComputedData();
+      const scale = 3; // 3倍视网膜高清输出
+      const W = 420;
+      const pad = 18;
+      const innerW = W - pad * 2;
+
+      const measureCanvas = document.createElement('canvas');
+      const mCtx = measureCanvas.getContext('2d');
+      const fontBase = '-apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif';
+
+      // 预计算每个模块的动态高度
+      const itemLayouts = data.items.map(item => {
+        mCtx.font = `400 12px ${fontBase}`;
+        const consumedText = '已消日期：' + (item.consumedDates.length ? item.consumedDates.join('、') : '暂未消课');
+        const consumedLines = wrapTextLines(mCtx, consumedText, innerW - 24);
+
+        let leaveLines = [];
+        if (item.leaveDates.length) {
+          const leaveText = '请假日期：' + item.leaveDates.join('、') + '（已顺延不扣费）';
+          leaveLines = wrapTextLines(mCtx, leaveText, innerW - 24);
+        }
+
+        const datesH = consumedLines.length * 18 + (leaveLines.length ? leaveLines.length * 18 + 4 : 0);
+        const boxH = 114 + datesH;
+        return { item, consumedLines, leaveLines, boxH };
+      });
+
+      let remarkLines = [];
+      let remarkH = 0;
+      if (data.remark) {
+        mCtx.font = `400 11.5px ${fontBase}`;
+        remarkLines = wrapTextLines(mCtx, data.remark, innerW - 22);
+        remarkH = remarkLines.length * 17 + 18;
+      }
+
+      const headerH = 122;
+      const itemsTotalH = itemLayouts.reduce((acc, cur) => acc + cur.boxH + 12, 0);
+      const totalBoxH = 64;
+      const footerH = 44;
+      const H = headerH + 16 + itemsTotalH + totalBoxH + (remarkH ? remarkH + 12 : 0) + footerH;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = W * scale;
+      canvas.height = H * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(scale, scale);
+
+      // 背景
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, W, H);
+
+      // 顶部深蓝渐变 Header
+      const grad = ctx.createLinearGradient(0, 0, W, headerH);
+      grad.addColorStop(0, '#08182B');
+      grad.addColorStop(1, '#11294D');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, headerH);
+
+      // 金色底边线
+      ctx.fillStyle = '#E2C08D';
+      ctx.fillRect(0, headerH - 3, W, 3);
+
+      // 品牌标语
+      ctx.fillStyle = '#E2C08D';
+      ctx.font = `700 11px ${fontBase}`;
+      ctx.fillText(`${data.orgName} · 教务核销单`, pad, 26);
+
+      // 主标题
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = `800 19px ${fontBase}`;
+      ctx.fillText('课时费用消课与结余明细', pad, 52);
+
+      // 学员信息条
+      drawRoundRect(ctx, pad, 66, innerW, 38, 7);
+      ctx.fillStyle = 'rgba(255,255,255,0.10)';
+      ctx.fill();
+
+      ctx.fillStyle = '#F8FAFC';
+      ctx.font = `600 12px ${fontBase}`;
+      ctx.fillText(`学员：${data.studentName}`, pad + 10, 89);
+      ctx.fillText(`班型：${data.studentGrade}`, pad + 115, 89);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#E2C08D';
+      ctx.fillText(data.reportDate, W - pad - 10, 89);
+      ctx.textAlign = 'left';
+
+      // 绘制各科目卡片
+      let curY = headerH + 16;
+
+      itemLayouts.forEach(layout => {
+        const { item, consumedLines, leaveLines, boxH } = layout;
+
+        drawRoundRect(ctx, pad, curY, innerW, boxH, 10);
+        ctx.fillStyle = '#FBFDFF';
+        ctx.fill();
+        ctx.strokeStyle = '#DCE3EC';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // 科目名
+        ctx.fillStyle = '#08182B';
+        ctx.font = `800 15px ${fontBase}`;
+        ctx.fillText(item.title, pad + 12, curY + 24);
+
+        const titleW = ctx.measureText(item.title).width;
+        // 标签
+        ctx.font = `600 10.5px ${fontBase}`;
+        const tagW = ctx.measureText(item.tag).width + 12;
+        drawRoundRect(ctx, pad + 18 + titleW, curY + 11, tagW, 18, 4);
+        ctx.fillStyle = '#EEF2FF';
+        ctx.fill();
+        ctx.fillStyle = '#2C55A0';
+        ctx.fillText(item.tag, pad + 24 + titleW, curY + 23);
+
+        // 右上角结余金额与剩余次数
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#08182B';
+        ctx.font = `800 15.5px ${fontBase}`;
+        ctx.fillText(`结余 ¥${item.remMoney.toLocaleString()}`, W - pad - 12, curY + 23);
+
+        ctx.fillStyle = item.remCount <= 1 ? '#DC2626' : '#059669';
+        ctx.font = `700 11px ${fontBase}`;
+        ctx.fillText(`剩余 ${item.remCount} 次${item.remCount <= 1 ? '（建议续费）' : ''}`, W - pad - 12, curY + 39);
+        ctx.textAlign = 'left';
+
+        // 4格数据栏
+        const barY = curY + 48;
+        drawRoundRect(ctx, pad + 10, barY, innerW - 20, 44, 6);
+        ctx.fillStyle = '#F1F5F9';
+        ctx.fill();
+
+        const cols = [
+          { label: '预收金额', val: `¥${item.totalPaid.toLocaleString()}` },
+          { label: '单次费用', val: `¥${item.price}` },
+          { label: '已消课时/费', val: `${item.consumedCount}次/¥${item.consumedMoney}` },
+          { label: '请假顺延', val: `${item.leaveCount}次(不扣)` }
+        ];
+        const colW = (innerW - 20) / 4;
+        cols.forEach((c, idx) => {
+          const cx = pad + 10 + colW * idx + colW / 2;
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#64748B';
+          ctx.font = `400 10px ${fontBase}`;
+          ctx.fillText(c.label, cx, barY + 16);
+          ctx.fillStyle = '#1E293B';
+          ctx.font = `700 11.5px ${fontBase}`;
+          ctx.fillText(c.val, cx, barY + 34);
+        });
+        ctx.textAlign = 'left';
+
+        // 具体消课日期明细
+        let textY = barY + 62;
+        ctx.fillStyle = '#1E293B';
+        ctx.font = `400 12px ${fontBase}`;
+        consumedLines.forEach(line => {
+          ctx.fillText(line, pad + 12, textY);
+          textY += 18;
+        });
+
+        if (leaveLines.length) {
+          textY += 3;
+          ctx.fillStyle = '#B45309';
+          leaveLines.forEach(line => {
+            ctx.fillText(line, pad + 12, textY);
+            textY += 18;
+          });
+        }
+
+        curY += boxH + 12;
+      });
+
+      // 总结余横幅
+      const totGrad = ctx.createLinearGradient(pad, curY, W - pad, curY + totalBoxH);
+      totGrad.addColorStop(0, '#08182B');
+      totGrad.addColorStop(1, '#16335B');
+      drawRoundRect(ctx, pad, curY, innerW, totalBoxH, 10);
+      ctx.fillStyle = totGrad;
+      ctx.fill();
+
+      ctx.fillStyle = '#E2C08D';
+      ctx.font = `700 13.5px ${fontBase}`;
+      ctx.fillText('当前账户总计结余费用', pad + 14, curY + 26);
+      ctx.fillStyle = 'rgba(255,255,255,0.82)';
+      ctx.font = `400 11px ${fontBase}`;
+      ctx.fillText(`共 ${data.items.length} 个在读项目 · 结余总额汇总`, pad + 14, curY + 46);
+
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#E2C08D';
+      ctx.font = `800 22px ${fontBase}`;
+      ctx.fillText(`¥${data.grandTotalBalance.toLocaleString()}`, W - pad - 14, curY + 40);
+      ctx.textAlign = 'left';
+
+      curY += totalBoxH + 12;
+
+      // 备注框
+      if (remarkH > 0) {
+        drawRoundRect(ctx, pad, curY, innerW, remarkH, 8);
+        ctx.fillStyle = '#FFFBEB';
+        ctx.fill();
+        ctx.strokeStyle = '#FDE68A';
+        ctx.stroke();
+
+        ctx.fillStyle = '#78350F';
+        ctx.font = `400 11.5px ${fontBase}`;
+        let ry = curY + 18;
+        remarkLines.forEach(line => {
+          ctx.fillText(line, pad + 10, ry);
+          ry += 17;
+        });
+        curY += remarkH + 10;
+      }
+
+      // 底部落款
+      ctx.strokeStyle = '#CBD5E1';
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(pad, curY + 4);
+      ctx.lineTo(W - pad, curY + 4);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#64748B';
+      ctx.font = `500 10.5px ${fontBase}`;
+      ctx.fillText(data.campus, pad, curY + 24);
+      ctx.textAlign = 'right';
+      ctx.fillText('核对无误请惠存', W - pad, curY + 24);
+      ctx.textAlign = 'left';
+
+      const dataUrl = canvas.toDataURL('image/png');
+      document.getElementById('generatedImg').src = dataUrl;
+      const dl = document.getElementById('downloadLink');
+      dl.href = dataUrl;
+      dl.download = `${data.studentName}_课时费用结余_${document.getElementById('reportDate').value || '明细'}.png`;
+
+      document.getElementById('imgModal').classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    // 本地学员档案存取
+    function saveCurrentStudent() {
+      const name = (document.getElementById('studentName').value || '').trim();
+      if (!name) {
+        alert('请先输入学生姓名再保存！');
+        return;
+      }
+      const archives = JSON.parse(localStorage.getItem('xuetu_tuition_archives') || '{}');
+      archives[name] = {
+        savedAt: new Date().toLocaleString(),
+        studentName: name,
+        studentGrade: document.getElementById('studentGrade').value,
+        orgName: document.getElementById('orgName').value,
+        dateFormat: document.getElementById('dateFormat').value,
+        enableEvening: document.getElementById('enableEvening').checked,
+        evTitle: document.getElementById('evTitle').value,
+        evTotal: document.getElementById('evTotal').value,
+        evPrice: document.getElementById('evPrice').value,
+        remarkText: document.getElementById('remarkText').value,
+        campusInfo: document.getElementById('campusInfo').value,
+        subjects: state.subjects,
+        eveningLogs: state.eveningLogs
+      };
+      localStorage.setItem('xuetu_tuition_archives', JSON.stringify(archives));
+      alert(`已将【${name}】的课时与消课日期档案保存到本机！`);
+    }
+
+    function openArchiveModal() {
+      const archives = JSON.parse(localStorage.getItem('xuetu_tuition_archives') || '{}');
+      const keys = Object.keys(archives);
+      const listEl = document.getElementById('archiveList');
+
+      if (keys.length === 0) {
+        listEl.innerHTML = '<div style="padding:20px;color:#94A3B8;font-size:13px;">暂无已保存的学员档案。<br>填好学生信息后点击顶部“💾 保存学员”即可存入。</div>';
+      } else {
+        listEl.innerHTML = keys.map(k => {
+          const item = archives[k];
+          return `
+            <div class="archive-item">
+              <div>
+                <strong style="font-size:14px;color:var(--navy-dark);">${item.studentName}</strong>
+                <div style="font-size:11.5px;color:#64748B;">${item.studentGrade || ''} · ${item.subjects.length}科 · 更新于 ${item.savedAt}</div>
+              </div>
+              <div style="display:flex;gap:6px;">
+                <button class="btn-add-consumed" onclick="loadStudent('${encodeURIComponent(k)}')">调出</button>
+                <button class="btn-del" onclick="deleteStudent('${encodeURIComponent(k)}')">删</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+      document.getElementById('archiveModal').classList.add('open');
+    }
+
+    function loadStudent(encodedKey) {
+      const key = decodeURIComponent(encodedKey);
+      const archives = JSON.parse(localStorage.getItem('xuetu_tuition_archives') || '{}');
+      const data = archives[key];
+      if (!data) return;
+
+      document.getElementById('studentName').value = data.studentName || '';
+      document.getElementById('studentGrade').value = data.studentGrade || '';
+      document.getElementById('orgName').value = data.orgName || '学途卫士';
+      document.getElementById('dateFormat').value = data.dateFormat || 'full';
+      document.getElementById('enableEvening').checked = !!data.enableEvening;
+      document.getElementById('evTitle').value = data.evTitle || '高中数理晚间自习答疑';
+      document.getElementById('evTotal').value = data.evTotal || 10;
+      document.getElementById('evPrice').value = data.evPrice || 100;
+      document.getElementById('remarkText').value = data.remarkText || '';
+      document.getElementById('campusInfo').value = data.campusInfo || '';
+      document.getElementById('reportDate').value = todayStr;
+
+      state.subjects = data.subjects || [];
+      state.eveningLogs = data.eveningLogs || [];
+      renderAll();
+      closeModal('archiveModal');
+    }
+
+    function deleteStudent(encodedKey) {
+      const key = decodeURIComponent(encodedKey);
+      const archives = JSON.parse(localStorage.getItem('xuetu_tuition_archives') || '{}');
+      delete archives[key];
+      localStorage.setItem('xuetu_tuition_archives', JSON.stringify(archives));
+      openArchiveModal();
+    }
+
+    function resetDemo() {
+      if (!confirm('确定恢复到默认示例数据吗？')) return;
+      location.reload();
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
