@@ -746,6 +746,12 @@
                     <span id="scorePercentText">100%</span>
                 </div>
 
+                <!-- 错题重切提示条（首轮未全对时显示，允许订正但不覆盖首轮战报记录） -->
+                <div id="retryPromptBar" style="display: none; background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 12px; padding: 10px 14px; align-items: center; justify-content: space-between; gap: 10px;">
+                    <span style="font-size: 12.5px; color: #92400E; font-weight: 600;">首轮真实记录已锁定入战报，可重新切分订正巩固：</span>
+                    <button type="button" onclick="retryCurrentSentence()" style="background: #D97706; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap;">重新订正本句</button>
+                </div>
+
                 <!-- 1. 标准意群与顺句直译 -->
                 <div class="detail-block">
                     <div class="detail-title">标准意群切分与顺句直译</div>
@@ -911,7 +917,7 @@ let runtimeState = {
     currentIndex: 0,
     userSelectedGaps: new Set(),
     isSubmittedCurrent: false,
-    results: [] // 每题记录: { accuracy, missedCount, extraCount, correctCount, totalExpected }
+    results: [] // 每题首轮记录: { accuracy, missedCount, extraCount, correctCount, totalExpected, firstAttemptCuts: number[] }
 };
 
 // 初始化页面标题与历史填写记忆
@@ -1027,6 +1033,7 @@ function renderCurrentQuestion() {
     document.getElementById("submitSliceBtn").style.display = "flex";
     document.getElementById("nextSentenceBtn").style.display = "none";
     document.getElementById("feedbackPanel").style.display = "none";
+    document.getElementById("retryPromptBar").style.display = "none";
 
     const stage = document.getElementById("sentenceStage");
     stage.innerHTML = "";
@@ -1105,13 +1112,18 @@ function submitCurrentSentence() {
     const denominator = Math.max(expectedGapIndices.size + extraCount, 1);
     const accuracy = Math.round((correctCount / denominator) * 100);
 
-    runtimeState.results.push({
-        accuracy,
-        correctCount,
-        missedCount,
-        extraCount,
-        totalExpected: expectedGapIndices.size
-    });
+    // 仅在首轮提交时锁定真实切分记录，供最终战报图还原现场
+    const qIdx = runtimeState.currentIndex;
+    if (!runtimeState.results[qIdx]) {
+        runtimeState.results[qIdx] = {
+            accuracy,
+            correctCount,
+            missedCount,
+            extraCount,
+            totalExpected: expectedGapIndices.size,
+            firstAttemptCuts: Array.from(userSet).sort((a, b) => a - b)
+        };
+    }
 
     // 渲染结果 Banner
     const banner = document.getElementById("scoreBanner");
@@ -1122,12 +1134,15 @@ function submitCurrentSentence() {
     if (accuracy === 100) {
         banner.classList.add("perfect");
         summaryText.textContent = "🎯 意群切分完全精准！句法结构一目了然";
+        document.getElementById("retryPromptBar").style.display = "none";
     } else if (accuracy >= 60) {
         banner.classList.add("good");
         summaryText.textContent = `👍 命中 ${correctCount}/${expectedGapIndices.size} 处（漏切 ${missedCount} 处，多切 ${extraCount} 处）`;
+        document.getElementById("retryPromptBar").style.display = "flex";
     } else {
         banner.classList.add("needs-work");
         summaryText.textContent = `💡 关注红标断点：漏切 ${missedCount} 处，多切 ${extraCount} 处`;
+        document.getElementById("retryPromptBar").style.display = "flex";
     }
     percentText.textContent = `${accuracy}%`;
 
@@ -1167,6 +1182,36 @@ function submitCurrentSentence() {
     document.getElementById("feedbackPanel").style.display = "flex";
 }
 
+function retryCurrentSentence() {
+    runtimeState.userSelectedGaps = new Set();
+    runtimeState.isSubmittedCurrent = false;
+    document.getElementById("submitSliceBtn").style.display = "flex";
+    document.getElementById("nextSentenceBtn").style.display = "none";
+    document.getElementById("feedbackPanel").style.display = "none";
+    document.getElementById("retryPromptBar").style.display = "none";
+
+    const q = TASK_CONFIG.questions[runtimeState.currentIndex];
+    const stage = document.getElementById("sentenceStage");
+    stage.innerHTML = "";
+    const { words } = parseSlashedSentence(q.slashedSentence);
+
+    words.forEach((word, wIdx) => {
+        const wordSpan = document.createElement("span");
+        wordSpan.className = "word-token";
+        wordSpan.textContent = word;
+        stage.appendChild(wordSpan);
+
+        if (wIdx < words.length - 1) {
+            const gapDiv = document.createElement("div");
+            gapDiv.className = "gap-slot";
+            gapDiv.dataset.gapIdx = String(wIdx);
+            gapDiv.innerHTML = `<span class="gap-dot"></span>`;
+            gapDiv.onclick = () => toggleGapSlash(wIdx, gapDiv);
+            stage.appendChild(gapDiv);
+        }
+    });
+}
+
 function goToNextSentence() {
     if (runtimeState.currentIndex < TASK_CONFIG.questions.length - 1) {
         runtimeState.currentIndex++;
@@ -1179,9 +1224,54 @@ function goToNextSentence() {
 
 /**
  * ============================================================================
- * 原生 HTML5 Canvas 2D 高清战报图绘制引擎（绝无 DOM 截图文字裁切或基线偏移）
+ * 原生 HTML5 Canvas 2D 高清战报图绘制引擎（含首轮逐句切分实况还原）
  * ============================================================================
  */
+function buildDiagnosticTokensForSentence(q, res) {
+    const { words, expectedGapIndices } = parseSlashedSentence(q.slashedSentence);
+    const userSet = new Set(res.firstAttemptCuts || []);
+    const tokens = [];
+
+    words.forEach((word, wIdx) => {
+        tokens.push({ text: word, color: "#1E293B", font: "600 18px Georgia, serif" });
+        if (wIdx < words.length - 1) {
+            const isExp = expectedGapIndices.has(wIdx);
+            const isUser = userSet.has(wIdx);
+            if (isExp && isUser) {
+                tokens.push({ text: " / ", color: "#059669", font: "900 19px sans-serif" });
+            } else if (isExp && !isUser) {
+                tokens.push({ text: " ▼[漏切] ", color: "#D97706", font: "800 16px sans-serif" });
+            } else if (!isExp && isUser) {
+                tokens.push({ text: " ✗[误切] ", color: "#DC2626", font: "800 16px sans-serif" });
+            } else {
+                tokens.push({ text: " ", color: "#1E293B", font: "600 18px Georgia, serif" });
+            }
+        }
+    });
+    return tokens;
+}
+
+function layoutRichTokenLines(ctx, tokens, maxWidth) {
+    const lines = [];
+    let currentLine = [];
+    let currentWidth = 0;
+
+    tokens.forEach(tok => {
+        ctx.font = tok.font;
+        const w = ctx.measureText(tok.text).width;
+        if (currentWidth + w > maxWidth && currentLine.length > 0 && tok.text.trim() !== "") {
+            lines.push(currentLine);
+            currentLine = [];
+            currentWidth = 0;
+        }
+        if (currentLine.length === 0 && tok.text === " ") return;
+        currentLine.push({ ...tok, width: w });
+        currentWidth += w;
+    });
+    if (currentLine.length > 0) lines.push(currentLine);
+    return lines;
+}
+
 function finishAllAndGeneratePoster() {
     clearInterval(runtimeState.timerInterval);
     document.getElementById("liveTimerPill").style.display = "none";
@@ -1193,7 +1283,29 @@ function finishAllAndGeneratePoster() {
 
     const W = 750;
     const qCount = runtimeState.results.length;
-    const H = 680 + qCount * 76 + 150;
+
+    // 预计算每句诊断卡片动态高度，确保长难句多行折叠绝不裁切
+    const cardInnerMaxW = W - 144;
+    const sentenceLayouts = runtimeState.results.map((res, idx) => {
+        const q = TASK_CONFIG.questions[idx];
+        const isPerfect = res.accuracy === 100;
+        if (isPerfect) {
+            return { isPerfect: true, lines: [], cardHeight: 64 };
+        }
+        const tokens = buildDiagnosticTokensForSentence(q, res);
+        const lines = layoutRichTokenLines(ctx, tokens, cardInnerMaxW);
+        const cardHeight = 64 + lines.length * 28 + 14;
+        return { isPerfect: false, lines, cardHeight };
+    });
+
+    const headerH = 270;
+    const statsH = 148;
+    const statsY = headerH + 24;
+    const listStartY = statsY + statsH + 24;
+    const totalCardsHeight = sentenceLayouts.reduce((sum, item) => sum + item.cardHeight + 12, 0);
+    const listH = 88 + totalCardsHeight;
+    const H = listStartY + listH + 140;
+
     canvas.width = W;
     canvas.height = H;
 
@@ -1202,7 +1314,6 @@ function finishAllAndGeneratePoster() {
     ctx.fillRect(0, 0, W, H);
 
     // 2. 顶部深海蓝学院风横幅
-    const headerH = 270;
     const grad = ctx.createLinearGradient(0, 0, W, headerH);
     grad.addColorStop(0, "#08182B");
     grad.addColorStop(1, "#132F5B");
@@ -1215,7 +1326,7 @@ function finishAllAndGeneratePoster() {
     ctx.arc(W - 60, 40, 140, 0, Math.PI * 2);
     ctx.fill();
 
-    // 品牌胶囊徽章（textBaseline = middle 绝对居中）
+    // 品牌胶囊徽章
     drawPillBadge(ctx, 44, 42, 176, 34, 8, "#E2C08D", "#08182B", "XUETU GUARD", "bold 15px sans-serif");
 
     ctx.fillStyle = "#EDD5AE";
@@ -1261,8 +1372,6 @@ function finishAllAndGeneratePoster() {
     const totalTimeStr = formatSecondsChinese(runtimeState.elapsedSeconds);
     const rankTitle = avgAccuracy >= 90 ? "意群大师" : (avgAccuracy >= 75 ? "稳步进阶" : "勤思笃行");
 
-    const statsY = headerH + 24;
-    const statsH = 148;
     roundRectPath(ctx, 36, statsY, W - 72, statsH, 18);
     ctx.fillStyle = "#FFFFFF";
     ctx.fill();
@@ -1297,9 +1406,7 @@ function finishAllAndGeneratePoster() {
     });
     ctx.textAlign = "left";
 
-    // 4. 逐句闯关明细列表
-    const listStartY = statsY + statsH + 24;
-    const listH = 74 + qCount * 76;
+    // 4. 首轮切分逐句诊断明细列表（还原学生首轮现场）
     roundRectPath(ctx, 36, listStartY, W - 72, listH, 18);
     ctx.fillStyle = "#FFFFFF";
     ctx.fill();
@@ -1308,31 +1415,58 @@ function finishAllAndGeneratePoster() {
 
     ctx.fillStyle = "#08182B";
     ctx.font = "800 22px sans-serif";
-    ctx.fillText("逐句意群切分诊断明细", 62, listStartY + 38);
+    ctx.fillText("首轮切分逐句诊断明细", 62, listStartY + 36);
 
+    ctx.fillStyle = "#64748B";
+    ctx.font = "600 14px sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText("图例：/ 切对   ▼[漏切]   ✗[误切]", W - 62, listStartY + 36);
+    ctx.textAlign = "left";
+
+    let cursorY = listStartY + 68;
     runtimeState.results.forEach((res, idx) => {
-        const rowY = listStartY + 68 + idx * 76;
         const q = TASK_CONFIG.questions[idx];
+        const layout = sentenceLayouts[idx];
 
-        roundRectPath(ctx, 58, rowY, W - 116, 62, 12);
-        ctx.fillStyle = "#F8FAFC";
+        roundRectPath(ctx, 56, cursorY, W - 112, layout.cardHeight, 12);
+        ctx.fillStyle = layout.isPerfect ? "#F8FAFC" : "#FFFDF9";
         ctx.fill();
+        ctx.strokeStyle = layout.isPerfect ? "#E2E8F0" : "#FDE68A";
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
 
         // 题号胶囊
-        drawPillBadge(ctx, 72, rowY + 15, 76, 32, 8, "#08182B", "#E2C08D", `第 ${idx + 1} 句`, "800 16px sans-serif");
+        drawPillBadge(ctx, 70, cursorY + 16, 76, 32, 8, "#08182B", "#E2C08D", `第 ${idx + 1} 句`, "800 16px sans-serif");
 
         // 题目来源
-        ctx.fillStyle = "#334155";
-        ctx.font = "600 18px sans-serif";
-        const shortSource = q.source.length > 16 ? q.source.slice(0, 16) + "..." : q.source;
-        ctx.fillText(shortSource, 164, rowY + 31);
+        ctx.fillStyle = "#475569";
+        ctx.font = "600 16px sans-serif";
+        const shortSource = q.source.length > 15 ? q.source.slice(0, 15) + "..." : q.source;
+        ctx.fillText(shortSource, 158, cursorY + 32);
 
-        // 右侧得分胶囊
-        const isPass = res.accuracy >= 80;
-        const badgeBg = isPass ? "#ECFDF5" : "#FFFBEB";
-        const badgeText = isPass ? "#059669" : "#D97706";
-        const label = res.accuracy === 100 ? "100% 精准" : `${res.accuracy}% (漏${res.missedCount}/多${res.extraCount})`;
-        drawPillBadge(ctx, W - 245, rowY + 15, 172, 32, 8, badgeBg, badgeText, label, "800 16px sans-serif");
+        // 右侧得分/诊断胶囊
+        if (layout.isPerfect) {
+            drawPillBadge(ctx, W - 238, cursorY + 16, 168, 32, 8, "#ECFDF5", "#059669", "✓ 首轮完美切分", "800 15px sans-serif");
+        } else {
+            const label = `⚠ 漏切${res.missedCount} · 误切${res.extraCount}`;
+            drawPillBadge(ctx, W - 238, cursorY + 16, 168, 32, 8, "#FEF2F2", "#DC2626", label, "800 15px sans-serif");
+
+            // 绘制还原学生首轮切分现场的多行带色标句子
+            let textY = cursorY + 68;
+            layout.lines.forEach(lineTokens => {
+                let textX = 72;
+                lineTokens.forEach(tok => {
+                    ctx.font = tok.font;
+                    ctx.fillStyle = tok.color;
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(tok.text, textX, textY);
+                    textX += tok.width;
+                });
+                textY += 28;
+            });
+        }
+
+        cursorY += layout.cardHeight + 12;
     });
 
     // 5. 底部老师寄语与落款
