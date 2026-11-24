@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>学途卫士 · 智能排课系统</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2canvas 用于电脑全览图高清截图导出 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Google Fonts: Inter & Noto Sans SC -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Inter"', '"Noto Sans SC"', 'sans-serif'],
+                    },
+                    colors: {
+                        navy: {
+                            950: '#050F1C',
+                            900: '#08182B',
+                            800: '#11294D',
+                            700: '#1B3B6B',
+                        },
+                        academy: {
+                            600: '#2C55A0',
+                            500: '#3B6EC8',
+                            50: '#F0F5FF',
+                        },
+                        champagne: {
+                            300: '#EDD5AE',
+                            400: '#E2C08D',
+                            500: '#CFA668',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+
+        .export-mode .hide-on-export {
+            display: none !important;
+        }
+        .export-mode [contenteditable] {
+            outline: none !important;
+            border-color: transparent !important;
+        }
+
+        [contenteditable="true"] {
+            outline: none;
+            border-bottom: 1px dashed rgba(226, 192, 141, 0.35);
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+            border-radius: 4px;
+            padding: 1px 4px;
+        }
+        [contenteditable="true"]:focus {
+            border-bottom-color: #E2C08D;
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .time-slot-cell {
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .time-slot-cell.half-hour {
+            border-bottom: 1px dashed #edf2f7;
+        }
+
+        .drag-selection-overlay {
+            position: absolute;
+            left: 4px;
+            right: 4px;
+            background-color: rgba(44, 85, 160, 0.18);
+            border: 2px dashed #2C55A0;
+            border-left: 4px solid #2C55A0;
+            border-radius: 8px;
+            pointer-events: none;
+            z-index: 25;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: #1E3A8A;
+        }
+
+        .resize-handle-bottom {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 14px;
+            cursor: ns-resize;
+            touch-action: none;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 3px;
+        }
+        .resize-handle-bottom::after {
+            content: "";
+            width: 28px;
+            height: 3.5px;
+            border-radius: 99px;
+            background-color: rgba(15, 23, 42, 0.25);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col pb-20 sm:pb-8">
+
+    <!-- 顶部操作工具栏 -->
+    <header class="bg-navy-900 text-white shadow-lg sticky top-0 z-30 border-b border-navy-700">
+        <div class="max-w-[1440px] mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-champagne-400 to-champagne-500 text-navy-900 flex items-center justify-center font-black text-base sm:text-lg shadow-md shrink-0">
+                    学
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-sm sm:text-base tracking-wide text-white truncate">学途卫士 · 智能排课</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-champagne-400/20 text-champagne-300 border border-champagne-400/30 font-semibold shrink-0">5分钟刻度</span>
+                    </div>
+                    <p class="text-[11px] text-slate-300 hidden md:block">在时间轴上「按住上下滑动/拖动」即可划定 08:00-21:30 任意5分钟刻度排课，一键导出手机版课表图</p>
+                </div>
+            </div>
+
+            <!-- 电脑端按钮组 -->
+            <div class="hidden sm:flex items-center gap-2 shrink-0">
+                <button onclick="openAddModal()" class="px-3.5 py-2 rounded-xl bg-navy-800 hover:bg-navy-700 text-white text-sm font-medium border border-slate-600/60 transition flex items-center gap-1.5 shadow-sm">
+                    <svg class="w-4 h-4 text-champagne-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>新增排课</span>
+                </button>
+
+                <button onclick="loadSampleSchedule()" class="px-3 py-2 rounded-xl bg-navy-800 hover:bg-navy-700 text-slate-200 text-sm font-medium border border-slate-700 transition">
+                    加载示例
+                </button>
+
+                <button onclick="openConfirmClear()" class="px-3 py-2 rounded-xl bg-navy-800 hover:bg-rose-900/60 text-slate-300 hover:text-rose-200 text-sm font-medium border border-slate-700 transition">
+                    清空
+                </button>
+
+                <button onclick="exportScheduleImage('mobile')" id="exportMobileBtnDesktop" class="px-4 py-2 rounded-xl bg-gradient-to-r from-champagne-400 to-champagne-500 hover:from-champagne-300 hover:to-champagne-400 text-navy-950 text-sm font-bold shadow-md transition transform active:scale-95 flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    <span>生成手机版课表图</span>
+                </button>
+
+                <button onclick="exportScheduleImage('desktop')" id="exportDesktopBtn" class="px-3 py-2 rounded-xl bg-navy-800 hover:bg-navy-700 text-champagne-300 text-sm font-bold border border-champagne-400/40 shadow-sm transition flex items-center gap-1.5">
+                    <span>电脑全览图</span>
+                </button>
+            </div>
+
+            <!-- 手机端右上角快捷操作 -->
+            <div class="flex sm:hidden items-center gap-1.5 shrink-0">
+                <button onclick="loadSampleSchedule()" class="px-2.5 py-1.5 rounded-lg bg-navy-800 text-slate-200 text-xs font-medium border border-slate-700">
+                    示例
+                </button>
+                <button onclick="openConfirmClear()" class="px-2.5 py-1.5 rounded-lg bg-navy-800 text-slate-300 text-xs font-medium border border-slate-700">
+                    清空
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 手机端底部固定悬浮操作栏 -->
+    <div class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-2.5 flex items-center gap-2.5 shadow-[0_-4px_16px_rgba(8,24,43,0.08)]">
+        <button onclick="openAddModal(appState.selectedMobileDate)" class="flex-1 py-2.5 px-3 rounded-xl bg-navy-900 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition">
+            <svg class="w-4 h-4 text-champagne-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/></svg>
+            <span>+ 新增排课</span>
+        </button>
+        <button onclick="exportScheduleImage('mobile')" id="exportMobileBtnPhone" class="flex-[1.35] py-2.5 px-3 rounded-xl bg-gradient-to-r from-champagne-400 to-champagne-500 text-navy-950 text-xs font-black flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <span>一键生成家长课表图</span>
+        </button>
+    </div>
+
+    <!-- 日期范围与视图切换控制条 -->
+    <div class="max-w-[1440px] w-full mx-auto px-3 sm:px-6 pt-3 sm:pt-4 pb-1.5">
+        <div class="bg-white rounded-2xl p-3 sm:p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                <div class="flex items-center gap-1.5">
+                    <label class="text-xs font-semibold text-slate-500">起始</label>
+                    <input type="date" id="startDateInput" onchange="handleDateConfigChange()" class="px-2.5 py-1.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-navy-900 focus:outline-none focus:ring-2 focus:ring-academy-600 bg-slate-50">
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <label class="text-xs font-semibold text-slate-500">天数</label>
+                    <select id="dayCountSelect" onchange="handleDateConfigChange()" class="px-2.5 py-1.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-navy-900 focus:outline-none focus:ring-2 focus:ring-academy-600 bg-slate-50">
+                        <option value="5">5天</option>
+                        <option value="6">6天</option>
+                        <option value="7" selected>7天(一周)</option>
+                        <option value="10">10天</option>
+                        <option value="14">14天</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button onclick="shiftDays(-7)" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">
+                        ← 上周
+                    </button>
+                    <button onclick="shiftDays(7)" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">
+                        下周 →
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between sm:justify-end gap-2 text-xs pt-1.5 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                <span class="text-slate-500 sm:hidden">在下方时间格长按上下滑动排课</span>
+                <span id="totalStatsBadge" class="px-2.5 py-1 rounded-lg bg-academy-50 text-academy-600 font-bold border border-academy-600/20">
+                    共 0 节课 · 0 小时
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主工作区 -->
+    <main class="flex-1 max-w-[1440px] w-full mx-auto px-3 sm:px-6 py-2">
+        <div id="exportTarget" class="w-full bg-white rounded-2xl shadow-xl border border-slate-200/90 pb-3 overflow-hidden">
+            
+            <!-- 1. 专属VIP排课表表头 -->
+            <div class="bg-gradient-to-r from-navy-900 via-navy-800 to-navy-900 text-white px-4 sm:px-7 py-4 sm:py-6 relative">
+                <div class="inset-0 absolute overflow-hidden pointer-events-none">
+                    <div class="absolute -right-12 -top-12 w-56 h-56 rounded-full bg-champagne-400/10 blur-2xl"></div>
+                    <div class="absolute left-1/3 bottom-0 w-72 h-24 bg-academy-600/20 blur-2xl"></div>
+                </div>
+
+                <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 sm:gap-5">
+                    <div class="space-y-1.5 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center justify-center px-2 py-0.5 rounded bg-champagne-400 text-navy-950 text-[10px] sm:text-xs font-black tracking-widest uppercase">
+                                XUETU GUARD
+                            </span>
+                            <span class="text-champagne-300 text-[11px] sm:text-xs font-medium tracking-wider">个性化高分定制教学方案</span>
+                        </div>
+                        <div class="flex items-center gap-2 group">
+                            <div id="headerTitleEditable" contenteditable="true" spellcheck="false"
+                                oninput="saveHeaderMeta()"
+                                class="text-lg sm:text-2xl font-black tracking-tight text-white leading-snug inline-block"
+                                title="点击可直接修改标题">学途卫士 · 专属VIP排课表</div>
+                            <span class="hide-on-export text-[11px] text-champagne-400/80 whitespace-nowrap">✎ 可编辑</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:flex sm:flex-nowrap items-stretch gap-3 sm:gap-4 bg-navy-950/65 backdrop-blur-sm px-3.5 sm:px-5 py-2.5 sm:py-3.5 rounded-xl border border-champagne-400/30 shrink-0">
+                        <div class="pr-2 sm:pr-4 border-r border-slate-700/80 flex flex-col justify-center min-w-0">
+                            <div class="text-[10px] sm:text-[11px] text-champagne-400 uppercase tracking-wider font-semibold mb-0.5">学员 / 班级</div>
+                            <div id="studentNameEditable" contenteditable="true" spellcheck="false"
+                                oninput="saveHeaderMeta()"
+                                class="text-xs sm:text-base font-bold text-white leading-snug break-words">高一核心冲刺班 · 张同学</div>
+                        </div>
+                        <div class="flex flex-col justify-center min-w-0">
+                            <div class="text-[10px] sm:text-[11px] text-champagne-400 uppercase tracking-wider font-semibold mb-0.5">排课周期</div>
+                            <div id="dateRangeSubtitleEditable" contenteditable="true" spellcheck="false"
+                                oninput="saveHeaderMeta()"
+                                class="text-xs sm:text-base font-bold text-champagne-300 leading-snug break-words">2026年11月23日 - 11月29日</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 底部学科色标指示条 -->
+                <div class="relative z-10 mt-3.5 sm:mt-5 pt-3 border-t border-white/15 flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2.5" id="headerLegendContainer"></div>
+                    <div class="text-slate-200 font-semibold text-[11px] sm:text-xs" id="exportSummaryText">
+                        本周期总计：0 节课（共 0 课时）
+                    </div>
+                </div>
+            </div>
+
+            <!-- 手机竖屏专属：横向日期胶囊切换条 -->
+            <div id="mobileDayTabsBar" class="md:hidden bg-slate-100/90 border-b border-slate-200 px-2.5 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar sticky top-[57px] z-20">
+            </div>
+
+            <!-- 2. 核心时间网格区 (08:00 - 21:30，每30分钟主行，5分钟精准定位) -->
+            <div class="relative bg-white select-none" id="scheduleGridWrapper">
+                <div class="grid border-b-2 border-navy-900/15 bg-slate-50/95" id="gridHeaderRow">
+                    <div class="py-2.5 sm:py-3 px-1.5 text-center border-r border-slate-200 flex flex-col items-center justify-center bg-slate-100/80">
+                        <span class="text-[11px] sm:text-xs font-extrabold text-navy-900 tracking-wider">时间段</span>
+                        <span class="text-[9px] sm:text-[10px] text-slate-500 font-medium">08:00-21:30</span>
+                    </div>
+                </div>
+
+                <div class="grid relative" id="gridBodyRow">
+                    <div class="border-r border-slate-200 bg-slate-50/60" id="timeAxisColumn"></div>
+                </div>
+            </div>
+
+            <!-- 3. 底部贴心备注与机构落款 -->
+            <div class="bg-slate-50 border-t border-slate-200 px-4 sm:px-7 py-3.5 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 text-xs text-slate-600">
+                <div class="flex items-start gap-2 flex-1">
+                    <span class="inline-flex items-center justify-center px-2 py-0.5 rounded bg-navy-900 text-champagne-400 font-bold text-[10px] sm:text-[11px] shrink-0 mt-0.5">
+                        温馨提示
+                    </span>
+                    <div id="footerNoteEditable" contenteditable="true" spellcheck="false"
+                        oninput="saveHeaderMeta()"
+                        class="text-slate-600 font-medium text-[11px] sm:text-xs leading-relaxed flex-1">
+                        请提前10分钟到达校区签到并做好课前预习；如需调课请提前24小时联系班主任老师。
+                    </div>
+                </div>
+                <div class="flex items-center justify-end gap-2.5 shrink-0 font-semibold text-[11px] sm:text-xs text-navy-900">
+                    <span>学途卫士教务中心制表</span>
+                    <span class="text-slate-300">|</span>
+                    <span id="generatedDateStamp" class="text-slate-500 font-normal"></span>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 拖拽时的实时悬浮时间提示气泡（精确到 5 分钟） -->
+    <div id="dragTooltip" class="fixed pointer-events-none z-50 hidden px-3 py-1.5 rounded-lg bg-navy-900 text-champagne-300 text-xs font-bold shadow-xl border border-champagne-400/40 whitespace-nowrap">
+        08:00 - 10:00 (2小时)
+    </div>
+
+    <!-- 新增 / 编辑课程弹窗 Modal -->
+    <div id="classModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-navy-950/60 backdrop-blur-xs p-3 sm:p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[92vh] flex flex-col overflow-hidden border border-slate-200">
+            <div class="bg-navy-900 text-white px-4 sm:px-5 py-3.5 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-champagne-400"></span>
+                    <h3 id="modalTitle" class="font-bold text-sm sm:text-base">新增排课安排</h3>
+                </div>
+                <button onclick="closeClassModal()" class="text-slate-400 hover:text-white p-1 rounded-lg transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <form id="classForm" onsubmit="saveClassSubmit(event)" class="p-4 sm:p-5 space-y-3.5 overflow-y-auto">
+                <input type="hidden" id="editClassId">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">上课日期</label>
+                    <select id="modalDayIndex" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold text-navy-900 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-academy-600">
+                    </select>
+                </div>
+
+                <!-- 开始时间与结束时间：双下拉框（小时 + 5分钟刻度） -->
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">开始时间 (5分刻度)</label>
+                        <div class="flex items-center gap-1">
+                            <select id="modalStartHour" onchange="onTimePartChange('start')" class="w-1/2 px-2 py-2 rounded-xl border border-slate-300 text-sm font-bold text-navy-900 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-academy-600"></select>
+                            <span class="font-bold text-slate-400">:</span>
+                            <select id="modalStartMin" onchange="onTimePartChange('start')" class="w-1/2 px-2 py-2 rounded-xl border border-slate-300 text-sm font-bold text-navy-900 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-academy-600"></select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">结束时间 (5分刻度)</label>
+                        <div class="flex items-center gap-1">
+                            <select id="modalEndHour" onchange="onTimePartChange('end')" class="w-1/2 px-2 py-2 rounded-xl border border-slate-300 text-sm font-bold text-navy-900 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-academy-600"></select>
+                            <span class="font-bold text-slate-400">:</span>
+                            <select id="modalEndMin" onchange="onTimePartChange('end')" class="w-1/2 px-2 py-2 rounded-xl border border-slate-300 text-sm font-bold text-navy-900 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-academy-600"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 快捷时长按钮 -->
+                <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                    <span class="text-slate-400 font-medium">快捷时长:</span>
+                    <button type="button" onclick="setDurationMinutes(45)" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-academy-50 hover:text-academy-600 font-semibold text-slate-600 transition">45分</button>
+                    <button type="button" onclick="setDurationMinutes(60)" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-academy-50 hover:text-academy-600 font-semibold text-slate-600 transition">1小时</button>
+                    <button type="button" onclick="setDurationMinutes(90)" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-academy-50 hover:text-academy-600 font-semibold text-slate-600 transition">1.5小时</button>
+                    <button type="button" onclick="setDurationMinutes(120)" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-academy-50 hover:text-academy-600 font-semibold text-slate-600 transition">2小时</button>
+                    <button type="button" onclick="setDurationMinutes(150)" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-academy-50 hover:text-academy-600 font-semibold text-slate-600 transition">2.5小时</button>
+                </div>
+
+                <!-- 科目选择 -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">选择科目</label>
+                    <div class="grid grid-cols-4 gap-1.5" id="subjectSelectorGrid"></div>
+                    <input type="hidden" id="modalSubject" value="数学">
+                </div>
+
+                <!-- 授课老师与教室/备注 -->
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">授课老师</label>
+                        <input type="text" id="modalTeacher" placeholder="如: 浩然老师" required
+                            class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-medium text-navy-900 focus:outline-none focus:ring-2 focus:ring-academy-600">
+                        <div class="flex flex-wrap gap-1 mt-1.5">
+                            <button type="button" onclick="document.getElementById('modalTeacher').value='浩然老师'" class="text-[11px] px-2 py-0.5 rounded bg-slate-100 text-slate-600">浩然老师</button>
+                            <button type="button" onclick="document.getElementById('modalTeacher').value='郭超老师'" class="text-[11px] px-2 py-0.5 rounded bg-slate-100 text-slate-600">郭超老师</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">教室 / 备注</label>
+                        <input type="text" id="modalNote" placeholder="如: VIP1室"
+                            class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-medium text-navy-900 focus:outline-none focus:ring-2 focus:ring-academy-600">
+                        <div class="flex flex-wrap gap-1 mt-1.5">
+                            <button type="button" onclick="document.getElementById('modalNote').value='VIP 1号教室'" class="text-[11px] px-2 py-0.5 rounded bg-slate-100 text-slate-600">VIP 1号教室</button>
+                            <button type="button" onclick="document.getElementById('modalNote').value='1对1强化'" class="text-[11px] px-2 py-0.5 rounded bg-slate-100 text-slate-600">1对1强化</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="modalErrorMsg" class="hidden text-xs text-rose-600 bg-rose-50 border border-rose-200 px-3 py-2 rounded-xl font-medium"></div>
+
+                <div class="pt-2 flex items-center justify-between gap-2 border-t border-slate-100">
+                    <button type="button" id="deleteClassBtn" onclick="deleteCurrentClass()" class="hidden px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs sm:text-sm font-bold transition">
+                        删除此课
+                    </button>
+                    <div class="flex items-center gap-2 ml-auto">
+                        <button type="button" onclick="closeClassModal()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold transition">
+                            取消
+                        </button>
+                        <button type="submit" class="px-4 py-2 rounded-xl bg-academy-600 hover:bg-academy-500 text-white text-xs sm:text-sm font-bold shadow-md transition">
+                            保存排课
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 一键生成图片预览与下载 Modal -->
+    <div id="imagePreviewModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-navy-950/75 backdrop-blur-sm p-3 sm:p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-slate-200">
+            <div class="bg-navy-900 text-white px-4 sm:px-5 py-3.5 flex items-center justify-between shrink-0 gap-2">
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h3 class="font-bold text-sm sm:text-base flex items-center gap-1.5">
+                            <span class="text-champagne-400">✦</span> 家长高清课表图
+                        </h3>
+                        <div class="inline-flex rounded-lg bg-navy-950 p-0.5 border border-slate-700 text-xs">
+                            <button id="switchMobilePreviewBtn" onclick="exportScheduleImage('mobile')" class="px-2.5 py-1 rounded-md font-bold transition bg-champagne-400 text-navy-950">
+                                📱 手机竖屏长图
+                            </button>
+                            <button id="switchDesktopPreviewBtn" onclick="exportScheduleImage('desktop')" class="px-2.5 py-1 rounded-md font-bold transition text-slate-300 hover:text-white">
+                                💻 电脑网格全览
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-[11px] sm:text-xs text-slate-300 mt-1">手机微信中「长按下方图片」即可直接转发给家长或保存到相册</p>
+                </div>
+                <button onclick="closePreviewModal()" class="text-slate-400 hover:text-white p-1.5 rounded-xl bg-navy-800 transition shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-auto p-3 sm:p-6 bg-slate-200/80 flex items-start justify-center">
+                <img id="generatedScheduleImg" src="" alt="家长排课表预览" class="max-w-full h-auto rounded-xl shadow-2xl border border-slate-300 bg-white">
+            </div>
+
+            <div class="px-4 sm:px-5 py-3 bg-white border-t border-slate-200 flex flex-wrap items-center justify-between gap-2.5 shrink-0">
+                <div class="text-[11px] sm:text-xs font-medium text-emerald-600">
+                    ✓ 手机竖屏3倍超清画质，文字精准居中零裁切
+                </div>
+                <div class="flex items-center gap-2 ml-auto">
+                    <button onclick="copyImageToClipboard()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-navy-900 text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
+                        <span>复制图片</span>
+                    </button>
+                    <a id="downloadImageLink" href="#" download="学途卫士_手机版课表.png" class="px-4 py-2 rounded-xl bg-gradient-to-r from-academy-600 to-navy-800 text-white text-xs sm:text-sm font-bold shadow-md transition flex items-center gap-1.5">
+                        <span>保存图片</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 清空确认自定义弹窗 -->
+    <div id="confirmClearModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-navy-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-5 border border-slate-200">
+            <h4 class="text-base font-bold text-navy-900 mb-2">确认清空当前所有排课？</h4>
+            <p class="text-xs text-slate-500 mb-5 leading-relaxed">此操作将移除当前课表中的所有课程安排，方便您为新学员重新排课。</p>
+            <div class="flex justify-end gap-2.5">
+                <button onclick="closeConfirmClear()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">取消</button>
+                <button onclick="confirmClearAll()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-sm">确认清空</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 轻提示 Toast -->
+    <div id="toastBanner" class="fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2.5 rounded-xl bg-navy-900 text-white text-xs sm:text-sm font-semibold shadow-2xl border border-champagne-400/40 whitespace-nowrap">
+    </div>
+
+    <script>
+        /**
+         * 核心常量定义：时间轴从 08:00 到 21:30，5分钟精准刻度
+         */
+        const START_MINUTES = 8 * 60;          // 08:00 -> 480
+        const END_MINUTES = 21 * 60 + 30;      // 21:30 -> 1290
+        const TOTAL_MINUTES = END_MINUTES - START_MINUTES; // 810 分钟
+        const VISUAL_GRID_STEP = 30;           // 视觉背景辅助线每 30 分钟一行
+        const SNAP_STEP = 5;                   // 交互与排课精度：精确到 5 分钟
+        const ROW_HEIGHT_PX = 36;              // 每 30 分钟高度 36px
+
+        const SUBJECT_THEMES = {
+            '数学': { bg: '#EFF6FF', border: '#2563EB', badgeBg: '#2563EB', text: '#1E3A8A', subText: '#1D4ED8', dot: '#60A5FA' },
+            '物理': { bg: '#F5F3FF', border: '#7C3AED', badgeBg: '#7C3AED', text: '#4C1D95', subText: '#6D28D9', dot: '#A78BFA' },
+            '化学': { bg: '#ECFEFF', border: '#0891B2', badgeBg: '#0891B2', text: '#164E63', subText: '#0E7490', dot: '#22D3EE' },
+            '英语': { bg: '#FFFBEB', border: '#D97706', badgeBg: '#D97706', text: '#78350F', subText: '#B45309', dot: '#FBBF24' },
+            '生物': { bg: '#ECFDF5', border: '#059669', badgeBg: '#059669', text: '#064E3B', subText: '#047857', dot: '#34D399' },
+            '语文': { bg: '#FFF1F2', border: '#E11D48', badgeBg: '#E11D48', text: '#881337', subText: '#BE123C', dot: '#FB7185' },
+            '晚辅/自习': { bg: '#F8FAFC', border: '#475569', badgeBg: '#475569', text: '#1E293B', subText: '#334155', dot: '#94A3B8' }
+        };
+
+        const WEEKDAY_NAMES = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+
+        function getDefaultMondayStr() {
+            const now = new Date();
+            const day = now.getDay();
+            const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+            const monday = new Date(now.getFullYear(), now.getMonth(), diff);
+            return formatDateYMD(monday);
+        }
+
+        function formatDateYMD(dateObj) {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function parseYMD(ymdStr) {
+            const [y, m, d] = ymdStr.split('-').map(Number);
+            return new Date(y, m - 1, d);
+        }
+
+        function addDaysToYMD(ymdStr, offsetDays) {
+            const dt = parseYMD(ymdStr);
+            dt.setDate(dt.getDate() + offsetDays);
+            return formatDateYMD(dt);
+        }
+
+        function minutesToTimeStr(totalMins) {
+            const h = Math.floor(totalMins / 60);
+            const m = totalMins % 60;
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        }
+
+        function formatDurationLabel(mins) {
+            const h = Math.floor(mins / 60);
+            const m = mins % 60;
+            if (h === 0) return `${m}分钟`;
+            if (m === 0) return `${h}小时`;
+            return `${h}小时${m}分`;
+        }
+
+        function isMobileViewport() {
+            return window.innerWidth < 768;
+        }
+
+        let appState = {
+            startDate: getDefaultMondayStr(),
+            dayCount: 7,
+            selectedMobileDate: getDefaultMondayStr(),
+            headerTitle: '学途卫士 · 专属VIP排课表',
+            studentName: '高一核心冲刺班 · 张同学',
+            dateRangeSubtitle: '',
+            footerNote: '请提前10分钟到达校区签到并做好课前预习；如需调课请提前24小时联系班主任老师。',
+            classes: []
+        };
+
+        let dragState = {
+            mode: null,
+            dateStr: null,
+            colEl: null,
+            anchorMin: 0,
+            currentMin: 0,
+            overlayEl: null,
+            resizeClassId: null,
+            resizeOriginalStartMin: null
+        };
+
+        /**
+         * 初始化 5 分钟刻度双下拉时间选择器 (08:00 - 21:30)
+         */
+        function initTimeDropdowns() {
+            const sHour = document.getElementById('modalStartHour');
+            const eHour = document.getElementById('modalEndHour');
+            const sMin = document.getElementById('modalStartMin');
+            const eMin = document.getElementById('modalEndMin');
+
+            sHour.innerHTML = '';
+            eHour.innerHTML = '';
+            for (let h = 8; h <= 21; h++) {
+                const label = `${String(h).padStart(2, '0')}时`;
+                sHour.add(new Option(label, h));
+                eHour.add(new Option(label, h));
+            }
+
+            sMin.innerHTML = '';
+            eMin.innerHTML = '';
+            for (let m = 0; m < 60; m += 5) {
+                const label = `${String(m).padStart(2, '0')}分`;
+                sMin.add(new Option(label, m));
+                eMin.add(new Option(label, m));
+            }
+        }
+
+        function onTimePartChange(which) {
+            const hEl = document.getElementById(which === 'start' ? 'modalStartHour' : 'modalEndHour');
+            const mEl = document.getElementById(which === 'start' ? 'modalStartMin' : 'modalEndMin');
+            if (parseInt(hEl.value, 10) === 21 && parseInt(mEl.value, 10) > 30) {
+                mEl.value = '30';
+            }
+        }
+
+        function setModalTimePickers(startMin, endMin) {
+            const sH = Math.floor(startMin / 60);
+            const sM = startMin % 60;
+            const eH = Math.floor(endMin / 60);
+            const eM = endMin % 60;
+
+            document.getElementById('modalStartHour').value = String(sH);
+            document.getElementById('modalStartMin').value = String(sM);
+            document.getElementById('modalEndHour').value = String(eH);
+            document.getElementById('modalEndMin').value = String(eM);
+        }
+
+        function getModalTimeValues() {
+            const sH = parseInt(document.getElementById('modalStartHour').value, 10);
+            const sM = parseInt(document.getElementById('modalStartMin').value, 10);
+            const eH = parseInt(document.getElementById('modalEndHour').value, 10);
+            const eM = parseInt(document.getElementById('modalEndMin').value, 10);
+            return {
+                startMin: sH * 60 + sM,
+                endMin: eH * 60 + eM
+            };
+        }
+
+        /**
+         * 初始化弹窗内的学科色块选择器
+         */
+        function initSubjectSelector() {
+            const grid = document.getElementById('subjectSelectorGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            Object.entries(SUBJECT_THEMES).forEach(([name, theme]) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.dataset.subject = name;
+                btn.className = 'subject-option-btn px-2 py-2 rounded-xl border text-xs font-bold flex items-center justify-center gap-1 transition';
+                btn.innerHTML = `
+                    <span class="w-2 h-2 rounded-full shrink-0" style="background-color:${theme.badgeBg}"></span>
+                    <span class="truncate">${name}</span>
+                `;
+                btn.onclick = () => selectSubjectInModal(name);
+                grid.appendChild(btn);
+            });
+            selectSubjectInModal('数学');
+        }
+
+        function selectSubjectInModal(subjectName) {
+            document.getElementById('modalSubject').value = subjectName;
+            const theme = SUBJECT_THEMES[subjectName] || SUBJECT_THEMES['数学'];
+            document.querySelectorAll('.subject-option-btn').forEach(btn => {
+                if (btn.dataset.subject === subjectName) {
+                    btn.style.backgroundColor = theme.bg;
+                    btn.style.borderColor = theme.border;
+                    btn.style.color = theme.text;
+                    btn.style.boxShadow = `0 0 0 2px ${theme.border}33`;
+                } else {
+                    btn.style.backgroundColor = '#ffffff';
+                    btn.style.borderColor = '#e2e8f0';
+                    btn.style.color = '#475569';
+                    btn.style.boxShadow = 'none';
+                }
+            });
+        }
+
+        function renderHeaderLegend() {
+            const container = document.getElementById('headerLegendContainer');
+            container.innerHTML = '';
+            Object.entries(SUBJECT_THEMES).forEach(([name, theme]) => {
+                const item = document.createElement('div');
+                item.className = 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-white/10 text-white/95 text-[11px] sm:text-xs font-medium';
+                item.innerHTML = `
+                    <span class="w-2 h-2 rounded-xs shrink-0" style="background-color: ${theme.dot}; border: 1px solid rgba(255,255,255,0.45);"></span>
+                    <span>${name}</span>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function syncInputsFromState() {
+            document.getElementById('startDateInput').value = appState.startDate;
+            document.getElementById('dayCountSelect').value = String(appState.dayCount);
+            document.getElementById('headerTitleEditable').textContent = appState.headerTitle;
+            document.getElementById('studentNameEditable').textContent = appState.studentName;
+            document.getElementById('footerNoteEditable').textContent = appState.footerNote;
+
+            if (!appState.dateRangeSubtitle) {
+                updateAutoDateSubtitle();
+            } else {
+                document.getElementById('dateRangeSubtitleEditable').textContent = appState.dateRangeSubtitle;
+            }
+        }
+
+        function updateAutoDateSubtitle() {
+            const start = parseYMD(appState.startDate);
+            const end = parseYMD(addDaysToYMD(appState.startDate, appState.dayCount - 1));
+            const subtitle = `${start.getFullYear()}年${start.getMonth() + 1}月${start.getDate()}日 - ${end.getMonth() + 1}月${end.getDate()}日`;
+            appState.dateRangeSubtitle = subtitle;
+            document.getElementById('dateRangeSubtitleEditable').textContent = subtitle;
+        }
+
+        function saveHeaderMeta() {
+            appState.headerTitle = document.getElementById('headerTitleEditable').textContent.trim();
+            appState.studentName = document.getElementById('studentNameEditable').textContent.trim();
+            appState.dateRangeSubtitle = document.getElementById('dateRangeSubtitleEditable').textContent.trim();
+            appState.footerNote = document.getElementById('footerNoteEditable').textContent.trim();
+            saveToLocalStorage();
+        }
+
+        function handleDateConfigChange() {
+            appState.startDate = document.getElementById('startDateInput').value || getDefaultMondayStr();
+            appState.dayCount = parseInt(document.getElementById('dayCountSelect').value, 10) || 7;
+            appState.selectedMobileDate = appState.startDate;
+            updateAutoDateSubtitle();
+            saveToLocalStorage();
+            renderScheduleGrid();
+        }
+
+        function shiftDays(offset) {
+            appState.startDate = addDaysToYMD(appState.startDate, offset);
+            appState.selectedMobileDate = appState.startDate;
+            document.getElementById('startDateInput').value = appState.startDate;
+            updateAutoDateSubtitle();
+            saveToLocalStorage();
+            renderScheduleGrid();
+        }
+
+        function selectMobileDay(dateStr) {
+            appState.selectedMobileDate = dateStr;
+            renderScheduleGrid();
+        }
+
+        /**
+         * 核心网格渲染（手机单日全宽竖屏模式 / 电脑多日总览网格模式）
+         */
+        function renderScheduleGrid() {
+            const totalDays = appState.dayCount;
+            const allDatesList = [];
+            for (let i = 0; i < totalDays; i++) {
+                allDatesList.push(addDaysToYMD(appState.startDate, i));
+            }
+
+            if (!allDatesList.includes(appState.selectedMobileDate)) {
+                appState.selectedMobileDate = allDatesList[0];
+            }
+
+            const isMobile = isMobileViewport();
+
+            // 1. 手机端顶部日期胶囊栏
+            const mobileTabsBar = document.getElementById('mobileDayTabsBar');
+            mobileTabsBar.innerHTML = '';
+            allDatesList.forEach(dateStr => {
+                const dt = parseYMD(dateStr);
+                const weekday = WEEKDAY_NAMES[dt.getDay()];
+                const dayNum = `${dt.getMonth() + 1}/${dt.getDate()}`;
+                const dayClassCount = appState.classes.filter(c => c.dateStr === dateStr).length;
+                const isSelected = dateStr === appState.selectedMobileDate;
+
+                const tabBtn = document.createElement('button');
+                tabBtn.type = 'button';
+                tabBtn.onclick = () => selectMobileDay(dateStr);
+                tabBtn.className = `px-3 py-1.5 rounded-xl flex flex-col items-center justify-center shrink-0 transition relative border ${
+                    isSelected
+                        ? 'bg-navy-900 text-white border-navy-900 shadow-sm'
+                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                }`;
+                tabBtn.innerHTML = `
+                    <span class="text-[11px] font-extrabold ${isSelected ? 'text-champagne-300' : ''}">${weekday}</span>
+                    <span class="text-xs font-bold mt-0.5">${dayNum}</span>
+                    ${dayClassCount > 0 ? `<span class="mt-1 px-1.5 py-0.2 rounded-full text-[9px] font-bold ${isSelected ? 'bg-champagne-400 text-navy-950' : 'bg-academy-50 text-academy-600'}">${dayClassCount}节</span>` : '<span class="mt-1 text-[9px] opacity-40">-</span>'}
+                `;
+                mobileTabsBar.appendChild(tabBtn);
+            });
+
+            const visibleGridDates = isMobile ? [appState.selectedMobileDate] : allDatesList;
+            const colCount = visibleGridDates.length;
+
+            const timeColWidth = isMobile ? '62px' : '76px';
+            const colTemplate = isMobile
+                ? `${timeColWidth} 1fr`
+                : `${timeColWidth} repeat(${colCount}, minmax(115px, 1fr))`;
+
+            const headerRow = document.getElementById('gridHeaderRow');
+            const bodyRow = document.getElementById('gridBodyRow');
+            headerRow.style.gridTemplateColumns = colTemplate;
+            bodyRow.style.gridTemplateColumns = colTemplate;
+
+            while (headerRow.children.length > 1) {
+                headerRow.removeChild(headerRow.lastChild);
+            }
+
+            visibleGridDates.forEach(dateStr => {
+                const dt = parseYMD(dateStr);
+                const weekday = WEEKDAY_NAMES[dt.getDay()];
+                const isWeekend = dt.getDay() === 0 || dt.getDay() === 6;
+                const monthDay = `${dt.getMonth() + 1}月${dt.getDate()}日`;
+
+                const dayHeader = document.createElement('div');
+                dayHeader.className = `py-2.5 sm:py-3 px-3 border-r border-slate-200 last:border-r-0 flex ${isMobile ? 'flex-row items-center justify-between' : 'flex-col items-center justify-center'} ${isWeekend ? 'bg-amber-50/50' : ''}`;
+                if (isMobile) {
+                    dayHeader.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-black ${isWeekend ? 'text-amber-700' : 'text-navy-900'}">${weekday} · ${monthDay}</span>
+                        </div>
+                        <span class="text-[11px] font-semibold text-academy-600 bg-academy-50 px-2 py-0.5 rounded-md">长按网格上下滑动排课</span>
+                    `;
+                } else {
+                    dayHeader.innerHTML = `
+                        <span class="text-xs font-extrabold ${isWeekend ? 'text-amber-700' : 'text-navy-900'}">${weekday}</span>
+                        <span class="text-[11px] font-semibold text-slate-500">${monthDay}</span>
+                    `;
+                }
+                headerRow.appendChild(dayHeader);
+            });
+
+            // 左侧时间刻度列
+            const timeAxisCol = document.getElementById('timeAxisColumn');
+            timeAxisCol.innerHTML = '';
+            const slotCount = TOTAL_MINUTES / VISUAL_GRID_STEP;
+
+            for (let s = 0; s < slotCount; s++) {
+                const slotStartMin = START_MINUTES + s * VISUAL_GRID_STEP;
+                const isFullHour = slotStartMin % 60 === 0;
+                const cell = document.createElement('div');
+                cell.style.height = `${ROW_HEIGHT_PX}px`;
+                cell.className = `px-1.5 sm:px-2 flex items-start justify-end pr-2 pt-1 text-[10px] sm:text-[11px] font-mono leading-none ${isFullHour ? 'font-bold text-navy-900 border-b border-slate-200' : 'text-slate-400 border-b border-dashed border-slate-200/80'}`;
+                cell.textContent = minutesToTimeStr(slotStartMin);
+                timeAxisCol.appendChild(cell);
+            }
+
+            // 右侧日期交互列 + 课程卡片
+            while (bodyRow.children.length > 1) {
+                bodyRow.removeChild(bodyRow.lastChild);
+            }
+
+            const totalHeightPx = slotCount * ROW_HEIGHT_PX;
+
+            visibleGridDates.forEach(dateStr => {
+                const dt = parseYMD(dateStr);
+                const isWeekend = dt.getDay() === 0 || dt.getDay() === 6;
+
+                const dayCol = document.createElement('div');
+                dayCol.className = `relative border-r border-slate-200 last:border-r-0 cursor-crosshair ${isWeekend ? 'bg-amber-50/15' : 'bg-white'}`;
+                dayCol.style.height = `${totalHeightPx}px`;
+                dayCol.dataset.dateStr = dateStr;
+
+                for (let s = 0; s < slotCount; s++) {
+                    const slotStartMin = START_MINUTES + s * VISUAL_GRID_STEP;
+                    const isHalfHour = slotStartMin % 60 !== 0;
+
+                    const slotCell = document.createElement('div');
+                    slotCell.style.height = `${ROW_HEIGHT_PX}px`;
+                    slotCell.className = `time-slot-cell pointer-events-none ${isHalfHour ? 'half-hour' : ''}`;
+                    dayCol.appendChild(slotCell);
+                }
+
+                // 桌面端鼠标按下划选
+                dayCol.addEventListener('mousedown', (e) => {
+                    if (e.button !== 0) return;
+                    const rect = dayCol.getBoundingClientRect();
+                    const relY = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
+                    const clickedMin = yOffsetToSnappedMinutes(relY, rect.height);
+                    startDragCreate(dateStr, dayCol, clickedMin, e.clientX, e.clientY);
+                });
+
+                // 手机端长按触摸划选
+                let touchHoldTimer = null;
+                let touchStartX = 0;
+                let touchStartY = 0;
+
+                dayCol.addEventListener('touchstart', (e) => {
+                    if (e.touches.length !== 1) return;
+                    const touch = e.touches[0];
+                    touchStartX = touch.clientX;
+                    touchStartY = touch.clientY;
+
+                    touchHoldTimer = setTimeout(() => {
+                        if (navigator.vibrate) navigator.vibrate(25);
+                        const rect = dayCol.getBoundingClientRect();
+                        const relY = Math.max(0, Math.min(rect.height, touchStartY - rect.top));
+                        const clickedMin = yOffsetToSnappedMinutes(relY, rect.height);
+                        startDragCreate(dateStr, dayCol, clickedMin, touchStartX, touchStartY);
+                    }, 220);
+                }, { passive: true });
+
+                dayCol.addEventListener('touchmove', (e) => {
+                    if (!dragState.mode && touchHoldTimer) {
+                        const touch = e.touches[0];
+                        if (Math.abs(touch.clientY - touchStartY) > 10 || Math.abs(touch.clientX - touchStartX) > 10) {
+                            clearTimeout(touchHoldTimer);
+                            touchHoldTimer = null;
+                        }
+                    }
+                }, { passive: true });
+
+                dayCol.addEventListener('touchend', () => {
+                    if (touchHoldTimer) {
+                        clearTimeout(touchHoldTimer);
+                        touchHoldTimer = null;
+                    }
+                }, { passive: true });
+
+                const dayClasses = appState.classes.filter(c => c.dateStr === dateStr);
+                dayClasses.forEach(cls => {
+                    const card = createClassCardElement(cls, dayCol);
+                    dayCol.appendChild(card);
+                });
+
+                bodyRow.appendChild(dayCol);
+            });
+
+            updateStatsSummary(allDatesList);
+        }
+
+        function yOffsetToSnappedMinutes(relY, colHeightPx) {
+            const rawMinutesFromStart = (relY / colHeightPx) * TOTAL_MINUTES;
+            const snappedFromStart = Math.round(rawMinutesFromStart / SNAP_STEP) * SNAP_STEP;
+            const absoluteMin = START_MINUTES + snappedFromStart;
+            return Math.max(START_MINUTES, Math.min(END_MINUTES, absoluteMin));
+        }
+
+        function createClassCardElement(cls, dayColEl) {
+            const theme = SUBJECT_THEMES[cls.subject] || SUBJECT_THEMES['数学'];
+            const topPx = ((cls.startMin - START_MINUTES) / VISUAL_GRID_STEP) * ROW_HEIGHT_PX;
+            const heightPx = Math.max(((cls.endMin - cls.startMin) / VISUAL_GRID_STEP) * ROW_HEIGHT_PX, 28);
+            const durationMins = cls.endMin - cls.startMin;
+            const durationHours = (durationMins / 60).toFixed(2).replace(/\.?0+$/, '');
+
+            const card = document.createElement('div');
+            card.dataset.classId = cls.id;
+            card.style.top = `${topPx + 1}px`;
+            card.style.height = `${heightPx - 2}px`;
+            card.style.backgroundColor = theme.bg;
+            card.style.borderLeft = `4px solid ${theme.border}`;
+            card.style.borderTop = `1px solid ${theme.border}38`;
+            card.style.borderRight = `1px solid ${theme.border}38`;
+            card.style.borderBottom = `1px solid ${theme.border}38`;
+
+            card.className = 'schedule-card-hover absolute left-1.5 right-1.5 rounded-lg px-2.5 py-1.5 shadow-xs cursor-pointer transition-shadow hover:shadow-md hover:z-20 flex flex-col justify-between';
+
+            card.addEventListener('mousedown', (e) => e.stopPropagation());
+            card.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
+            card.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openEditModal(cls.id);
+            });
+
+            const timeRangeText = `${minutesToTimeStr(cls.startMin)} - ${minutesToTimeStr(cls.endMin)}`;
+            const isCompact = heightPx < 64;
+
+            if (isCompact) {
+                card.innerHTML = `
+                    <div class="flex items-center justify-between gap-1.5" style="line-height: 1.35;">
+                        <span class="font-extrabold text-xs" style="color:${theme.text}">${cls.subject} · ${cls.teacher}</span>
+                        <span class="text-[11px] font-bold shrink-0" style="color:${theme.subText}">${timeRangeText}</span>
+                    </div>
+                `;
+            } else {
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between gap-1.5 mb-1">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-black text-white tracking-wide" style="background-color:${theme.badgeBg}; line-height: 1.25;">
+                                ${cls.subject}
+                            </span>
+                            <span class="inline-flex items-center text-[11px] font-bold px-1.5 py-0.5 rounded bg-white/85" style="color:${theme.text}; line-height: 1.25;">
+                                ${durationHours}h
+                            </span>
+                        </div>
+                        <div class="text-xs sm:text-[13px] font-extrabold tracking-tight" style="color:${theme.text}; line-height: 1.35;">
+                            ${timeRangeText}
+                        </div>
+                    </div>
+                    <div class="mt-auto pt-1 flex flex-wrap items-center justify-between gap-1 text-[11px] font-bold" style="color:${theme.subText}; line-height: 1.35;">
+                        <span class="whitespace-nowrap">👨‍🏫 ${cls.teacher}</span>
+                        ${cls.note ? `<span class="text-[10px] font-semibold bg-white/85 px-1.5 py-0.5 rounded break-words" style="line-height: 1.3;">${cls.note}</span>` : ''}
+                    </div>
+                `;
+            }
+
+            const resizeHandle = document.createElement('div');
+            resizeHandle.className = 'resize-handle-bottom hide-on-export';
+            resizeHandle.title = '按住上下拖动调整结束时间（5分钟刻度）';
+            resizeHandle.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+                startDragResize(cls, dayColEl, card, e.clientX, e.clientY);
+            });
+            resizeHandle.addEventListener('touchstart', (e) => {
+                e.stopPropagation();
+                if (e.touches.length === 1) {
+                    const t = e.touches[0];
+                    startDragResize(cls, dayColEl, card, t.clientX, t.clientY);
+                }
+            }, { passive: true });
+            card.appendChild(resizeHandle);
+
+            return card;
+        }
+
+        function startDragCreate(dateStr, colEl, clickedMin, clientX, clientY) {
+            const anchorMin = Math.min(END_MINUTES - SNAP_STEP, clickedMin);
+            const initialEnd = Math.min(END_MINUTES, anchorMin + 30);
+
+            const overlay = document.createElement('div');
+            overlay.className = 'drag-selection-overlay';
+            colEl.appendChild(overlay);
+
+            dragState = {
+                mode: 'create',
+                dateStr: dateStr,
+                colEl: colEl,
+                anchorMin: anchorMin,
+                currentMin: initialEnd,
+                overlayEl: overlay,
+                resizeClassId: null,
+                resizeOriginalStartMin: null
+            };
+
+            renderDragOverlay(clientX, clientY);
+        }
+
+        function startDragResize(cls, colEl, cardEl, clientX, clientY) {
+            dragState = {
+                mode: 'resize',
+                dateStr: cls.dateStr,
+                colEl: colEl,
+                anchorMin: cls.startMin,
+                currentMin: cls.endMin,
+                overlayEl: cardEl,
+                resizeClassId: cls.id,
+                resizeOriginalStartMin: cls.startMin
+            };
+            updateTooltipOnly(cls.startMin, cls.endMin, clientX, clientY);
+        }
+
+        function renderDragOverlay(clientX, clientY) {
+            if (!dragState.mode || !dragState.overlayEl) return;
+
+            if (dragState.mode === 'create') {
+                const startM = Math.min(dragState.anchorMin, dragState.currentMin);
+                let endM = Math.max(dragState.anchorMin, dragState.currentMin);
+                if (endM === startM) endM = Math.min(END_MINUTES, startM + SNAP_STEP);
+
+                const topPx = ((startM - START_MINUTES) / VISUAL_GRID_STEP) * ROW_HEIGHT_PX;
+                const heightPx = Math.max(((endM - startM) / VISUAL_GRID_STEP) * ROW_HEIGHT_PX, 14);
+
+                dragState.overlayEl.style.top = `${topPx}px`;
+                dragState.overlayEl.style.height = `${heightPx}px`;
+                dragState.overlayEl.textContent = heightPx >= 24 ? `${minutesToTimeStr(startM)} - ${minutesToTimeStr(endM)}` : '';
+
+                updateTooltipOnly(startM, endM, clientX, clientY);
+            } else if (dragState.mode === 'resize') {
+                const startM = dragState.resizeOriginalStartMin;
+                const endM = Math.max(startM + SNAP_STEP, dragState.currentMin);
+                const heightPx = Math.max(((endM - startM) / VISUAL_GRID_STEP) * ROW_HEIGHT_PX, 14);
+                dragState.overlayEl.style.height = `${heightPx - 2}px`;
+
+                updateTooltipOnly(startM, endM, clientX, clientY);
+            }
+        }
+
+        function updateTooltipOnly(startM, endM, clientX, clientY) {
+            const tooltip = document.getElementById('dragTooltip');
+            const durLabel = formatDurationLabel(endM - startM);
+            tooltip.textContent = `${minutesToTimeStr(startM)} - ${minutesToTimeStr(endM)} (${durLabel})`;
+            const safeX = Math.min(window.innerWidth - 190, Math.max(12, clientX - 60));
+            const safeY = Math.max(16, clientY - 46);
+            tooltip.style.left = `${safeX}px`;
+            tooltip.style.top = `${safeY}px`;
+            tooltip.classList.remove('hidden');
+        }
+
+        function setupGlobalPointerHandlers() {
+            const handleMove = (clientX, clientY) => {
+                if (!dragState.mode || !dragState.colEl) return;
+                const rect = dragState.colEl.getBoundingClientRect();
+                const relY = Math.max(0, Math.min(rect.height, clientY - rect.top));
+                dragState.currentMin = yOffsetToSnappedMinutes(relY, rect.height);
+                renderDragOverlay(clientX, clientY);
+            };
+
+            const handleEnd = () => {
+                if (!dragState.mode) return;
+                document.getElementById('dragTooltip').classList.add('hidden');
+
+                if (dragState.mode === 'create') {
+                    const startM = Math.min(dragState.anchorMin, dragState.currentMin);
+                    let endM = Math.max(dragState.anchorMin, dragState.currentMin);
+                    if (endM <= startM) endM = Math.min(END_MINUTES, startM + 60);
+
+                    const targetDate = dragState.dateStr;
+                    if (dragState.overlayEl) dragState.overlayEl.remove();
+                    dragState.mode = null;
+
+                    openAddModal(targetDate, startM, endM);
+                } else if (dragState.mode === 'resize') {
+                    const classId = dragState.resizeClassId;
+                    const startM = dragState.resizeOriginalStartMin;
+                    const newEndM = Math.max(startM + SNAP_STEP, dragState.currentMin);
+                    dragState.mode = null;
+
+                    const cls = appState.classes.find(c => c.id === classId);
+                    if (cls) {
+                        const conflict = appState.classes.find(other =>
+                            other.id !== cls.id &&
+                            other.dateStr === cls.dateStr &&
+                            Math.max(other.startMin, startM) < Math.min(other.endMin, newEndM)
+                        );
+                        if (conflict) {
+                            showToast(`时间冲突：与「${conflict.subject}」重叠，已恢复原时长`);
+                        } else {
+                            cls.endMin = newEndM;
+                            saveToLocalStorage();
+                            showToast(`✓ 已调整为 ${minutesToTimeStr(startM)} - ${minutesToTimeStr(newEndM)}`);
+                        }
+                    }
+                    renderScheduleGrid();
+                }
+            };
+
+            window.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
+            window.addEventListener('mouseup', handleEnd);
+
+            window.addEventListener('touchmove', (e) => {
+                if (!dragState.mode) return;
+                if (e.cancelable) e.preventDefault();
+                const t = e.touches[0];
+                handleMove(t.clientX, t.clientY);
+            }, { passive: false });
+
+            window.addEventListener('touchend', handleEnd);
+        }
+
+        function populateModalDayDropdown(selectedDateStr) {
+            const daySel = document.getElementById('modalDayIndex');
+            daySel.innerHTML = '';
+            for (let i = 0; i < appState.dayCount; i++) {
+                const dStr = addDaysToYMD(appState.startDate, i);
+                const dt = parseYMD(dStr);
+                const label = `${dt.getMonth() + 1}月${dt.getDate()}日 (${WEEKDAY_NAMES[dt.getDay()]})`;
+                const opt = new Option(label, dStr);
+                daySel.add(opt);
+            }
+            if (selectedDateStr && Array.from(daySel.options).some(o => o.value === selectedDateStr)) {
+                daySel.value = selectedDateStr;
+            }
+        }
+
+        function openAddModal(dateStr = null, startMin = 9 * 60, endMin = 11 * 60) {
+            document.getElementById('modalTitle').textContent = '新增排课安排';
+            document.getElementById('editClassId').value = '';
+            document.getElementById('deleteClassBtn').classList.add('hidden');
+            document.getElementById('modalErrorMsg').classList.add('hidden');
+
+            const defaultDate = dateStr || (isMobileViewport() ? appState.selectedMobileDate : appState.startDate);
+            populateModalDayDropdown(defaultDate);
+
+            const safeStart = Math.max(START_MINUTES, Math.min(END_MINUTES - SNAP_STEP, startMin));
+            const safeEnd = Math.max(safeStart + SNAP_STEP, Math.min(END_MINUTES, endMin));
+
+            setModalTimePickers(safeStart, safeEnd);
+
+            const modal = document.getElementById('classModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function openEditModal(classId) {
+            const cls = appState.classes.find(c => c.id === classId);
+            if (!cls) return;
+
+            document.getElementById('modalTitle').textContent = '编辑排课详情';
+            document.getElementById('editClassId').value = cls.id;
+            document.getElementById('deleteClassBtn').classList.remove('hidden');
+            document.getElementById('modalErrorMsg').classList.add('hidden');
+
+            populateModalDayDropdown(cls.dateStr);
+            setModalTimePickers(cls.startMin, cls.endMin);
+            selectSubjectInModal(cls.subject);
+            document.getElementById('modalTeacher').value = cls.teacher;
+            document.getElementById('modalNote').value = cls.note || '';
+
+            const modal = document.getElementById('classModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeClassModal() {
+            const modal = document.getElementById('classModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function setDurationMinutes(mins) {
+            const { startMin } = getModalTimeValues();
+            const targetE = Math.min(END_MINUTES, startMin + mins);
+            setModalTimePickers(startMin, targetE);
+        }
+
+        function saveClassSubmit(event) {
+            event.preventDefault();
+            const errBox = document.getElementById('modalErrorMsg');
+            errBox.classList.add('hidden');
+
+            const editId = document.getElementById('editClassId').value;
+            const dateStr = document.getElementById('modalDayIndex').value;
+            const { startMin, endMin } = getModalTimeValues();
+            const subject = document.getElementById('modalSubject').value;
+            const teacher = document.getElementById('modalTeacher').value.trim();
+            const note = document.getElementById('modalNote').value.trim();
+
+            if (endMin <= startMin) {
+                errBox.textContent = '结束时间必须晚于开始时间，请重新选择！';
+                errBox.classList.remove('hidden');
+                return;
+            }
+
+            if (endMin > END_MINUTES) {
+                errBox.textContent = '结束时间不能超过 21:30！';
+                errBox.classList.remove('hidden');
+                return;
+            }
+
+            const conflict = appState.classes.find(c => {
+                if (c.id === editId) return false;
+                if (c.dateStr !== dateStr) return false;
+                return Math.max(c.startMin, startMin) < Math.min(c.endMin, endMin);
+            });
+
+            if (conflict) {
+                errBox.textContent = `时间冲突：该时段已安排「${conflict.subject} (${minutesToTimeStr(conflict.startMin)}-${minutesToTimeStr(conflict.endMin)})」，请调整时间。`;
+                errBox.classList.remove('hidden');
+                return;
+            }
+
+            if (editId) {
+                const idx = appState.classes.findIndex(c => c.id === editId);
+                if (idx !== -1) {
+                    appState.classes[idx] = { id: editId, dateStr, startMin, endMin, subject, teacher, note };
+                }
+                showToast('✓ 课程已更新');
+            } else {
+                const newClass = {
+                    id: 'cls_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                    dateStr,
+                    startMin,
+                    endMin,
+                    subject,
+                    teacher,
+                    note
+                };
+                appState.classes.push(newClass);
+                appState.selectedMobileDate = dateStr;
+                showToast('✓ 新课程已加入课表');
+            }
+
+            saveToLocalStorage();
+            renderScheduleGrid();
+            closeClassModal();
+        }
+
+        function deleteCurrentClass() {
+            const editId = document.getElementById('editClassId').value;
+            if (!editId) return;
+            appState.classes = appState.classes.filter(c => c.id !== editId);
+            saveToLocalStorage();
+            renderScheduleGrid();
+            closeClassModal();
+            showToast('已删除该节课程');
+        }
+
+        function updateStatsSummary(visibleDatesList) {
+            const visibleSet = new Set(visibleDatesList);
+            const activeClasses = appState.classes.filter(c => visibleSet.has(c.dateStr));
+            const totalCount = activeClasses.length;
+            const totalMins = activeClasses.reduce((acc, c) => acc + (c.endMin - c.startMin), 0);
+            const totalHours = (totalMins / 60).toFixed(1).replace(/\.0$/, '');
+
+            document.getElementById('totalStatsBadge').textContent = `共 ${totalCount} 节课 · ${totalHours} 小时`;
+            document.getElementById('exportSummaryText').textContent = `本周期总计：${totalCount} 节课（共 ${totalHours} 课时）`;
+        }
+
+        /**
+         * 原生 HTML5 Canvas 2D 引擎绘制手机竖屏高清家长课表图（文字100%精准居中零偏移）
+         */
+        function renderMobilePosterOnCanvas(scale = 3) {
+            const datesList = [];
+            for (let i = 0; i < appState.dayCount; i++) {
+                datesList.push(addDaysToYMD(appState.startDate, i));
+            }
+            const visibleSet = new Set(datesList);
+            const activeClasses = appState.classes.filter(c => visibleSet.has(c.dateStr));
+            const totalCount = activeClasses.length;
+            const totalMins = activeClasses.reduce((acc, c) => acc + (c.endMin - c.startMin), 0);
+            const totalHours = (totalMins / 60).toFixed(1).replace(/\.0$/, '');
+
+            const today = new Date();
+            const stamp = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
+
+            const W = 440;
+            const fontStack = '"Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif';
+
+            const measureCanvas = document.createElement('canvas');
+            const mCtx = measureCanvas.getContext('2d');
+
+            function wrapTextLines(ctx, text, maxWidth) {
+                const chars = Array.from(String(text || ''));
+                const lines = [];
+                let line = '';
+                for (let ch of chars) {
+                    const test = line + ch;
+                    if (ctx.measureText(test).width > maxWidth && line.length > 0) {
+                        lines.push(line);
+                        line = ch;
+                    } else {
+                        line = test;
+                    }
+                }
+                if (line) lines.push(line);
+                return lines.length ? lines : [''];
+            }
+
+            const usedSubjects = Array.from(new Set(activeClasses.map(c => c.subject)));
+            const legendSubjects = usedSubjects.length > 0 ? usedSubjects : Object.keys(SUBJECT_THEMES);
+
+            mCtx.font = `600 12px ${fontStack}`;
+            let lx = 22;
+            let legendRows = 1;
+            legendSubjects.forEach(name => {
+                const bw = mCtx.measureText(name).width + 32;
+                if (lx + bw > W - 22) {
+                    lx = 22;
+                    legendRows++;
+                }
+                lx += bw + 6;
+            });
+
+            mCtx.font = `900 22px ${fontStack}`;
+            const titleLines = wrapTextLines(mCtx, appState.headerTitle || '学途卫士 · 专属VIP排课表', W - 44);
+            const titleHeight = titleLines.length * 30;
+
+            const headerHeight = 24 + 24 + 12 + titleHeight + 14 + 82 + 14 + (legendRows * 30) + 8 + 34 + 20;
+
+            let bodyHeight = 16;
+            datesList.forEach(dateStr => {
+                const dayClasses = activeClasses.filter(c => c.dateStr === dateStr);
+                if (dayClasses.length === 0) {
+                    bodyHeight += 14 + 36 + 44 + 14 + 12;
+                } else {
+                    bodyHeight += 14 + 36 + (dayClasses.length * 76) + ((dayClasses.length - 1) * 8) + 14 + 12;
+                }
+            });
+            bodyHeight += 6;
+
+            mCtx.font = `500 12.5px ${fontStack}`;
+            const noteLines = wrapTextLines(mCtx, appState.footerNote || '', W - 114);
+            const noteBlockHeight = Math.max(24, noteLines.length * 20);
+            const footerHeight = 18 + noteBlockHeight + 14 + 32 + 18;
+
+            const H = Math.ceil(headerHeight + bodyHeight + footerHeight);
+
+            const canvas = document.createElement('canvas');
+            canvas.width = W * scale;
+            canvas.height = H * scale;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(scale, scale);
+
+            function roundRect(x, y, w, h, r) {
+                ctx.beginPath();
+                ctx.moveTo(x + r, y);
+                ctx.arcTo(x + w, y, x + w, y + h, r);
+                ctx.arcTo(x + w, y + h, x, y + h, r);
+                ctx.arcTo(x, y + h, x, y, r);
+                ctx.arcTo(x, y, x + w, y, r);
+                ctx.closePath();
+            }
+
+            function drawPill(x, y, h, text, bgColor, textColor, fontStr, padX = 10, radius = 6) {
+                ctx.font = fontStr;
+                const tw = ctx.measureText(text).width;
+                const w = tw + padX * 2;
+                roundRect(x, y, w, h, radius);
+                ctx.fillStyle = bgColor;
+                ctx.fill();
+
+                ctx.fillStyle = textColor;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(text, x + w / 2, y + h / 2 + 0.5);
+                return w;
+            }
+
+            ctx.fillStyle = '#F1F5F9';
+            ctx.fillRect(0, 0, W, H);
+
+            const grad = ctx.createLinearGradient(0, 0, W, headerHeight);
+            grad.addColorStop(0, '#08182B');
+            grad.addColorStop(0.65, '#11294D');
+            grad.addColorStop(1, '#08182B');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, headerHeight);
+
+            let curY = 24;
+            const brandW = drawPill(22, curY, 22, 'XUETU GUARD', '#E2C08D', '#050F1C', `900 11px ${fontStack}`, 8, 5);
+            ctx.font = `600 12px ${fontStack}`;
+            ctx.fillStyle = '#EDD5AE';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('个性化高分定制教学方案', 22 + brandW + 10, curY + 11.5);
+
+            curY += 34;
+            ctx.font = `900 22px ${fontStack}`;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            titleLines.forEach((line, idx) => {
+                ctx.fillText(line, 22, curY + idx * 30 + 15);
+            });
+            curY += titleHeight + 14;
+
+            roundRect(22, curY, W - 44, 82, 12);
+            ctx.fillStyle = 'rgba(5, 15, 28, 0.68)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(226, 192, 141, 0.35)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            ctx.font = `600 12px ${fontStack}`;
+            ctx.fillStyle = '#E2C08D';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('学员 / 班级', 36, curY + 21);
+
+            ctx.font = `800 14.5px ${fontStack}`;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = 'right';
+            ctx.fillText(appState.studentName || '', W - 36, curY + 21);
+
+            ctx.beginPath();
+            ctx.moveTo(36, curY + 41);
+            ctx.lineTo(W - 36, curY + 41);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.stroke();
+
+            ctx.font = `600 12px ${fontStack}`;
+            ctx.fillStyle = '#E2C08D';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('排课周期', 36, curY + 61);
+
+            ctx.font = `800 14px ${fontStack}`;
+            ctx.fillStyle = '#EDD5AE';
+            ctx.textAlign = 'right';
+            ctx.fillText(appState.dateRangeSubtitle || '', W - 36, curY + 61);
+
+            curY += 82 + 14;
+
+            let curX = 22;
+            legendSubjects.forEach(name => {
+                const theme = SUBJECT_THEMES[name] || SUBJECT_THEMES['数学'];
+                ctx.font = `600 12px ${fontStack}`;
+                const tw = ctx.measureText(name).width;
+                const boxW = tw + 32;
+                if (curX + boxW > W - 22) {
+                    curX = 22;
+                    curY += 30;
+                }
+                roundRect(curX, curY, boxW, 24, 6);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+                ctx.fill();
+
+                roundRect(curX + 9, curY + 8, 8, 8, 2);
+                ctx.fillStyle = theme.dot;
+                ctx.fill();
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(name, curX + 22, curY + 12.5);
+
+                curX += boxW + 6;
+            });
+
+            curY += 32;
+
+            roundRect(22, curY, W - 44, 34, 8);
+            ctx.fillStyle = 'rgba(226, 192, 141, 0.16)';
+            ctx.fill();
+            ctx.font = `800 13px ${fontStack}`;
+            ctx.fillStyle = '#EDD5AE';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`本周期总计：${totalCount} 节课（共 ${totalHours} 课时）`, W / 2, curY + 17.5);
+
+            curY = headerHeight + 16;
+
+            datesList.forEach(dateStr => {
+                const dt = parseYMD(dateStr);
+                const weekday = WEEKDAY_NAMES[dt.getDay()];
+                const isWeekend = dt.getDay() === 0 || dt.getDay() === 6;
+                const monthDay = `${dt.getMonth() + 1}月${dt.getDate()}日`;
+
+                const dayClasses = activeClasses
+                    .filter(c => c.dateStr === dateStr)
+                    .sort((a, b) => a.startMin - b.startMin);
+
+                const dayTotalMins = dayClasses.reduce((acc, c) => acc + (c.endMin - c.startMin), 0);
+                const dayTotalHours = (dayTotalMins / 60).toFixed(1).replace(/\.0$/, '');
+
+                const cardH = dayClasses.length === 0
+                    ? 14 + 36 + 44 + 14
+                    : 14 + 36 + (dayClasses.length * 76) + ((dayClasses.length - 1) * 8) + 14;
+
+                roundRect(16, curY, W - 32, cardH, 14);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fill();
+                ctx.strokeStyle = '#E2E8F0';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                const wkW = drawPill(
+                    32,
+                    curY + 14,
+                    24,
+                    weekday,
+                    isWeekend ? '#FEF3C7' : '#08182B',
+                    isWeekend ? '#B45309' : '#EDD5AE',
+                    `800 12.5px ${fontStack}`,
+                    9,
+                    6
+                );
+
+                ctx.font = `900 16px ${fontStack}`;
+                ctx.fillStyle = '#08182B';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(monthDay, 32 + wkW + 10, curY + 26.5);
+
+                ctx.font = `700 12px ${fontStack}`;
+                ctx.fillStyle = dayClasses.length > 0 ? '#2C55A0' : '#94A3B8';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(
+                    dayClasses.length > 0 ? `共 ${dayClasses.length} 节 · ${dayTotalHours} 小时` : '休息日',
+                    W - 32,
+                    curY + 26.5
+                );
+
+                ctx.beginPath();
+                ctx.moveTo(32, curY + 46);
+                ctx.lineTo(W - 32, curY + 46);
+                ctx.strokeStyle = '#F1F5F9';
+                ctx.stroke();
+
+                let innerY = curY + 54;
+
+                if (dayClasses.length === 0) {
+                    roundRect(32, innerY, W - 64, 40, 10);
+                    ctx.fillStyle = '#F8FAFC';
+                    ctx.fill();
+                    ctx.setLineDash([4, 4]);
+                    ctx.strokeStyle = '#CBD5E1';
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+
+                    ctx.font = `500 13px ${fontStack}`;
+                    ctx.fillStyle = '#94A3B8';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('当日无排课 · 自主复习巩固', W / 2, innerY + 20.5);
+                } else {
+                    dayClasses.forEach(cls => {
+                        const theme = SUBJECT_THEMES[cls.subject] || SUBJECT_THEMES['数学'];
+                        const timeRange = `${minutesToTimeStr(cls.startMin)} - ${minutesToTimeStr(cls.endMin)}`;
+                        const durMins = cls.endMin - cls.startMin;
+                        const durHours = (durMins / 60).toFixed(2).replace(/\.?0+$/, '');
+
+                        roundRect(32, innerY, W - 64, 76, 12);
+                        ctx.fillStyle = theme.bg;
+                        ctx.fill();
+                        ctx.strokeStyle = theme.border + '44';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+
+                        ctx.save();
+                        roundRect(32, innerY, W - 64, 76, 12);
+                        ctx.clip();
+                        ctx.fillStyle = theme.border;
+                        ctx.fillRect(32, innerY, 5, 76);
+                        ctx.restore();
+
+                        const subjW = drawPill(46, innerY + 11, 24, cls.subject, theme.badgeBg, '#FFFFFF', `800 12.5px ${fontStack}`, 10, 6);
+
+                        ctx.font = `900 16px ${fontStack}`;
+                        ctx.fillStyle = theme.text;
+                        ctx.textAlign = 'left';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(timeRange, 46 + subjW + 10, innerY + 23.5);
+
+                        const durText = `${durHours}课时`;
+                        ctx.font = `800 12px ${fontStack}`;
+                        const durPillW = ctx.measureText(durText).width + 16;
+                        drawPill(W - 44 - durPillW, innerY + 12, 22, durText, 'rgba(255,255,255,0.92)', theme.text, `800 12px ${fontStack}`, 8, 6);
+
+                        ctx.font = `700 13px ${fontStack}`;
+                        ctx.fillStyle = theme.subText;
+                        ctx.textAlign = 'left';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(`授课：${cls.teacher}`, 46, innerY + 54);
+
+                        if (cls.note) {
+                            ctx.font = `600 12px ${fontStack}`;
+                            const notePillW = ctx.measureText(cls.note).width + 16;
+                            drawPill(W - 44 - notePillW, innerY + 43, 22, cls.note, 'rgba(255,255,255,0.9)', theme.text, `600 12px ${fontStack}`, 8, 5);
+                        }
+
+                        innerY += 84;
+                    });
+                }
+
+                curY += cardH + 12;
+            });
+
+            const footerY = headerHeight + bodyHeight;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, footerY, W, footerHeight);
+
+            ctx.beginPath();
+            ctx.moveTo(0, footerY);
+            ctx.lineTo(W, footerY);
+            ctx.strokeStyle = '#E2E8F0';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            drawPill(20, footerY + 17, 22, '温馨提示', '#08182B', '#E2C08D', `800 11px ${fontStack}`, 8, 5);
+
+            ctx.font = `500 12.5px ${fontStack}`;
+            ctx.fillStyle = '#475569';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            noteLines.forEach((line, idx) => {
+                ctx.fillText(line, 92, footerY + 28 + idx * 20);
+            });
+
+            const signY = footerY + 18 + noteBlockHeight + 14;
+            ctx.save();
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(20, signY);
+            ctx.lineTo(W - 20, signY);
+            ctx.strokeStyle = '#E2E8F0';
+            ctx.stroke();
+            ctx.restore();
+
+            ctx.font = `700 12px ${fontStack}`;
+            ctx.fillStyle = '#08182B';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('学途卫士教务中心制表', 20, signY + 18);
+
+            ctx.font = `500 12px ${fontStack}`;
+            ctx.fillStyle = '#64748B';
+            ctx.textAlign = 'right';
+            ctx.fillText(`制表日期：${stamp}`, W - 20, signY + 18);
+
+            return canvas;
+        }
+
+        async function exportScheduleImage(mode = 'mobile') {
+            showToast('正在渲染超清课表图，请稍候...');
+
+            if (document.activeElement && document.activeElement.blur) {
+                document.activeElement.blur();
+            }
+
+            const swMobile = document.getElementById('switchMobilePreviewBtn');
+            const swDesktop = document.getElementById('switchDesktopPreviewBtn');
+            if (mode === 'mobile') {
+                swMobile.className = 'px-2.5 py-1 rounded-md font-bold transition bg-champagne-400 text-navy-950';
+                swDesktop.className = 'px-2.5 py-1 rounded-md font-bold transition text-slate-300 hover:text-white';
+            } else {
+                swDesktop.className = 'px-2.5 py-1 rounded-md font-bold transition bg-champagne-400 text-navy-950';
+                swMobile.className = 'px-2.5 py-1 rounded-md font-bold transition text-slate-300 hover:text-white';
+            }
+
+            const desktopTarget = document.getElementById('exportTarget');
+            const prevStyle = desktopTarget.getAttribute('style') || '';
+
+            try {
+                if (document.fonts && document.fonts.ready) {
+                    await document.fonts.ready;
+                }
+
+                let canvas = null;
+
+                if (mode === 'mobile') {
+                    canvas = renderMobilePosterOnCanvas(3);
+                } else {
+                    desktopTarget.classList.add('export-mode');
+                    if (isMobileViewport()) {
+                        desktopTarget.style.width = '1060px';
+                        desktopTarget.style.minWidth = '1060px';
+                        renderFullDesktopGridForCapture();
+                    }
+                    await new Promise(r => setTimeout(r, 100));
+
+                    const exactWidth = desktopTarget.scrollWidth;
+                    const exactHeight = desktopTarget.scrollHeight;
+                    canvas = await html2canvas(desktopTarget, {
+                        scale: 2.5,
+                        useCORS: true,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        width: exactWidth,
+                        height: exactHeight,
+                        windowWidth: Math.max(exactWidth + 40, 1120),
+                        windowHeight: exactHeight + 40
+                    });
+                }
+
+                const dataUrl = canvas.toDataURL('image/png', 1.0);
+                const imgEl = document.getElementById('generatedScheduleImg');
+                imgEl.src = dataUrl;
+                imgEl.style.maxWidth = mode === 'mobile' ? '400px' : '100%';
+
+                const downloadLink = document.getElementById('downloadImageLink');
+                const safeStudent = (appState.studentName || '学员').replace(/[\\/:*?"<>|]/g, '_');
+                const suffix = mode === 'mobile' ? '手机版' : '全览版';
+                downloadLink.download = `学途卫士_排课表_${safeStudent}_${suffix}.png`;
+                downloadLink.href = dataUrl;
+
+                const modal = document.getElementById('imagePreviewModal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } catch (err) {
+                console.error('导出图片失败:', err);
+                showToast('生成图片遇到问题，请刷新重试');
+            } finally {
+                desktopTarget.classList.remove('export-mode');
+                desktopTarget.setAttribute('style', prevStyle);
+                if (mode === 'desktop') {
+                    renderScheduleGrid();
+                }
+            }
+        }
+
+        function renderFullDesktopGridForCapture() {
+            const totalDays = appState.dayCount;
+            const allDatesList = [];
+            for (let i = 0; i < totalDays; i++) {
+                allDatesList.push(addDaysToYMD(appState.startDate, i));
+            }
+            const colTemplate = `76px repeat(${totalDays}, minmax(120px, 1fr))`;
+            const headerRow = document.getElementById('gridHeaderRow');
+            const bodyRow = document.getElementById('gridBodyRow');
+            headerRow.style.gridTemplateColumns = colTemplate;
+            bodyRow.style.gridTemplateColumns = colTemplate;
+
+            while (headerRow.children.length > 1) headerRow.removeChild(headerRow.lastChild);
+            while (bodyRow.children.length > 1) bodyRow.removeChild(bodyRow.lastChild);
+
+            const slotCount = TOTAL_MINUTES / VISUAL_GRID_STEP;
+            const totalHeightPx = slotCount * ROW_HEIGHT_PX;
+
+            allDatesList.forEach(dateStr => {
+                const dt = parseYMD(dateStr);
+                const weekday = WEEKDAY_NAMES[dt.getDay()];
+                const isWeekend = dt.getDay() === 0 || dt.getDay() === 6;
+                const monthDay = `${dt.getMonth() + 1}月${dt.getDate()}日`;
+
+                const dayHeader = document.createElement('div');
+                dayHeader.className = `py-3 px-2 text-center border-r border-slate-200 last:border-r-0 flex flex-col items-center justify-center ${isWeekend ? 'bg-amber-50/50' : ''}`;
+                dayHeader.innerHTML = `<span class="text-xs font-extrabold ${isWeekend ? 'text-amber-700' : 'text-navy-900'}">${weekday}</span><span class="text-[11px] font-semibold text-slate-500">${monthDay}</span>`;
+                headerRow.appendChild(dayHeader);
+
+                const dayCol = document.createElement('div');
+                dayCol.className = `relative border-r border-slate-200 last:border-r-0 ${isWeekend ? 'bg-amber-50/15' : 'bg-white'}`;
+                dayCol.style.height = `${totalHeightPx}px`;
+                for (let s = 0; s < slotCount; s++) {
+                    const slotStartMin = START_MINUTES + s * VISUAL_GRID_STEP;
+                    const slotCell = document.createElement('div');
+                    slotCell.style.height = `${ROW_HEIGHT_PX}px`;
+                    slotCell.className = `time-slot-cell ${slotStartMin % 60 !== 0 ? 'half-hour' : ''}`;
+                    dayCol.appendChild(slotCell);
+                }
+                appState.classes.filter(c => c.dateStr === dateStr).forEach(cls => {
+                    dayCol.appendChild(createClassCardElement(cls, dayCol));
+                });
+                bodyRow.appendChild(dayCol);
+            });
+        }
+
+        function closePreviewModal() {
+            const modal = document.getElementById('imagePreviewModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function copyImageToClipboard() {
+            const imgEl = document.getElementById('generatedScheduleImg');
+            try {
+                const res = await fetch(imgEl.src);
+                const blob = await res.blob();
+                await navigator.clipboard.write([
+                    new ClipboardItem({ 'image/png': blob })
+                ]);
+                showToast('✓ 高清课表已复制到剪贴板！可直接粘贴发微信');
+            } catch (err) {
+                showToast('请直接在上方图片上「长按 / 右键 -> 转发或复制图片」');
+            }
+        }
+
+        function openConfirmClear() {
+            const modal = document.getElementById('confirmClearModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeConfirmClear() {
+            const modal = document.getElementById('confirmClearModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function confirmClearAll() {
+            appState.classes = [];
+            saveToLocalStorage();
+            renderScheduleGrid();
+            closeConfirmClear();
+            showToast('已清空全部排课记录');
+        }
+
+        function loadSampleSchedule() {
+            const d0 = appState.startDate;
+            const d1 = addDaysToYMD(d0, 1);
+            const d2 = addDaysToYMD(d0, 2);
+            const d3 = addDaysToYMD(d0, 3);
+            const d4 = addDaysToYMD(d0, 4);
+            const d5 = addDaysToYMD(d0, 5);
+            const d6 = addDaysToYMD(d0, 6);
+
+            appState.classes = [
+                { id: 's1', dateStr: d0, startMin: 18 * 60 + 35, endMin: 20 * 60 + 35, subject: '数学', teacher: '浩然老师', note: 'VIP 1号教室' },
+                { id: 's2', dateStr: d1, startMin: 19 * 60, endMin: 21 * 60, subject: '物理', teacher: '郭超老师', note: '力学综合突破' },
+                { id: 's3', dateStr: d2, startMin: 18 * 60 + 30, endMin: 20 * 60 + 30, subject: '英语', teacher: '林老师', note: '阅读与完形' },
+                { id: 's4', dateStr: d3, startMin: 19 * 60, endMin: 21 * 60 + 30, subject: '晚辅/自习', teacher: '学管师值班', note: '错题清零打卡' },
+                { id: 's5', dateStr: d4, startMin: 18 * 60 + 30, endMin: 20 * 60 + 30, subject: '化学', teacher: '陈老师', note: '实验专题精讲' },
+                { id: 's6', dateStr: d5, startMin: 8 * 60 + 30, endMin: 10 * 60 + 30, subject: '数学', teacher: '浩然老师', note: '函数压轴题' },
+                { id: 's7', dateStr: d5, startMin: 14 * 60 + 15, endMin: 16 * 60 + 15, subject: '物理', teacher: '郭超老师', note: '1对1查漏补缺' },
+                { id: 's8', dateStr: d6, startMin: 9 * 60, endMin: 11 * 60, subject: '语文', teacher: '王老师', note: '现代文阅读' },
+                { id: 's9', dateStr: d6, startMin: 15 * 60, endMin: 17 * 60, subject: '生物', teacher: '周老师', note: '遗传规律专题' }
+            ];
+
+            saveToLocalStorage();
+            renderScheduleGrid();
+            showToast('✓ 已加载一周典型排课示例');
+        }
+
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('xuetu_scheduler_state_v2', JSON.stringify(appState));
+            } catch (e) {
+                console.warn('LocalStorage 写入失败', e);
+            }
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const raw = localStorage.getItem('xuetu_scheduler_state_v2');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    appState = { ...appState, ...parsed };
+                } else {
+                    loadSampleSchedule();
+                }
+            } catch (e) {
+                console.warn('LocalStorage 读取失败', e);
+            }
+        }
+
+        let toastTimer = null;
+        function showToast(msg) {
+            const el = document.getElementById('toastBanner');
+            el.textContent = msg;
+            el.classList.remove('hidden');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                el.classList.add('hidden');
+            }, 3000);
+        }
+
+        window.onload = function () {
+            const today = new Date();
+            document.getElementById('generatedDateStamp').textContent =
+                `制表日期：${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
+
+            initTimeDropdowns();
+            initSubjectSelector();
+            renderHeaderLegend();
+            loadFromLocalStorage();
+            syncInputsFromState();
+            renderScheduleGrid();
+            setupGlobalPointerHandlers();
+
+            let lastIsMobile = isMobileViewport();
+            window.addEventListener('resize', () => {
+                const nowIsMobile = isMobileViewport();
+                if (nowIsMobile !== lastIsMobile) {
+                    lastIsMobile = nowIsMobile;
+                    renderScheduleGrid();
+                }
+            });
+        };
+    </script>
+</body>
+</html>
