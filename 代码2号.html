@@ -576,7 +576,7 @@
 
       <div class="form-group">
         <label class="form-label">所在班型 / 备注</label>
-        <input type="text" id="inputClassName" class="form-input" value="高二高考强化班" />
+        <input type="text" id="inputClassName" class="form-input" placeholder="选填（如：高一 / 高二 / 5人小组课）" />
       </div>
 
       <button class="btn-primary" onclick="startChallenge()">开始今日 5 句切分与直译 →</button>
@@ -874,7 +874,7 @@
       return;
     }
     state.studentName = nameInput;
-    state.className = classInput || "高中英语强化班";
+    state.className = classInput || "学途卫士学员";
     state.currentIndex = 0;
     state.rawSubmissions = [];
     state.startTime = Date.now();
