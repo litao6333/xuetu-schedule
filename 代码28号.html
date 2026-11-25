@@ -625,6 +625,7 @@
 
     <!-- 阶段 3A：学生交卷凭证页 -->
     <section id="viewStudentReceipt" class="card hidden">
+      <div class="poster-tip syncing" id="cloudSyncStatus">⏳ 正在将你的切分与直译答卷自动同步至教研老师后台，请稍候...</div>
       <div class="poster-tip">
         ✅ 已成功封存你的 5 句切分与直译答卷！<br/>请将下方【交卷答卷图】与【交卷回执码】发至微信群，等待老师一对一精批诊断。
       </div>
@@ -1857,6 +1858,167 @@
       enableTeacherMode();
     }
   })();
+
+// === XUETU_CLOUD_SYNC_START ===
+  const SUPABASE_URL = "https://db.litao1986.ccwu.cc";
+  const SUPABASE_ANON_KEY = "sb_publishable_NBhQ-TR8nlGx4A_-VeIYlw_X2IjXc5Z";
+
+  function normalizeSubmissionItem(subItem) {
+    if (Array.isArray(subItem)) {
+      return { cuts: subItem, trans: [] };
+    }
+    if (subItem && typeof subItem === "object") {
+      return { cuts: subItem.cuts || [], trans: subItem.trans || [] };
+    }
+    return { cuts: [], trans: [] };
+  }
+
+  function buildCloudRecord(payload) {
+    const cfg = (typeof QUIZ_CONFIG !== "undefined" && QUIZ_CONFIG) || { taskTitle: document.title, sentences: [] };
+    const sentences = cfg.sentences || [];
+    let totalAcc = 0;
+
+    const items = sentences.map((item, idx) => {
+      const parsed = typeof parseChunkedSentence === "function"
+        ? parseChunkedSentence(item.chunkedText || "")
+        : { words: (item.chunkedText || "").replace(/\s*\/\s*/g, " ").trim().split(/\s+/).filter(Boolean), cuts: new Set() };
+
+      const norm = normalizeSubmissionItem((payload.s || [])[idx]);
+      const userCutSet = new Set(norm.cuts);
+      const targetCutSet = parsed.cuts;
+
+      let correctCount = 0;
+      let missedCount = 0;
+      let wrongCount = 0;
+
+      targetCutSet.forEach(ci => {
+        if (userCutSet.has(ci)) correctCount++;
+        else missedCount++;
+      });
+      userCutSet.forEach(ci => {
+        if (!targetCutSet.has(ci)) wrongCount++;
+      });
+
+      const totalOps = targetCutSet.size + wrongCount;
+      const accuracy = totalOps === 0 ? 100 : Math.round((correctCount / totalOps) * 100);
+      totalAcc += accuracy;
+
+      const userMarkedWords = [];
+      parsed.words.forEach((w, wi) => {
+        userMarkedWords.push(w);
+        if (wi < parsed.words.length - 1) {
+          const inU = userCutSet.has(wi);
+          const inT = targetCutSet.has(wi);
+          if (inU && inT) userMarkedWords.push("/");
+          else if (inU && !inT) userMarkedWords.push("✗/");
+          else if (!inU && inT) userMarkedWords.push("[漏]");
+        }
+      });
+
+      const studentChunks = typeof buildChunksFromCuts === "function"
+        ? buildChunksFromCuts(parsed.words, userCutSet)
+        : [parsed.words.join(" ")];
+
+      return {
+        index: idx + 1,
+        source: item.source || "",
+        words: parsed.words,
+        userCuts: norm.cuts,
+        targetCuts: Array.from(targetCutSet).sort((a, b) => a - b),
+        userMarkedSentence: userMarkedWords.join(" "),
+        standardSentence: item.chunkedText || "",
+        studentChunks: studentChunks,
+        studentTrans: norm.trans,
+        literalTrans: item.literalTrans || "",
+        grammarNote: item.grammarNote || "",
+        vocab: item.vocab || [],
+        stats: { correctCount, missedCount, wrongCount, accuracy }
+      };
+    });
+
+    const avgAccuracy = items.length > 0 ? Math.round(totalAcc / items.length) : 100;
+    const sec = payload.t || 0;
+    const mins = Math.floor(sec / 60);
+    const secs = String(sec % 60).padStart(2, "0");
+    const durationText = mins > 0 ? `${mins}分${secs}秒` : `${secs}秒`;
+    const taskTitle = cfg.taskTitle || document.title;
+
+    return {
+      code_id: taskTitle,
+      student_name: payload.n || "未命名学员",
+      grade: payload.c || "未填年级",
+      summary: `切分准确率 ${avgAccuracy}% · 用时 ${durationText}`,
+      detail: {
+        taskTitle: taskTitle,
+        studentName: payload.n || "未命名学员",
+        grade: payload.c || "未填年级",
+        elapsedSeconds: sec,
+        durationText: durationText,
+        submittedAtLocal: payload.d || "",
+        avgAccuracy: avgAccuracy,
+        items: items
+      }
+    };
+  }
+
+  async function syncSubmissionToSupabase(cloudRow) {
+    const statusEl = document.getElementById("cloudSyncStatus");
+    if (statusEl) {
+      statusEl.className = "poster-tip syncing";
+      statusEl.innerHTML = "⏳ 正在将你的切分与直译答卷自动同步至教研老师后台，请稍候...";
+    }
+
+    try {
+      localStorage.setItem("xuetu_last_backup_" + Date.now(), JSON.stringify(cloudRow));
+    } catch (_) {}
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/sentence_submissions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_ANON_KEY,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(cloudRow)
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`HTTP ${res.status}: ${errText}`);
+      }
+
+      if (statusEl) {
+        statusEl.className = "poster-tip";
+        statusEl.innerHTML = `✅ <strong>交卷成功！</strong>你的答卷已自动同步至教研老师后台。<br/>无需复制发送任何回执码，等待老师精批即可！`;
+      }
+    } catch (err) {
+      console.error("Supabase sync error:", err);
+      if (statusEl) {
+        statusEl.className = "poster-tip error";
+        statusEl.innerHTML = `⚠️ 当前网络波动（${err.message}），答卷已安全暂存在本机。<br/><button class="btn-retry-sync" onclick="retryCloudSync()">点击重新同步至老师后台</button>`;
+      }
+    }
+  }
+
+  function retryCloudSync() {
+    if (typeof state !== "undefined" && state.lastCloudRow) {
+      syncSubmissionToSupabase(state.lastCloudRow);
+    }
+  }
+
+  function triggerCloudSyncForPayload(payload) {
+    try {
+      const cloudRow = buildCloudRecord(payload);
+      if (typeof state !== "undefined") {
+        state.lastCloudRow = cloudRow;
+      }
+      syncSubmissionToSupabase(cloudRow);
+    } catch (e) {
+      console.error("Build cloud record error:", e);
+    }
+  }
+// === XUETU_CLOUD_SYNC_END ===
 </script>
 </body>
 </html>
