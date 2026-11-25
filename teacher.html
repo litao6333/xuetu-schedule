@@ -266,7 +266,6 @@
       border: 1px solid var(--border);
     }
 
-    /* 诊断长图弹窗 */
     .modal-mask {
       position: fixed;
       inset: 0;
@@ -354,7 +353,6 @@
   <div class="record-list" id="recordList"></div>
 </main>
 
-<!-- 诊断图预览与下载弹窗 -->
 <div class="modal-mask" id="posterModal">
   <div class="modal-card">
     <div class="modal-head">
@@ -375,7 +373,8 @@
 <canvas id="diagCanvas" class="hidden"></canvas>
 
 <script>
-  const SUPABASE_URL = "https://lgerpdgbjwzrllyyxm.supabase.co";
+  // 已接入 Cloudflare 反向代理域名，国内微信直连秒通
+  const SUPABASE_URL = "https://db.litao1986.ccwu.cc";
   const SUPABASE_ANON_KEY = "sb_publishable_NBhQ-TR8nlGx4A_-VeIYlw_X2IjXc5Z";
 
   let allRecords = [];
@@ -395,8 +394,7 @@
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/sentence_submissions?select=*&order=created_at.desc&limit=200`, {
         headers: {
-          "apikey": SUPABASE_ANON_KEY,
-          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+          "apikey": SUPABASE_ANON_KEY
         }
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
