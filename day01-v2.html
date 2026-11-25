@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>学途卫士 · 天津高考英语长难句意群训练</title>
+  <title>学途卫士 · 天津高考英语长难句意群与直译训练</title>
   <style>
     :root {
       --navy-dark: #08182B;
@@ -324,6 +324,62 @@
       line-height: 1.2;
     }
 
+    /* 逐块意群翻译输入区 */
+    .chunk-trans-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .chunk-trans-item {
+      background: #F8FAFC;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .chunk-en-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .chunk-num {
+      background: var(--navy-dark);
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .chunk-en-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0F172A;
+      line-height: 1.45;
+    }
+
+    .chunk-cn-input {
+      width: 100%;
+      padding: 9px 11px;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #1E293B;
+      background: #FFFFFF;
+      outline: none;
+    }
+
+    .chunk-cn-input:focus {
+      border-color: var(--academy-blue);
+      box-shadow: 0 0 0 3px rgba(44, 85, 160, 0.1);
+    }
+
     .action-row {
       display: flex;
       gap: 10px;
@@ -509,8 +565,8 @@
     <section id="viewLogin" class="card">
       <div class="welcome-banner">
         <div class="welcome-sub">学途卫士 · 高中英语课后专项</div>
-        <h1 class="welcome-h1" id="bannerTitle">天津高考真题 · 意群切分提交</h1>
-        <p class="welcome-desc">用拇指点击单词之间的圆点切分意群（/）。共 5 句真题，全部切分提交后自动生成【学员原始答卷图】与【交卷回执码】，发送至学习群等待教研老师逐句精批。</p>
+        <h1 class="welcome-h1" id="bannerTitle">天津高考真题 · 意群切分与直译</h1>
+        <p class="welcome-desc">第一步：点击单词间的圆点切分意群（/）；第二步：按切出来的意群逐块填写顺句中文直译。全部完成后生成【学员交卷单】与【回执码】，发群等待老师逐句精批。</p>
       </div>
 
       <div class="form-group">
@@ -523,10 +579,10 @@
         <input type="text" id="inputClassName" class="form-input" value="高二高考强化班" />
       </div>
 
-      <button class="btn-primary" onclick="startChallenge()">开始今日 5 句独立切分 →</button>
+      <button class="btn-primary" onclick="startChallenge()">开始今日 5 句切分与直译 →</button>
     </section>
 
-    <!-- 阶段 2：学生盲切答题区（不显示对错与解析） -->
+    <!-- 阶段 2：学生盲切 + 逐块直译区 -->
     <section id="viewQuiz" class="card hidden">
       <div class="progress-header">
         <span class="progress-badge" id="progressText">第 1 / 5 句</span>
@@ -536,25 +592,41 @@
         <div class="progress-fill" id="progressBar" style="width: 20%;"></div>
       </div>
 
-      <div style="margin-top: 14px;">
+      <!-- 步骤 2.1：切分意群 -->
+      <div id="stepCutSection" style="margin-top: 14px;">
         <span class="source-tag" id="sentenceSource">天津高考真题 · 阅读理解 C篇</span>
-        <div class="instruction-tip" id="instructionTip">
-          👆 点击单词之间的灰色圆点切出意群停顿（/），确认无误后点击下方锁定本句
+        <div class="instruction-tip">
+          <strong>第一步 · 切分意群：</strong>点击下方单词之间的灰色圆点切出意群停顿（/），切好后进入下一步填写逐块中文直译
         </div>
 
         <div class="sentence-arena" id="sentenceArena"></div>
 
         <div class="action-row">
           <button class="btn-secondary" onclick="clearCurrentCuts()">清空重切</button>
+          <button class="btn-submit" onclick="proceedToTranslateStep()">确认切分，填写意群直译 →</button>
+        </div>
+      </div>
+
+      <!-- 步骤 2.2：按切出的意群逐块填写顺句直译 -->
+      <div id="stepTranslateSection" class="hidden" style="margin-top: 14px;">
+        <span class="source-tag" id="sentenceSourceTrans">天津高考真题 · 阅读理解 C篇</span>
+        <div class="instruction-tip">
+          <strong>第二步 · 顺句直译：</strong>按你刚才切分的英文意群，顺着语序逐块写出中文意思（不倒装）
+        </div>
+
+        <div class="chunk-trans-list" id="chunkTransList"></div>
+
+        <div class="action-row">
+          <button class="btn-secondary" onclick="backToCutStep()">← 返回重切</button>
           <button class="btn-submit" id="btnLockAndNext" onclick="lockAndNextSentence()">锁定本句并进入下一句 →</button>
         </div>
       </div>
     </section>
 
-    <!-- 阶段 3A：学生交卷凭证页（仅展示原始切分答卷，等待老师批改） -->
+    <!-- 阶段 3A：学生交卷凭证页 -->
     <section id="viewStudentReceipt" class="card hidden">
       <div class="poster-tip">
-        ✅ 已成功封存你的 5 句切分答卷！<br/>请将下方【交卷答卷图】与【交卷回执码】发至微信群，等待老师一对一精批诊断。
+        ✅ 已成功封存你的 5 句切分与直译答卷！<br/>请将下方【交卷答卷图】与【交卷回执码】发至微信群，等待老师一对一精批诊断。
       </div>
 
       <div class="receipt-box">
@@ -566,7 +638,7 @@
       </div>
 
       <div class="poster-preview-wrap" style="margin-top: 12px;">
-        <img id="studentPosterImg" alt="学员原始切分答卷" />
+        <img id="studentPosterImg" alt="学员原始切分与直译答卷" />
       </div>
 
       <div class="action-row" style="margin-top: 14px;">
@@ -598,7 +670,7 @@
   <div class="modal-card">
     <div class="modal-title">👨‍🏫 老师专属批改台（生成精批报告）</div>
     <div class="modal-hint">
-      粘贴学生在微信群发送的<strong>【交卷回执码】</strong>（以 <code>XT#</code> 开头），系统将自动还原该生每一刀的真实切分现场，并生成包含<strong>红绿错因批注 + 顺句直译 + 句法拆解 + 核心单字</strong>的豪华名师诊断长图。
+      粘贴学生在微信群发送的<strong>【交卷回执码】</strong>（以 <code>XT#</code> 开头），系统将自动还原该生每一刀的切分现场与顺句直译，并生成包含<strong>红绿切分批注 + 学员译文对照 + 教研标准直译 + 句法拆解 + 核心单字</strong>的豪华名师诊断长图。
     </div>
     <div class="form-group" style="margin-top: 0;">
       <label class="form-label">粘贴学员交卷回执码</label>
@@ -606,7 +678,7 @@
     </div>
     <div class="form-group">
       <label class="form-label">教研老师寄语（可选，将印在报告底部）</label>
-      <input type="text" id="teacherCustomNote" class="form-input" style="padding: 9px 12px; font-size: 13px;" value="红/橙标记处为意群边界薄弱点，请对照顺句直译朗读三遍巩固。" />
+      <input type="text" id="teacherCustomNote" class="form-input" style="padding: 9px 12px; font-size: 13px;" value="红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。" />
     </div>
     <div class="action-row" style="margin-top: 14px;">
       <button class="btn-secondary" onclick="closeGradeModal()">取消</button>
@@ -708,7 +780,8 @@
     elapsedSeconds: 0,
     words: [],
     userCuts: new Set(),
-    // 仅存储学生每句的原始切分索引数组
+    currentChunks: [],
+    // 每句存储格式：{ cuts: number[], trans: string[] }
     rawSubmissions: [],
     lastReceiptCode: ""
   };
@@ -731,6 +804,20 @@
       }
     });
     return { words, cuts };
+  }
+
+  // 根据切分点数组将单词列表拆成意群短语数组
+  function buildChunksFromCuts(words, cutSet) {
+    const chunks = [];
+    let current = [];
+    words.forEach((w, idx) => {
+      current.push(w);
+      if (cutSet.has(idx) || idx === words.length - 1) {
+        chunks.push(current.join(" "));
+        current = [];
+      }
+    });
+    return chunks;
   }
 
   function startChallenge() {
@@ -776,6 +863,10 @@
     document.getElementById("progressText").textContent = `第 ${idx + 1} / ${total} 句`;
     document.getElementById("progressBar").style.width = `${((idx + 1) / total) * 100}%`;
     document.getElementById("sentenceSource").textContent = item.source;
+    document.getElementById("sentenceSourceTrans").textContent = item.source;
+
+    document.getElementById("stepCutSection").classList.remove("hidden");
+    document.getElementById("stepTranslateSection").classList.add("hidden");
 
     const isLast = idx === total - 1;
     document.getElementById("btnLockAndNext").textContent = isLast
@@ -822,9 +913,57 @@
     renderArena();
   }
 
-  // 盲切提交：不展示任何对错与解析，直接记录并跳下一句
+  // 进入第二步：按学生刚才切出的意群拆成中文输入框
+  function proceedToTranslateStep() {
+    const chunks = buildChunksFromCuts(state.words, state.userCuts);
+    state.currentChunks = chunks;
+
+    const listEl = document.getElementById("chunkTransList");
+    listEl.innerHTML = "";
+
+    chunks.forEach((chunkStr, cIdx) => {
+      const card = document.createElement("div");
+      card.className = "chunk-trans-item";
+      card.innerHTML = `
+        <div class="chunk-en-header">
+          <span class="chunk-num">意群 ${cIdx + 1}</span>
+          <span class="chunk-en-text">${chunkStr}</span>
+        </div>
+        <input type="text" class="chunk-cn-input" id="chunkInput_${cIdx}" placeholder="请顺句直译这一块的中文意思..." />
+      `;
+      listEl.appendChild(card);
+    });
+
+    document.getElementById("stepCutSection").classList.add("hidden");
+    document.getElementById("stepTranslateSection").classList.remove("hidden");
+
+    const firstInput = document.getElementById("chunkInput_0");
+    if (firstInput) firstInput.focus();
+  }
+
+  function backToCutStep() {
+    document.getElementById("stepTranslateSection").classList.add("hidden");
+    document.getElementById("stepCutSection").classList.remove("hidden");
+  }
+
+  // 锁定切分与逐块译文，跳下一句
   function lockAndNextSentence() {
-    state.rawSubmissions[state.currentIndex] = Array.from(state.userCuts).sort((a, b) => a - b);
+    const transArr = [];
+    for (let i = 0; i < state.currentChunks.length; i++) {
+      const inp = document.getElementById(`chunkInput_${i}`);
+      const val = inp ? inp.value.trim() : "";
+      if (!val) {
+        alert(`请先填写「意群 ${i + 1}」的中文直译再提交本句哦！`);
+        if (inp) inp.focus();
+        return;
+      }
+      transArr.push(val);
+    }
+
+    state.rawSubmissions[state.currentIndex] = {
+      cuts: Array.from(state.userCuts).sort((a, b) => a - b),
+      trans: transArr
+    };
 
     if (state.currentIndex < QUIZ_CONFIG.sentences.length - 1) {
       loadSentence(state.currentIndex + 1);
@@ -833,7 +972,6 @@
     }
   }
 
-  // 生成支持中文的 Base64 回执码（不包含任何标准答案信息，学生无法自行破解）
   function encodeReceiptPayload(obj) {
     const jsonStr = JSON.stringify(obj);
     const bytes = new TextEncoder().encode(jsonStr);
@@ -851,6 +989,17 @@
     for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
     const jsonStr = new TextDecoder().decode(bytes);
     return JSON.parse(jsonStr);
+  }
+
+  // 兼容旧版数组格式与新版 {cuts, trans} 对象格式
+  function normalizeSubmissionItem(subItem) {
+    if (Array.isArray(subItem)) {
+      return { cuts: subItem, trans: [] };
+    }
+    if (subItem && typeof subItem === "object") {
+      return { cuts: subItem.cuts || [], trans: subItem.trans || [] };
+    }
+    return { cuts: [], trans: [] };
   }
 
   function finishStudentSubmission() {
@@ -952,7 +1101,7 @@
     return lines;
   }
 
-  // ==================== 3A：绘制学生端【交卷凭证图】（无答案、无对错） ====================
+  // ==================== 3A：绘制学生端【交卷凭证图】（含切分与学生顺句直译） ====================
   function renderStudentReceiptPoster(payload) {
     const canvas = document.getElementById("reportCanvas");
     const ctx = canvas.getContext("2d");
@@ -961,6 +1110,7 @@
     const padX = 20;
     const cardW = W - padX * 2;
     const textMaxW = cardW - 40;
+    const fontTrans = "500 11.5px -apple-system, PingFang SC, sans-serif";
 
     const mins = Math.floor(payload.t / 60);
     const secs = String(payload.t % 60).padStart(2, "0");
@@ -968,7 +1118,9 @@
 
     const sentenceCards = QUIZ_CONFIG.sentences.map((item, idx) => {
       const parsed = parseChunkedSentence(item.chunkedText);
-      const userCutSet = new Set(payload.s[idx] || []);
+      const norm = normalizeSubmissionItem(payload.s[idx]);
+      const userCutSet = new Set(norm.cuts);
+
       const tokens = [];
       parsed.words.forEach((w, wi) => {
         tokens.push({ text: w, type: "word" });
@@ -977,8 +1129,15 @@
         }
       });
       const lines = layoutTokens(ctx, tokens, textMaxW);
-      const height = 44 + lines.length * 22 + 12;
-      return { idx, source: item.source, cutCount: userCutSet.size, lines, height };
+
+      const joinedStudentTrans = norm.trans.length > 0
+        ? "✍️ 学员顺句直译：" + norm.trans.join(" / ")
+        : "✍️ 学员顺句直译：（未填写）";
+      const transLines = wrapPlainText(ctx, joinedStudentTrans, textMaxW - 12, fontTrans);
+      const transBoxH = 12 + transLines.length * 17 + 8;
+
+      const height = 44 + lines.length * 22 + 6 + transBoxH + 10;
+      return { idx, source: item.source, cutCount: userCutSet.size, lines, transLines, transBoxH, height };
     });
 
     const headerH = 172;
@@ -1013,7 +1172,7 @@
     ctx.fillStyle = "#CBD5E1";
     ctx.font = "600 11px -apple-system, PingFang SC, sans-serif";
     ctx.textAlign = "left";
-    ctx.fillText("学员课后意群切分交卷单", padX + 84, 31);
+    ctx.fillText("学员课后意群切分与直译交卷单", padX + 84, 31);
 
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "800 20px -apple-system, PingFang SC, sans-serif";
@@ -1040,7 +1199,6 @@
     ctx.textAlign = "right";
     ctx.fillText(payload.c, W - padX - 14, 132);
 
-    // 状态提示条
     const statusY = headerH + 12;
     drawRoundedRect(ctx, padX, statusY, cardW, 44, 10);
     ctx.fillStyle = "#EFF6FF";
@@ -1051,13 +1209,13 @@
     ctx.textAlign = "center";
     ctx.fillStyle = "#1E40AF";
     ctx.font = "700 12.5px -apple-system, PingFang SC, sans-serif";
-    ctx.fillText("⏳ 答卷已封存提交 · 等待教研老师逐句批改诊断", W / 2, statusY + 22);
+    ctx.fillText("⏳ 切分与直译答卷已封存 · 等待教研老师逐句批改诊断", W / 2, statusY + 22);
 
     let curY = statusY + 44 + 22;
     ctx.textAlign = "left";
     ctx.fillStyle = "#0F172A";
     ctx.font = "800 14px -apple-system, PingFang SC, sans-serif";
-    ctx.fillText("学员原始切分提交记录", padX, curY);
+    ctx.fillText("学员原始切分与顺句直译记录", padX, curY);
 
     curY += 14;
 
@@ -1110,6 +1268,21 @@
         ly += 22;
       });
 
+      // 学员中文直译框
+      const boxY = ly - 4;
+      drawRoundedRect(ctx, padX + 12, boxY, cardW - 24, card.transBoxH, 7);
+      ctx.fillStyle = "#F8FAFC";
+      ctx.fill();
+
+      let ty = boxY + 13;
+      ctx.textAlign = "left";
+      ctx.font = fontTrans;
+      ctx.fillStyle = "#334155";
+      card.transLines.forEach(tLine => {
+        ctx.fillText(tLine, padX + 18, ty);
+        ty += 17;
+      });
+
       curY += card.height + 10;
     });
 
@@ -1131,7 +1304,6 @@
 
   // ==================== 3B：老师端批改台 & 生成【名师逐句精批诊断报告】 ====================
   function openGradeModal() {
-    // 如果当前页面刚交卷，自动预填方便老师直接体验效果
     if (state.lastReceiptCode && !document.getElementById("gradeReceiptInput").value) {
       document.getElementById("gradeReceiptInput").value = state.lastReceiptCode;
     }
@@ -1174,7 +1346,7 @@
 
   function generateTeacherDiagnosisFromCode() {
     const code = document.getElementById("gradeReceiptInput").value.trim();
-    const customNote = document.getElementById("teacherCustomNote").value.trim() || "红/橙标记处为意群边界薄弱点，请对照顺句直译朗读三遍巩固。";
+    const customNote = document.getElementById("teacherCustomNote").value.trim() || "红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。";
     if (!code) {
       alert("请先粘贴学生发来的 XT# 交卷回执码！");
       return;
@@ -1203,10 +1375,10 @@
     const innerPad = 14;
     const textMaxW = cardW - innerPad * 2 - 16;
 
-    // 逐句比对批改
     const records = QUIZ_CONFIG.sentences.map((item, idx) => {
       const parsed = parseChunkedSentence(item.chunkedText);
-      const userCutSet = new Set(payload.s[idx] || []);
+      const norm = normalizeSubmissionItem(payload.s[idx]);
+      const userCutSet = new Set(norm.cuts);
       const targetCutSet = parsed.cuts;
 
       let correctCount = 0;
@@ -1231,6 +1403,7 @@
         words: parsed.words,
         userCutSet,
         targetCutSet,
+        studentTrans: norm.trans,
         correctCount,
         missedCount,
         wrongCount,
@@ -1250,16 +1423,24 @@
 
     const itemLayouts = records.map(rec => {
       const itemData = QUIZ_CONFIG.sentences[rec.index];
-      const literalLines = wrapPlainText(ctx, "📖 顺句直译：" + itemData.literalTrans, textMaxW, fontBody);
-      const grammarLines = wrapPlainText(ctx, "🔍 句法拆解：" + itemData.grammarNote, textMaxW, fontBody);
-      const vocabStr = "💡 核心单字：" + itemData.vocab.map(v => `${v.word}（${v.mean}）`).join(" · ");
+      const stuTransText = rec.studentTrans && rec.studentTrans.length > 0
+        ? "✍️ 学员顺句直译：" + rec.studentTrans.join(" / ")
+        : "✍️ 学员顺句直译：（未填写）";
+      const stuTransLines = wrapPlainText(ctx, stuTransText, textMaxW, fontBody);
+      const literalLines = wrapPlainText(ctx, "📖 标准顺句直译：" + itemData.literalTrans, textMaxW, fontBody);
+      const grammarLines = wrapPlainText(ctx, "🔍 句法结构拆解：" + itemData.grammarNote, textMaxW, fontBody);
+      const vocabStr = "💡 高频核心单字：" + itemData.vocab.map(v => `${v.word}（${v.mean}）`).join(" · ");
       const vocabLines = wrapPlainText(ctx, vocabStr, textMaxW, fontBody);
 
-      const knowledgeH = 12 + literalLines.length * lineHPlain + 6 + grammarLines.length * lineHPlain + 6 + vocabLines.length * lineHPlain + 8;
+      const knowledgeH = 12
+        + stuTransLines.length * lineHPlain + 6
+        + literalLines.length * lineHPlain + 6
+        + grammarLines.length * lineHPlain + 6
+        + vocabLines.length * lineHPlain + 8;
 
       if (rec.isPerfect) {
         const height = 46 + knowledgeH + 10;
-        return { rec, height, userLines: [], stdLines: [], literalLines, grammarLines, vocabLines, knowledgeH };
+        return { rec, height, userLines: [], stdLines: [], stuTransLines, literalLines, grammarLines, vocabLines, knowledgeH };
       } else {
         const userTokens = buildDiagnosticTokens(rec.words, rec.userCutSet, rec.targetCutSet);
         const stdTokens = buildStandardTokens(rec.words, rec.targetCutSet);
@@ -1268,7 +1449,7 @@
         const lineH = 22;
         const diagBoxH = 20 + userLines.length * lineH + 22 + stdLines.length * lineH + 6;
         const height = 46 + diagBoxH + 8 + knowledgeH + 10;
-        return { rec, height, userLines, stdLines, diagBoxH, literalLines, grammarLines, vocabLines, knowledgeH };
+        return { rec, height, userLines, stdLines, diagBoxH, stuTransLines, literalLines, grammarLines, vocabLines, knowledgeH };
       }
     });
 
@@ -1339,7 +1520,7 @@
 
     const colW = cardW / 3;
     const metrics = [
-      { val: `${avgAcc}%`, label: "首轮切分准确率", color: "#2C55A0" },
+      { val: `${avgAcc}%`, label: "意群切分准确率", color: "#2C55A0" },
       { val: timeStr, label: "专注思考总耗时", color: "#0F172A" },
       { val: rankTitle, label: "教研综合评级", color: "#B68B4C" }
     ];
@@ -1368,7 +1549,7 @@
     ctx.textAlign = "left";
     ctx.fillStyle = "#0F172A";
     ctx.font = "800 14px -apple-system, PingFang SC, sans-serif";
-    ctx.fillText("逐句切分诊断与教研精讲批注", padX, curY);
+    ctx.fillText("逐句切分与顺句直译精批明细", padX, curY);
 
     ctx.textAlign = "right";
     ctx.font = "600 10px -apple-system, PingFang SC, sans-serif";
@@ -1377,7 +1558,7 @@
 
     curY += 16;
 
-    itemLayouts.forEach(({ rec, height, userLines, stdLines, diagBoxH, literalLines, grammarLines, vocabLines, knowledgeH }) => {
+    itemLayouts.forEach(({ rec, height, userLines, stdLines, diagBoxH, stuTransLines, literalLines, grammarLines, vocabLines, knowledgeH }) => {
       drawRoundedRect(ctx, padX, curY, cardW, height, 10);
       ctx.fillStyle = "#FFFFFF";
       ctx.fill();
@@ -1493,12 +1674,22 @@
       ctx.textAlign = "left";
       ctx.font = fontBody;
 
-      ctx.fillStyle = "#1E293B";
+      // 1. 学员直译
+      ctx.fillStyle = "#B45309";
+      stuTransLines.forEach(line => {
+        ctx.fillText(line, padX + 20, ky);
+        ky += lineHPlain;
+      });
+
+      // 2. 标准直译
+      ky += 5;
+      ctx.fillStyle = "#059669";
       literalLines.forEach(line => {
         ctx.fillText(line, padX + 20, ky);
         ky += lineHPlain;
       });
 
+      // 3. 句法拆解
       ky += 5;
       ctx.fillStyle = "#334155";
       grammarLines.forEach(line => {
@@ -1506,6 +1697,7 @@
         ky += lineHPlain;
       });
 
+      // 4. 高频单字
       ky += 5;
       ctx.fillStyle = "#2C55A0";
       vocabLines.forEach(line => {
