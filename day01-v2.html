@@ -495,10 +495,10 @@
 <div class="app-shell">
   <header class="topbar">
     <div class="brand-group">
-      <span class="brand-tag">学途卫士</span>
+      <span class="brand-tag" onclick="secretTapUnlock()" style="cursor:pointer;">学途卫士</span>
       <span class="brand-title" id="headerTaskTitle">长难句意群训练 · Day 01</span>
     </div>
-    <div class="top-actions">
+    <div class="top-actions hidden" id="teacherTopActions">
       <button class="btn-teacher grade-btn" onclick="openGradeModal()">👨‍🏫 老师批改</button>
       <button class="btn-teacher" onclick="openTeacherModal()">⚙️ 改题</button>
     </div>
@@ -515,7 +515,7 @@
 
       <div class="form-group">
         <label class="form-label">学员姓名（必填）</label>
-        <input type="text" id="inputStudentName" class="form-input" placeholder="例如：张同学 / 李嘉滢" />
+        <input type="text" id="inputStudentName" class="form-input" placeholder="请输入你的真实姓名" />
       </div>
 
       <div class="form-group">
@@ -1593,6 +1593,33 @@
     a.click();
     URL.revokeObjectURL(url);
   }
+
+  // ==================== 老师端权限无痕控制 ====================
+  let tapCount = 0;
+  let tapTimer = null;
+
+  function enableTeacherMode() {
+    const actions = document.getElementById("teacherTopActions");
+    if (actions) actions.classList.remove("hidden");
+  }
+
+  function secretTapUnlock() {
+    tapCount++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(() => { tapCount = 0; }, 1500);
+    if (tapCount >= 5) {
+      tapCount = 0;
+      enableTeacherMode();
+      alert("已进入教研老师工作模式！");
+    }
+  }
+
+  (function checkRoleParam() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("role") === "teacher") {
+      enableTeacherMode();
+    }
+  })();
 </script>
 </body>
 </html>
