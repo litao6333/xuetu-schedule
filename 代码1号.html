@@ -688,9 +688,8 @@
 <canvas id="reportCanvas" class="hidden"></canvas>
 
 <script>
-  // 已接入 Cloudflare 反向代理域名，国内微信直连秒通
   const SUPABASE_URL = "https://db.litao1986.ccwu.cc";
-  const SUPABASE_ANON_KEY = "sb_publishable_NBhQ-TR8nlGx4A_-VeIYlw_X2IjXc5ZNBhQ-TR8nlGx4A_-VeIYlw_X2IjXc5Z";
+  const SUPABASE_ANON_KEY = "sb_publishable_NBhQ-TR8nlGx4A_-VeIYlw_X2IjXc5Z";
 
   let QUIZ_CONFIG = {
     "taskTitle": "长难句意群训练 · 代码1号",
@@ -1454,8 +1453,7 @@
 
       renderTeacherDiagnosisPoster(payload, customNote);
     } catch (e) {
-      alert("回执码解析失败，请确认是否完整复制了以 XT# 开头的全部字符：
-" + e.message);
+      alert("回执码解析失败，请确认是否完整复制了以 XT# 开头的全部字符：\n" + e.message);
     }
   }
 
@@ -1861,15 +1859,13 @@
       closeTeacherModal();
       alert("题库已更新！");
     } catch (e) {
-      alert("JSON 格式有误，请检查引号或逗号是否匹配：
-" + e.message);
+      alert("JSON 格式有误，请检查引号或逗号是否匹配：\n" + e.message);
     }
   }
 
   function exportUpdatedHtml() {
     applyTeacherData();
-    const docHtml = "<!DOCTYPE html>
-" + document.documentElement.outerHTML;
+    const docHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
     const blob = new Blob([docHtml], { type: "text/html;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
