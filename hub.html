@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+hub_html = r'''<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -211,6 +211,37 @@
       border-color: var(--gold-dark);
     }
 
+    .nav-card.cloud-highlight {
+      background: linear-gradient(135deg, #08182B 0%, #11294D 100%);
+      border: 1.5px solid rgba(226, 192, 141, 0.6);
+      color: #FFFFFF;
+      box-shadow: 0 6px 18px rgba(8, 24, 43, 0.18);
+    }
+
+    .nav-card.cloud-highlight .nav-info h3 {
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-card.cloud-highlight .nav-info p {
+      color: #CBD5E1;
+    }
+
+    .nav-card.cloud-highlight .nav-arrow {
+      color: var(--gold);
+    }
+
+    .cloud-badge {
+      background: var(--gold);
+      color: var(--navy-dark);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
     .nav-left {
       display: flex;
       align-items: center;
@@ -239,10 +270,10 @@
       border: 1px solid rgba(182, 139, 76, 0.3);
     }
 
-    .icon-blue {
-      background: #EFF6FF;
-      color: var(--academy-blue);
-      border: 1px solid #BFDBFE;
+    .icon-cloud {
+      background: rgba(226, 192, 141, 0.16);
+      color: var(--gold);
+      border: 1px solid rgba(226, 192, 141, 0.45);
     }
 
     .nav-info h3 {
@@ -408,12 +439,23 @@
       </a>
 
       <div class="section-label" style="margin-top: 4px;">
-        <span>🇬🇧 高中英语课后意群训练（批改与改题入口）</span>
+        <span>🇬🇧 高中英语课后意群训练（云端阅卷与改题入口）</span>
       </div>
+
+      <a class="nav-card cloud-highlight" href="./teacher.html">
+        <div class="nav-left">
+          <div class="nav-icon-box icon-cloud">☁️</div>
+          <div class="nav-info">
+            <h3>云端自动交卷阅卷中心 <span class="cloud-badge">免回执码</span></h3>
+            <p>统一汇总全部关卡交卷，一键生成 5 句名师精批诊断长图</p>
+          </div>
+        </div>
+        <span class="nav-arrow">›</span>
+      </a>
 
       <div class="english-panel">
         <div class="english-header">
-          <h3>长难句意群训练关卡</h3>
+          <h3>单关卡改题与历史回执兼容台</h3>
           <button class="btn-add-day" onclick="addCustomDay()">+ 添加新关卡</button>
         </div>
 
@@ -422,7 +464,7 @@
 
       <div class="tip-footer">
         💡 建议将本页面添加到手机浏览器「主屏幕」或收藏夹<br/>
-        外部学生打卡请直接发送具体关卡链接（如 day01-v2.html），勿发本工作台网址
+        外部学生打卡请直接发送具体关卡链接（如 代码1号.html），勿发本工作台网址
       </div>
     </div>
   </main>
@@ -434,207 +476,47 @@
   const STORAGE_KEY_DAYS = "xuetu_english_days_v2";
 
   const DEFAULT_DAYS = [
-    {
-        "title": "代码1号 · 批改台",
-        "file": "代码1号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码2号 · 批改台",
-        "file": "代码2号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码3号 · 批改台",
-        "file": "代码3号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码4号 · 批改台",
-        "file": "代码4号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码5号 · 批改台",
-        "file": "代码5号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码6号 · 批改台",
-        "file": "代码6号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码7号 · 批改台",
-        "file": "代码7号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码8号 · 批改台",
-        "file": "代码8号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码9号 · 批改台",
-        "file": "代码9号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码10号 · 批改台",
-        "file": "代码10号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码11号 · 批改台",
-        "file": "代码11号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码12号 · 批改台",
-        "file": "代码12号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码13号 · 批改台",
-        "file": "代码13号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码14号 · 批改台",
-        "file": "代码14号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码15号 · 批改台",
-        "file": "代码15号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码16号 · 批改台",
-        "file": "代码16号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码17号 · 批改台",
-        "file": "代码17号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码18号 · 批改台",
-        "file": "代码18号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码19号 · 批改台",
-        "file": "代码19号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码20号 · 批改台",
-        "file": "代码20号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码21号 · 批改台",
-        "file": "代码21号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码22号 · 批改台",
-        "file": "代码22号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码23号 · 批改台",
-        "file": "代码23号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码24号 · 批改台",
-        "file": "代码24号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码25号 · 批改台",
-        "file": "代码25号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码26号 · 批改台",
-        "file": "代码26号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码27号 · 批改台",
-        "file": "代码27号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码28号 · 批改台",
-        "file": "代码28号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码29号 · 批改台",
-        "file": "代码29号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码30号 · 批改台",
-        "file": "代码30号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码31号 · 批改台",
-        "file": "代码31号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码32号 · 批改台",
-        "file": "代码32号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码33号 · 批改台",
-        "file": "代码33号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码34号 · 批改台",
-        "file": "代码34号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码35号 · 批改台",
-        "file": "代码35号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码36号 · 批改台",
-        "file": "代码36号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码37号 · 批改台",
-        "file": "代码37号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码38号 · 批改台",
-        "file": "代码38号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码39号 · 批改台",
-        "file": "代码39号.html",
-        "badge": "2008-17真题"
-    },
-    {
-        "title": "代码40号 · 批改台",
-        "file": "代码40号.html",
-        "badge": "2008-17真题"
-    }
-];
+    { "title": "代码1号 · 批改台", "file": "代码1号.html", "badge": "2008-17真题" },
+    { "title": "代码2号 · 批改台", "file": "代码2号.html", "badge": "2008-17真题" },
+    { "title": "代码3号 · 批改台", "file": "代码3号.html", "badge": "2008-17真题" },
+    { "title": "代码4号 · 批改台", "file": "代码4号.html", "badge": "2008-17真题" },
+    { "title": "代码5号 · 批改台", "file": "代码5号.html", "badge": "2008-17真题" },
+    { "title": "代码6号 · 批改台", "file": "代码6号.html", "badge": "2008-17真题" },
+    { "title": "代码7号 · 批改台", "file": "代码7号.html", "badge": "2008-17真题" },
+    { "title": "代码8号 · 批改台", "file": "代码8号.html", "badge": "2008-17真题" },
+    { "title": "代码9号 · 批改台", "file": "代码9号.html", "badge": "2008-17真题" },
+    { "title": "代码10号 · 批改台", "file": "代码10号.html", "badge": "2008-17真题" },
+    { "title": "代码11号 · 批改台", "file": "代码11号.html", "badge": "2008-17真题" },
+    { "title": "代码12号 · 批改台", "file": "代码12号.html", "badge": "2008-17真题" },
+    { "title": "代码13号 · 批改台", "file": "代码13号.html", "badge": "2008-17真题" },
+    { "title": "代码14号 · 批改台", "file": "代码14号.html", "badge": "2008-17真题" },
+    { "title": "代码15号 · 批改台", "file": "代码15号.html", "badge": "2008-17真题" },
+    { "title": "代码16号 · 批改台", "file": "代码16号.html", "badge": "2008-17真题" },
+    { "title": "代码17号 · 批改台", "file": "代码17号.html", "badge": "2008-17真题" },
+    { "title": "代码18号 · 批改台", "file": "代码18号.html", "badge": "2008-17真题" },
+    { "title": "代码19号 · 批改台", "file": "代码19号.html", "badge": "2008-17真题" },
+    { "title": "代码20号 · 批改台", "file": "代码20号.html", "badge": "2008-17真题" },
+    { "title": "代码21号 · 批改台", "file": "代码21号.html", "badge": "2008-17真题" },
+    { "title": "代码22号 · 批改台", "file": "代码22号.html", "badge": "2008-17真题" },
+    { "title": "代码23号 · 批改台", "file": "代码23号.html", "badge": "2008-17真题" },
+    { "title": "代码24号 · 批改台", "file": "代码24号.html", "badge": "2008-17真题" },
+    { "title": "代码25号 · 批改台", "file": "代码25号.html", "badge": "2008-17真题" },
+    { "title": "代码26号 · 批改台", "file": "代码26号.html", "badge": "2008-17真题" },
+    { "title": "代码27号 · 批改台", "file": "代码27号.html", "badge": "2008-17真题" },
+    { "title": "代码28号 · 批改台", "file": "代码28号.html", "badge": "2008-17真题" },
+    { "title": "代码29号 · 批改台", "file": "代码29号.html", "badge": "2008-17真题" },
+    { "title": "代码30号 · 批改台", "file": "代码30号.html", "badge": "2008-17真题" },
+    { "title": "代码31号 · 批改台", "file": "代码31号.html", "badge": "2008-17真题" },
+    { "title": "代码32号 · 批改台", "file": "代码32号.html", "badge": "2008-17真题" },
+    { "title": "代码33号 · 批改台", "file": "代码33号.html", "badge": "2008-17真题" },
+    { "title": "代码34号 · 批改台", "file": "代码34号.html", "badge": "2008-17真题" },
+    { "title": "代码35号 · 批改台", "file": "代码35号.html", "badge": "2008-17真题" },
+    { "title": "代码36号 · 批改台", "file": "代码36号.html", "badge": "2008-17真题" },
+    { "title": "代码37号 · 批改台", "file": "代码37号.html", "badge": "2008-17真题" },
+    { "title": "代码38号 · 批改台", "file": "代码38号.html", "badge": "2008-17真题" },
+    { "title": "代码39号 · 批改台", "file": "代码39号.html", "badge": "2008-17真题" },
+    { "title": "代码40号 · 批改台", "file": "代码40号.html", "badge": "2008-17真题" }
+  ];
 
   function getSavedDays() {
     try {
@@ -652,7 +534,7 @@
     const days = getSavedDays();
     grid.innerHTML = "";
 
-    days.forEach((d, idx) => {
+    days.forEach((d) => {
       const a = document.createElement("a");
       a.className = "day-chip";
       a.href = "./" + d.file + (d.file.includes("?") ? "&role=teacher" : "?role=teacher");
@@ -668,10 +550,10 @@
   }
 
   function addCustomDay() {
-    const file = prompt("请输入你上传到 GitHub 仓库的新 HTML 文件名（例如：day02.html）：");
+    const file = prompt("请输入你上传到 GitHub 仓库的新 HTML 文件名（例如：代码41号.html）：");
     if (!file || !file.trim()) return;
     const cleanFile = file.trim();
-    const title = prompt("请输入显示名称（例如：Day 02 · 批改台）：", cleanFile.replace(".html", ""));
+    const title = prompt("请输入显示名称（例如：代码41号 · 批改台）：", cleanFile.replace(".html", ""));
     const days = getSavedDays();
     days.unshift({
       title: (title && title.trim()) || cleanFile,
@@ -711,7 +593,6 @@
     document.getElementById("pinInput").value = "";
   }
 
-  // 初始化状态检查
   (function init() {
     if (localStorage.getItem(STORAGE_KEY_AUTH) === "1") {
       showDashboard();
@@ -721,4 +602,9 @@
   })();
 </script>
 </body>
-</html>
+</html>'''
+
+with open("hub.html", "w", encoding="utf-8") as f:
+    f.write(hub_html)
+
+print("Updated hub.html generated successfully.")
