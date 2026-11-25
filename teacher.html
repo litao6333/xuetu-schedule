@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>学途卫士 · 教研云端阅卷与精批中心</title>
+  <style>
+    :root {
+      --navy-dark: #08182B;
+      --navy-mid: #11294D;
+      --academy-blue: #2C55A0;
+      --gold: #E2C08D;
+      --gold-dark: #B68B4C;
+      --bg-page: #F1F5F9;
+      --card-bg: #FFFFFF;
+      --text-main: #0F172A;
+      --text-sub: #64748B;
+      --border: #E2E8F0;
+      --emerald: #059669;
+      --emerald-bg: #ECFDF5;
+      --crimson: #DC2626;
+      --crimson-bg: #FEF2F2;
+      --amber: #D97706;
+      --amber-bg: #FFFBEB;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 40px;
+    }
+
+    .topbar {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy-mid));
+      color: #fff;
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      box-shadow: 0 4px 16px rgba(8, 24, 43, 0.2);
+    }
+
+    .topbar-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge {
+      background: var(--gold);
+      color: var(--navy-dark);
+      font-weight: 800;
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 5px;
+    }
+
+    .title {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .btn-refresh {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(226,192,141,0.5);
+      color: var(--gold);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 18px auto 0;
+      padding: 0 16px;
+    }
+
+    .filter-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+    }
+
+    .filter-input {
+      flex: 1;
+      min-width: 160px;
+      padding: 9px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .filter-input:focus { border-color: var(--academy-blue); }
+
+    .stats-strip {
+      font-size: 13px;
+      color: var(--text-sub);
+      font-weight: 600;
+      margin-left: auto;
+    }
+
+    .record-list {
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .record-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+      transition: border-color 0.2s;
+    }
+
+    .record-card:hover { border-color: #CBD5E1; }
+
+    .rec-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .rec-student {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .stu-name {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--navy-dark);
+    }
+
+    .stu-grade {
+      background: #EFF6FF;
+      color: var(--academy-blue);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 5px;
+    }
+
+    .stu-code {
+      background: #FEF3C7;
+      color: var(--gold-dark);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 5px;
+    }
+
+    .rec-meta {
+      font-size: 12.5px;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+
+    .rec-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-detail {
+      background: #F1F5F9;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-poster {
+      background: linear-gradient(135deg, var(--navy-dark), var(--academy-blue));
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .detail-panel {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--border);
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .detail-panel.open { display: flex; }
+
+    .sent-box {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .sent-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .sent-en {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #0F172A;
+      background: #fff;
+      padding: 8px 10px;
+      border-radius: 7px;
+      border: 1px solid #E2E8F0;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .sent-line {
+      font-size: 13px;
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 16px;
+      color: var(--text-sub);
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* 诊断长图弹窗 */
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 24, 43, 0.72);
+      z-index: 60;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-mask.show { display: flex; }
+
+    .modal-card {
+      background: #fff;
+      width: 100%;
+      max-width: 460px;
+      max-height: 90vh;
+      border-radius: 14px;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .note-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .note-input {
+      flex: 1;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      font-size: 12.5px;
+    }
+
+    .btn-sm-gold {
+      background: var(--gold);
+      color: var(--navy-dark);
+      border: none;
+      border-radius: 7px;
+      padding: 7px 12px;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .poster-img {
+      width: 100%;
+      border-radius: 10px;
+      display: block;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="badge">学途卫士</span>
+      <span class="title">高中英语 · 云端自动交卷阅卷中心</span>
+    </div>
+    <button class="btn-refresh" onclick="loadSubmissions()">🔄 刷新最新交卷</button>
+  </div>
+</header>
+
+<main class="container">
+  <div class="filter-bar">
+    <input type="text" id="filterName" class="filter-input" placeholder="按学员姓名筛选..." oninput="renderList()" />
+    <input type="text" id="filterCode" class="filter-input" placeholder="按关卡筛选（如 代码1号）..." oninput="renderList()" />
+    <span class="stats-strip" id="statsStrip">正在加载云端交卷数据...</span>
+  </div>
+
+  <div class="record-list" id="recordList"></div>
+</main>
+
+<!-- 诊断图预览与下载弹窗 -->
+<div class="modal-mask" id="posterModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <strong style="font-size:15px;">👨‍🏫 名师精批诊断长图</strong>
+      <button class="btn-detail" onclick="closePosterModal()">关闭</button>
+    </div>
+    <div class="note-row">
+      <input type="text" id="customNoteInput" class="note-input" value="红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。" />
+      <button class="btn-sm-gold" onclick="regenerateCurrentPoster()">更新寄语</button>
+    </div>
+    <img id="diagnosisPreviewImg" class="poster-img" alt="诊断报告" />
+    <div style="margin-top:12px; display:flex; gap:10px;">
+      <button class="btn-poster" style="flex:1; padding:11px;" onclick="downloadDiagnosisImg()">📥 保存诊断长图发群</button>
+    </div>
+  </div>
+</div>
+
+<canvas id="diagCanvas" class="hidden"></canvas>
+
+<script>
+  const SUPABASE_URL = "https://lgerpdgbjwzrllyyxm.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_NBhQ-TR8nlGx4A_-VeIYlw_X2IjXc5Z";
+
+  let allRecords = [];
+  let activeRecord = null;
+
+  function formatChinaTime(isoStr) {
+    if (!isoStr) return "";
+    const d = new Date(isoStr);
+    if (isNaN(d.getTime())) return isoStr;
+    const pad = n => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  async function loadSubmissions() {
+    const strip = document.getElementById("statsStrip");
+    strip.textContent = "正在同步云端记录...";
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/sentence_submissions?select=*&order=created_at.desc&limit=200`, {
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      allRecords = await res.json();
+      renderList();
+    } catch (e) {
+      strip.textContent = "加载失败：" + e.message;
+    }
+  }
+
+  function renderList() {
+    const nameKw = document.getElementById("filterName").value.trim().toLowerCase();
+    const codeKw = document.getElementById("filterCode").value.trim().toLowerCase();
+
+    const filtered = allRecords.filter(r => {
+      const nOk = !nameKw || (r.student_name || "").toLowerCase().includes(nameKw);
+      const cOk = !codeKw || (r.code_id || "").toLowerCase().includes(codeKw);
+      return nOk && cOk;
+    });
+
+    document.getElementById("statsStrip").textContent = `共 ${filtered.length} 份交卷记录`;
+    const listEl = document.getElementById("recordList");
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = `<div class="empty-state">暂无符合条件的交卷记录，学生提交后点击右上角「刷新最新交卷」即可查看。</div>`;
+      return;
+    }
+
+    listEl.innerHTML = "";
+    filtered.forEach((row, idx) => {
+      const detail = row.detail || {};
+      const items = detail.items || [];
+      const timeStr = detail.submittedAtLocal || formatChinaTime(row.created_at);
+
+      const card = document.createElement("div");
+      card.className = "record-card";
+
+      const itemsHtml = items.map(it => {
+        const st = it.stats || {};
+        const isPerf = st.missedCount === 0 && st.wrongCount === 0;
+        const badgeColor = isPerf ? "color:#059669;" : "color:#D97706;";
+        const badgeText = isPerf
+          ? `✓ 切分全对（对${st.correctCount}/漏0/误0）`
+          : `对${st.correctCount} · 漏${st.missedCount} · 误${st.wrongCount}`;
+        const stuTransStr = (it.studentTrans || []).join(" / ") || "（未填写）";
+
+        return `
+          <div class="sent-box">
+            <div class="sent-title">
+              <span>第 ${it.index} 句 · ${it.source || ""}</span>
+              <span style="${badgeColor}">${badgeText}</span>
+            </div>
+            <div class="sent-en">${it.userMarkedSentence || it.standardSentence || ""}</div>
+            ${!isPerf ? `<div class="sent-line" style="color:#059669;"><strong>标准切分：</strong>${it.standardSentence || ""}</div>` : ""}
+            <div class="sent-line" style="color:#B45309;"><strong>✍️ 学员直译：</strong>${stuTransStr}</div>
+            <div class="sent-line" style="color:#059669;"><strong>📖 标准直译：</strong>${it.literalTrans || ""}</div>
+            <div class="sent-line" style="color:#334155;"><strong>🔍 句法拆解：</strong>${it.grammarNote || ""}</div>
+          </div>
+        `;
+      }).join("");
+
+      card.innerHTML = `
+        <div class="rec-head">
+          <div>
+            <div class="rec-student">
+              <span class="stu-name">${row.student_name || "未命名学员"}</span>
+              <span class="stu-grade">${row.grade || "未填年级"}</span>
+              <span class="stu-code">${row.code_id || "专项训练"}</span>
+            </div>
+            <div class="rec-meta">交卷时间：${timeStr} &nbsp;|&nbsp; ${row.summary || ""}</div>
+          </div>
+          <div class="rec-actions">
+            <button class="btn-detail" onclick="toggleDetail('detail_${idx}')">展开逐句批改</button>
+            <button class="btn-poster" onclick='openDiagnosisForRow(${idx})'>生成诊断长图</button>
+          </div>
+        </div>
+        <div class="detail-panel" id="detail_${idx}">
+          ${itemsHtml || "<div style='color:#64748B;font-size:13px;'>该记录无明细数据</div>"}
+        </div>
+      `;
+      listEl.appendChild(card);
+    });
+
+    window._currentFilteredRows = filtered;
+  }
+
+  function toggleDetail(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle("open");
+  }
+
+  function openDiagnosisForRow(filteredIdx) {
+    const row = (window._currentFilteredRows || [])[filteredIdx];
+    if (!row || !row.detail || !row.detail.items) {
+      alert("该记录缺少明细数据，无法生成诊断长图。");
+      return;
+    }
+    activeRecord = row;
+    document.getElementById("posterModal").classList.add("show");
+    regenerateCurrentPoster();
+  }
+
+  function closePosterModal() {
+    document.getElementById("posterModal").classList.remove("show");
+  }
+
+  function regenerateCurrentPoster() {
+    if (!activeRecord) return;
+    const note = document.getElementById("customNoteInput").value.trim() || "红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。";
+    renderDiagnosisCanvas(activeRecord, note);
+  }
+
+  function drawRoundedRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function layoutTokens(ctx, tokens, maxWidth) {
+    const lines = [];
+    let currentLine = [];
+    let currentWidth = 0;
+    const spaceW = 5;
+
+    tokens.forEach(tok => {
+      ctx.font = tok.type === "word"
+        ? "600 13px -apple-system, PingFang SC, sans-serif"
+        : "800 13px -apple-system, PingFang SC, sans-serif";
+      const pad = tok.type === "word" ? 0 : 8;
+      const w = ctx.measureText(tok.text).width + pad;
+
+      if (currentLine.length > 0 && currentWidth + spaceW + w > maxWidth) {
+        lines.push(currentLine);
+        currentLine = [{ ...tok, width: w }];
+        currentWidth = w;
+      } else {
+        if (currentLine.length > 0) currentWidth += spaceW;
+        currentLine.push({ ...tok, width: w });
+        currentWidth += w;
+      }
+    });
+    if (currentLine.length > 0) lines.push(currentLine);
+    return lines;
+  }
+
+  function wrapPlainText(ctx, text, maxWidth, font) {
+    ctx.font = font;
+    const lines = [];
+    let currentLine = "";
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      const testLine = currentLine + ch;
+      if (ctx.measureText(testLine).width > maxWidth && currentLine.length > 0) {
+        lines.push(currentLine);
+        currentLine = ch;
+      } else {
+        currentLine = testLine;
+      }
+    }
+    if (currentLine.length > 0) lines.push(currentLine);
+    return lines;
+  }
+
+  function renderDiagnosisCanvas(row, customNote) {
+    const detail = row.detail;
+    const items = detail.items || [];
+    const canvas = document.getElementById("diagCanvas");
+    const ctx = canvas.getContext("2d");
+    const dpr = 3;
+    const W = 440;
+    const padX = 20;
+    const cardW = W - padX * 2;
+    const innerPad = 14;
+    const textMaxW = cardW - innerPad * 2 - 16;
+
+    const avgAcc = detail.avgAccuracy ?? 0;
+    const timeStr = detail.durationText || `${detail.elapsedSeconds || 0}秒`;
+    const rankTitle = avgAcc >= 90 ? "句法大师" : avgAcc >= 75 ? "勤思笃行" : "稳步进阶";
+    const fontBody = "500 11.5px -apple-system, PingFang SC, sans-serif";
+    const lineHPlain = 17;
+
+    const itemLayouts = items.map(it => {
+      const st = it.stats || { correctCount: 0, missedCount: 0, wrongCount: 0 };
+      const isPerfect = st.missedCount === 0 && st.wrongCount === 0;
+      const userCutSet = new Set(it.userCuts || []);
+      const targetCutSet = new Set(it.targetCuts || []);
+      const words = it.words || [];
+
+      const userTokens = [];
+      words.forEach((word, i) => {
+        userTokens.push({ text: word, type: "word" });
+        if (i < words.length - 1) {
+          const inU = userCutSet.has(i);
+          const inT = targetCutSet.has(i);
+          if (inU && inT) userTokens.push({ text: "/", type: "correct" });
+          else if (inU && !inT) userTokens.push({ text: "✗/", type: "wrong" });
+          else if (!inU && inT) userTokens.push({ text: "[漏]", type: "missed" });
+        }
+      });
+
+      const stdTokens = [];
+      words.forEach((word, i) => {
+        stdTokens.push({ text: word, type: "word" });
+        if (i < words.length - 1 && targetCutSet.has(i)) {
+          stdTokens.push({ text: "/", type: "std" });
+        }
+      });
+
+      const stuTransText = it.studentTrans && it.studentTrans.length > 0
+        ? "✍️ 学员顺句直译：" + it.studentTrans.join(" / ")
+        : "✍️ 学员顺句直译：（未填写）";
+      const stuTransLines = wrapPlainText(ctx, stuTransText, textMaxW, fontBody);
+      const literalLines = wrapPlainText(ctx, "📖 标准顺句直译：" + (it.literalTrans || ""), textMaxW, fontBody);
+      const grammarLines = wrapPlainText(ctx, "🔍 句法结构拆解：" + (it.grammarNote || ""), textMaxW, fontBody);
+      const vocabStr = "💡 高频核心单字：" + (it.vocab || []).map(v => `${v.word}（${v.mean}）`).join(" · ");
+      const vocabLines = wrapPlainText(ctx, vocabStr, textMaxW, fontBody);
+
+      const knowledgeH = 12
+        + stuTransLines.length * lineHPlain + 6
+        + literalLines.length * lineHPlain + 6
+        + grammarLines.length * lineHPlain + 6
+        + vocabLines.length * lineHPlain + 8;
+
+      const userLines = layoutTokens(ctx, userTokens, textMaxW);
+      const stdLines = isPerfect ? [] : layoutTokens(ctx, stdTokens, textMaxW);
+      const lineH = 22;
+      const diagBoxH = isPerfect
+        ? (22 + userLines.length * lineH + 4)
+        : (20 + userLines.length * lineH + 22 + stdLines.length * lineH + 6);
+      const height = 46 + diagBoxH + 8 + knowledgeH + 10;
+
+      return { it, st, isPerfect, height, userLines, stdLines, diagBoxH, stuTransLines, literalLines, grammarLines, vocabLines, knowledgeH };
+    });
+
+    const noteLines = wrapPlainText(ctx, customNote, cardW - 84, "500 11px -apple-system, PingFang SC, sans-serif");
+    const headerH = 175;
+    const statsH = 88;
+    const listHeaderH = 46;
+    const itemsTotalH = itemLayouts.reduce((s, x) => s + x.height + 12, 0);
+    const footerH = 65 + noteLines.length * 16;
+    const H = headerH + statsH + listHeaderH + itemsTotalH + footerH;
+
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.scale(dpr, dpr);
+
+    ctx.fillStyle = "#F1F5F9";
+    ctx.fillRect(0, 0, W, H);
+
+    const grad = ctx.createLinearGradient(0, 0, W, headerH);
+    grad.addColorStop(0, "#08182B");
+    grad.addColorStop(1, "#11294D");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, headerH);
+
+    drawRoundedRect(ctx, padX, 20, 74, 22, 5);
+    ctx.fillStyle = "#E2C08D";
+    ctx.fill();
+    ctx.fillStyle = "#08182B";
+    ctx.font = "800 11px -apple-system, PingFang SC, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("学途卫士", padX + 37, 31);
+
+    ctx.fillStyle = "#CBD5E1";
+    ctx.font = "600 11px -apple-system, PingFang SC, sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText("高中英语教研组 · 专属名师精批诊断书", padX + 84, 31);
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "800 20px -apple-system, PingFang SC, sans-serif";
+    ctx.fillText(row.code_id || "长难句意群训练", padX, 66);
+
+    ctx.fillStyle = "#94A3B8";
+    ctx.font = "500 11px -apple-system, PingFang SC, sans-serif";
+    ctx.fillText(`学员交卷时间：${detail.submittedAtLocal || formatChinaTime(row.created_at)}`, padX, 92);
+
+    drawRoundedRect(ctx, padX, 112, cardW, 42, 9);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(226, 192, 141, 0.35)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "700 13px -apple-system, PingFang SC, sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText(`学员：${row.student_name || ""}`, padX + 14, 133);
+
+    ctx.fillStyle = "#E2C08D";
+    ctx.font = "600 12px -apple-system, PingFang SC, sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText(row.grade || "学途卫士学员", W - padX - 14, 133);
+
+    const statsY = headerH + 14;
+    drawRoundedRect(ctx, padX, statsY, cardW, 72, 12);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fill();
+
+    const colW = cardW / 3;
+    const metrics = [
+      { val: `${avgAcc}%`, label: "意群切分准确率", color: "#2C55A0" },
+      { val: timeStr, label: "专注思考总耗时", color: "#0F172A" },
+      { val: rankTitle, label: "教研综合评级", color: "#B68B4C" }
+    ];
+
+    metrics.forEach((m, i) => {
+      const cx = padX + colW * i + colW / 2;
+      ctx.textAlign = "center";
+      ctx.fillStyle = m.color;
+      ctx.font = "800 19px -apple-system, PingFang SC, sans-serif";
+      ctx.fillText(m.val, cx, statsY + 28);
+
+      ctx.fillStyle = "#64748B";
+      ctx.font = "500 11px -apple-system, PingFang SC, sans-serif";
+      ctx.fillText(m.label, cx, statsY + 52);
+
+      if (i < 2) {
+        ctx.strokeStyle = "#E2E8F0";
+        ctx.beginPath();
+        ctx.moveTo(padX + colW * (i + 1), statsY + 16);
+        ctx.lineTo(padX + colW * (i + 1), statsY + 56);
+        ctx.stroke();
+      }
+    });
+
+    let curY = statsY + 72 + 22;
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#0F172A";
+    ctx.font = "800 14px -apple-system, PingFang SC, sans-serif";
+    ctx.fillText("逐句切分与顺句直译精批明细", padX, curY);
+
+    ctx.textAlign = "right";
+    ctx.font = "600 10px -apple-system, PingFang SC, sans-serif";
+    ctx.fillStyle = "#64748B";
+    ctx.fillText("🟢切对  🔴✗/误切  🟠[漏]漏切", W - padX, curY);
+
+    curY += 16;
+
+    itemLayouts.forEach(({ it, st, isPerfect, height, userLines, stdLines, diagBoxH, stuTransLines, literalLines, grammarLines, vocabLines, knowledgeH }) => {
+      drawRoundedRect(ctx, padX, curY, cardW, height, 10);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fill();
+      ctx.strokeStyle = isPerfect ? "#D1FAE5" : "#FDE68A";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      drawRoundedRect(ctx, padX + 12, curY + 12, 46, 22, 5);
+      ctx.fillStyle = "#0F172A";
+      ctx.fill();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "700 11px -apple-system, PingFang SC, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(`第 ${it.index} 句`, padX + 35, curY + 23);
+
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#475569";
+      ctx.font = "600 11px -apple-system, PingFang SC, sans-serif";
+      const src = it.source || "";
+      const shortSource = src.length > 13 ? src.slice(0, 13) + "..." : src;
+      ctx.fillText(shortSource, padX + 64, curY + 23);
+
+      const badgeW = isPerfect ? 104 : 138;
+      const badgeX = W - padX - 12 - badgeW;
+      drawRoundedRect(ctx, badgeX, curY + 12, badgeW, 22, 5);
+      ctx.fillStyle = isPerfect ? "#ECFDF5" : "#FFFBEB";
+      ctx.fill();
+      ctx.fillStyle = isPerfect ? "#059669" : "#D97706";
+      ctx.font = "700 10.5px -apple-system, PingFang SC, sans-serif";
+      ctx.textAlign = "center";
+      const badgeLabel = isPerfect
+        ? `✓ 对${st.correctCount}/漏0/误0`
+        : `对${st.correctCount} · 漏${st.missedCount} · 误${st.wrongCount}`;
+      ctx.fillText(badgeLabel, badgeX + badgeW / 2, curY + 23);
+
+      let innerY = curY + 46;
+
+      drawRoundedRect(ctx, padX + 12, innerY, cardW - 24, diagBoxH, 8);
+      ctx.fillStyle = "#F8FAFC";
+      ctx.fill();
+
+      let dy = innerY + 12;
+      ctx.textAlign = "left";
+      ctx.fillStyle = isPerfect ? "#059669" : "#DC2626";
+      ctx.font = "700 11px -apple-system, PingFang SC, sans-serif";
+      ctx.fillText(isPerfect ? "▸ 英文原句与精准意群切分：" : "▸ 学员切分现场批注：", padX + 20, dy);
+
+      dy += 18;
+      userLines.forEach(line => {
+        let lx = padX + 20;
+        line.forEach(tok => {
+          if (tok.type === "word") {
+            ctx.fillStyle = "#1E293B";
+            ctx.font = "600 13px -apple-system, PingFang SC, sans-serif";
+            ctx.fillText(tok.text, lx, dy);
+          } else {
+            drawRoundedRect(ctx, lx, dy - 9, tok.width, 17, 4);
+            if (tok.type === "correct") {
+              ctx.fillStyle = "#DCFCE7";
+              ctx.fill();
+              ctx.fillStyle = "#059669";
+            } else if (tok.type === "wrong") {
+              ctx.fillStyle = "#FEE2E2";
+              ctx.fill();
+              ctx.fillStyle = "#DC2626";
+            } else {
+              ctx.fillStyle = "#FEF3C7";
+              ctx.fill();
+              ctx.fillStyle = "#D97706";
+            }
+            ctx.font = "800 11px -apple-system, PingFang SC, sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(tok.text, lx + tok.width / 2, dy);
+            ctx.textAlign = "left";
+          }
+          lx += tok.width + 5;
+        });
+        dy += 22;
+      });
+
+      if (!isPerfect) {
+        dy += 4;
+        ctx.fillStyle = "#059669";
+        ctx.font = "700 11px -apple-system, PingFang SC, sans-serif";
+        ctx.fillText("▸ 教研标准意群：", padX + 20, dy);
+
+        dy += 18;
+        stdLines.forEach(line => {
+          let lx = padX + 20;
+          line.forEach(tok => {
+            if (tok.type === "word") {
+              ctx.fillStyle = "#475569";
+              ctx.font = "500 12.5px -apple-system, PingFang SC, sans-serif";
+              ctx.fillText(tok.text, lx, dy);
+            } else {
+              ctx.fillStyle = "#059669";
+              ctx.font = "800 13px -apple-system, PingFang SC, sans-serif";
+              ctx.fillText("/", lx + 2, dy);
+            }
+            lx += tok.width + 5;
+          });
+          dy += 22;
+        });
+      }
+
+      innerY += diagBoxH + 8;
+
+      drawRoundedRect(ctx, padX + 12, innerY, cardW - 24, knowledgeH, 8);
+      ctx.fillStyle = "#F0F5FF";
+      ctx.fill();
+
+      let ky = innerY + 13;
+      ctx.textAlign = "left";
+      ctx.font = fontBody;
+
+      ctx.fillStyle = "#B45309";
+      stuTransLines.forEach(line => {
+        ctx.fillText(line, padX + 20, ky);
+        ky += lineHPlain;
+      });
+
+      ky += 5;
+      ctx.fillStyle = "#059669";
+      literalLines.forEach(line => {
+        ctx.fillText(line, padX + 20, ky);
+        ky += lineHPlain;
+      });
+
+      ky += 5;
+      ctx.fillStyle = "#334155";
+      grammarLines.forEach(line => {
+        ctx.fillText(line, padX + 20, ky);
+        ky += lineHPlain;
+      });
+
+      ky += 5;
+      ctx.fillStyle = "#2C55A0";
+      vocabLines.forEach(line => {
+        ctx.fillText(line, padX + 20, ky);
+        ky += lineHPlain;
+      });
+
+      curY += height + 12;
+    });
+
+    curY += 4;
+    drawRoundedRect(ctx, padX, curY, 64, 22, 5);
+    ctx.fillStyle = "#0F172A";
+    ctx.fill();
+    ctx.fillStyle = "#E2C08D";
+    ctx.font = "700 11px -apple-system, PingFang SC, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("名师寄语", padX + 32, curY + 11);
+
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#334155";
+    ctx.font = "500 11px -apple-system, PingFang SC, sans-serif";
+    let ny = curY + 11;
+    noteLines.forEach(line => {
+      ctx.fillText(line, padX + 72, ny);
+      ny += 16;
+    });
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#94A3B8";
+    ctx.font = "500 10.5px -apple-system, PingFang SC, sans-serif";
+    ctx.fillText("学途卫士高中英语教研组 · 精细化课后诊断反馈", W / 2, ny + 22);
+
+    document.getElementById("diagnosisPreviewImg").src = canvas.toDataURL("image/png");
+  }
+
+  function downloadDiagnosisImg() {
+    const img = document.getElementById("diagnosisPreviewImg");
+    const sName = (activeRecord && activeRecord.student_name) || "学员";
+    const link = document.createElement("a");
+    link.download = `学途卫士_名师精批诊断_${sName}.png`;
+    link.href = img.src;
+    link.click();
+  }
+
+  loadSubmissions();
+</script>
+</body>
+</html>
