@@ -373,9 +373,8 @@
 <canvas id="diagCanvas" class="hidden"></canvas>
 
 <script>
-  // 已接入 Cloudflare 反向代理域名，国内微信直连秒通
   const SUPABASE_URL = "https://db.litao1986.ccwu.cc";
-  const SUPABASE_ANON_KEY = "sb_publishable_NBhQ-TR8nlGx4A_-VeIYlw_X2IjXc5ZNBhQ-TR8nlGx4A_-VeIYlw_X2IjXc5Z";
+  const SUPABASE_ANON_KEY = "sb_publishable_NBhQ-TR8nlGx4A_-VeIYlw_X2IjXc5Z";
 
   let allRecords = [];
   let activeRecord = null;
@@ -397,7 +396,10 @@
           "apikey": SUPABASE_ANON_KEY
         }
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) {
+        const errTxt = await res.text();
+        throw new Error(`HTTP ${res.status}: ${errTxt}`);
+      }
       allRecords = await res.json();
       renderList();
     } catch (e) {
