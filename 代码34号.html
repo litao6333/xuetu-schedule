@@ -544,6 +544,9 @@
     .hidden {
       display: none !important;
     }
+  
+    .receipt-box, .code-box, #receiptBox, #receiptCodeBox { display: none !important; }
+    
   </style>
 </head>
 <body>
@@ -628,13 +631,9 @@
       <div class="poster-tip syncing" id="cloudSyncStatus">⏳ 正在将你的切分与直译答卷自动同步至教研老师后台，请稍候...</div>
       
 
-      <div class="receipt-box">
-        <div class="receipt-label">
-          <span>📋 交卷回执码（复制发群，供老师批改并做出诊断报告）</span>
-          
-        </div>
-        <div class="receipt-code" id="receiptCodeDisplay"></div>
-      </div>
+      
+      <!-- 已精简移除交卷回执码区域 -->
+
 
       <div class="poster-preview-wrap" style="margin-top: 12px;">
         <img id="studentPosterImg" alt="学员原始切分与直译答卷" />
@@ -2016,6 +2015,23 @@
       console.error("Build cloud record error:", e);
     }
   }
+
+  // 页面加载及交卷后彻底隐藏任何残留的“交卷回执码”卡片
+  (function hideLegacyReceiptBox() {
+    function cleanDom() {
+      document.querySelectorAll("div, section").forEach(el => {
+        const txt = (el.textContent || "").trim();
+        if (txt.startsWith("📋 交卷回执码") && txt.length < 2500) {
+          el.style.display = "none";
+        }
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", cleanDom);
+    } else {
+      cleanDom();
+    }
+  })();
 // === XUETU_CLOUD_SYNC_END ===
 </script>
 </body>
