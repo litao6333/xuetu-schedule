@@ -331,7 +331,7 @@
 
     <div class="search-box">
       <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" class="search-input" placeholder="输入关数快速定位（如：1、15、32）..." oninput="renderLevels()" />
+      <input type="text" id="searchInput" class="search-input" placeholder="输入编号快速定位（如：0001、0015、0032）..." oninput="renderLevels()" />
     </div>
 
     <div class="level-grid" id="levelGrid"></div>
@@ -351,7 +351,7 @@
     const num = idx + 1;
     return {
       num,
-      title: `代码${num}号`,
+      title: `长难句${String(num).padStart(4, '0')}`,
       file: `代码${num}号.html`,
       desc: "2008-2017 天津高考真题 · 5句精练"
     };
