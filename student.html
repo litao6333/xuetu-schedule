@@ -353,7 +353,7 @@
       num,
       title: `长难句${String(num).padStart(4, '0')}`,
       file: `代码${num}号.html`,
-      desc: "2008-2017 天津高考真题 · 5句精练"
+      desc: "2008-2026天津高考真题 · 5句精练"
     };
   });
 
@@ -388,7 +388,6 @@
   }
 
   function markStarted(num) {
-    // 记录最近点击过的关卡，方便学生回看
     try {
       localStorage.setItem("xuetu_student_last_level", String(num));
     } catch (_) {}
