@@ -697,9 +697,11 @@
       <input type="text" id="editTaskTitle" class="form-input" style="padding: 8px 10px; font-size: 13px;" />
     </div>
     <textarea id="teacherJsonInput" class="teacher-textarea"></textarea>
-    
-      <!-- 已精简移除交卷回执码区域 -->
-
+    <div class="action-row" style="margin-top: 12px;">
+      <button class="btn-secondary" onclick="closeTeacherModal()">取消</button>
+      <button class="btn-secondary" style="background: #EFF6FF; color: #2C55A0;" onclick="applyTeacherData()">应用预览</button>
+      <button class="btn-submit" onclick="exportUpdatedHtml()">📦 导出HTML</button>
+    </div>
   </div>
 </div>
 
@@ -911,7 +913,7 @@
 
     const isLast = idx === total - 1;
     document.getElementById("btnLockAndNext").textContent = isLast
-      ? "完成全部 5 句并生成交卷回执 ✓"
+      ? "完成全部 5 句并自动交卷 ✓"
       : "锁定本句并进入下一句 →";
 
     renderArena();
@@ -2014,20 +2016,26 @@
     }
   }
 
-  // 页面加载及交卷后彻底隐藏任何残留的“交卷回执码”卡片
-  (function hideLegacyReceiptBox() {
-    function cleanDom() {
-      document.querySelectorAll("div, section").forEach(el => {
+  // 安全隐藏旧版“交卷回执码”卡片与旧引导文案（绝不破坏DOM结构）
+  (function hideLegacyReceiptUi() {
+    function cleanUi() {
+      const receiptSec = document.getElementById("viewStudentReceipt");
+      if (!receiptSec) return;
+      receiptSec.querySelectorAll("div").forEach(el => {
+        if (el.id === "cloudSyncStatus") return;
         const txt = (el.textContent || "").trim();
-        if (txt.startsWith("📋 交卷回执码") && txt.length < 2500) {
+        if (txt.includes("交卷回执码") && !el.querySelector("img") && txt.length < 3000) {
+          el.style.display = "none";
+        }
+        if (txt.includes("已成功封存你的") && txt.includes("发至微信群") && !el.querySelector("img") && txt.length < 500) {
           el.style.display = "none";
         }
       });
     }
     if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", cleanDom);
+      document.addEventListener("DOMContentLoaded", cleanUi);
     } else {
-      cleanDom();
+      cleanUi();
     }
   })();
 // === XUETU_CLOUD_SYNC_END ===
