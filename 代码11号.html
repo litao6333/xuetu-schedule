@@ -324,7 +324,6 @@
       line-height: 1.2;
     }
 
-    /* 逐块意群翻译输入区 */
     .chunk-trans-list {
       display: flex;
       flex-direction: column;
@@ -410,56 +409,43 @@
       cursor: pointer;
     }
 
+    .btn-submit:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
     .poster-tip {
-      background: #EFF6FF;
-      border: 1px solid #BFDBFE;
-      color: var(--academy-blue);
+      background: var(--emerald-bg);
+      border: 1px solid #A7F3D0;
+      color: var(--emerald);
       font-size: 13px;
       font-weight: 700;
       text-align: center;
-      padding: 10px 12px;
-      border-radius: 10px;
-      line-height: 1.5;
-    }
-
-    .receipt-box {
-      margin-top: 12px;
-      background: #F8FAFC;
-      border: 1.5px dashed #CBD5E1;
-      border-radius: 10px;
       padding: 12px;
+      border-radius: 10px;
+      line-height: 1.6;
     }
 
-    .receipt-label {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 6px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .poster-tip.syncing {
+      background: #EFF6FF;
+      border-color: #BFDBFE;
+      color: var(--academy-blue);
     }
 
-    .receipt-code {
-      width: 100%;
-      font-family: monospace;
-      font-size: 11.5px;
-      color: #334155;
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 8px;
-      word-break: break-all;
-      user-select: all;
+    .poster-tip.error {
+      background: var(--crimson-bg);
+      border-color: #FECACA;
+      color: var(--crimson);
     }
 
-    .btn-copy-code {
-      background: var(--navy-dark);
-      color: var(--gold);
+    .btn-retry-sync {
+      margin-top: 8px;
+      background: var(--crimson);
+      color: #fff;
       border: none;
       border-radius: 6px;
-      padding: 4px 10px;
-      font-size: 11.5px;
+      padding: 6px 14px;
+      font-size: 12px;
       font-weight: 700;
       cursor: pointer;
     }
@@ -544,9 +530,6 @@
     .hidden {
       display: none !important;
     }
-  
-    .receipt-box, .code-box, #receiptBox, #receiptCodeBox { display: none !important; }
-    
   </style>
 </head>
 <body>
@@ -597,7 +580,7 @@
 
       <!-- 步骤 2.1：切分意群 -->
       <div id="stepCutSection" style="margin-top: 14px;">
-        <span class="source-tag" id="sentenceSource">天津高考真题 · 阅读理解 C篇</span>
+        <span class="source-tag" id="sentenceSource">天津高考真题</span>
         <div class="instruction-tip">
           <strong>第一步 · 切分意群：</strong>点击下方单词之间的灰色圆点切出意群停顿（/），切好后进入下一步填写逐块中文直译
         </div>
@@ -612,7 +595,7 @@
 
       <!-- 步骤 2.2：按切出的意群逐块填写顺句直译 -->
       <div id="stepTranslateSection" class="hidden" style="margin-top: 14px;">
-        <span class="source-tag" id="sentenceSourceTrans">天津高考真题 · 阅读理解 C篇</span>
+        <span class="source-tag" id="sentenceSourceTrans">天津高考真题</span>
         <div class="instruction-tip">
           <strong>第二步 · 顺句直译：</strong>按你刚才切分的英文意群，顺着语序逐块写出中文意思（不倒装）
         </div>
@@ -626,28 +609,25 @@
       </div>
     </section>
 
-    <!-- 阶段 3A：学生交卷凭证页 -->
+    <!-- 阶段 3A：学生交卷完成页（云端自动同步，免回执码） -->
     <section id="viewStudentReceipt" class="card hidden">
-      <div class="poster-tip syncing" id="cloudSyncStatus">⏳ 正在将你的切分与直译答卷自动同步至教研老师后台，请稍候...</div>
-      
-
-      
-      <!-- 已精简移除交卷回执码区域 -->
-
+      <div class="poster-tip syncing" id="cloudSyncStatus">
+        ⏳ 正在将你的 5 句切分与直译答卷自动同步至教研老师后台，请稍候...
+      </div>
 
       <div class="poster-preview-wrap" style="margin-top: 12px;">
         <img id="studentPosterImg" alt="学员原始切分与直译答卷" />
       </div>
 
       <div class="action-row" style="margin-top: 14px;">
-        <button class="btn-gold" onclick="downloadStudentPoster()">📥 保存交卷答卷图</button>
+        <button class="btn-gold" onclick="downloadStudentPoster()">📥 保存个人交卷留念图</button>
         <button class="btn-secondary" onclick="restartAll()">返回首页</button>
       </div>
     </section>
 
     <!-- 阶段 3B：老师端专属《名师逐句精批诊断报告》输出页 -->
     <section id="viewTeacherReport" class="card hidden">
-      <div class="poster-tip" style="background: var(--emerald-bg); border-color: #A7F3D0; color: var(--emerald);">
+      <div class="poster-tip">
         👨‍🏫 名师精批诊断报告已生成！长按保存长图直接发给学生/家长即可
       </div>
 
@@ -663,12 +643,12 @@
   </main>
 </div>
 
-<!-- 老师端：一键批改生成诊断报告弹窗 -->
+<!-- 老师端：兼容历史回执码批改弹窗 -->
 <div class="modal-mask" id="gradeModal">
   <div class="modal-card">
-    <div class="modal-title">👨‍🏫 老师专属批改台（生成精批报告）</div>
+    <div class="modal-title">👨‍🏫 老师专属批改台（兼容历史回执码）</div>
     <div class="modal-hint">
-      粘贴学生在微信群发送的<strong>【交卷回执码】</strong>（以 <code>XT#</code> 开头），系统将自动还原该生每一刀的切分现场与顺句直译，并生成包含<strong>红绿切分批注 + 学员译文对照 + 教研标准直译 + 句法拆解 + 核心单字</strong>的豪华名师诊断长图。
+      新版答卷已自动同步云端（可直接在 <code>teacher.html</code> 查看）。如需批改旧版<strong>【交卷回执码】</strong>（以 <code>XT#</code> 开头），粘贴在下方即可生成诊断长图。
     </div>
     <div class="form-group" style="margin-top: 0;">
       <label class="form-label">粘贴学员交卷回执码</label>
@@ -708,6 +688,9 @@
 <canvas id="reportCanvas" class="hidden"></canvas>
 
 <script>
+  const SUPABASE_URL = "https://db.litao1986.ccwu.cc";
+  const SUPABASE_ANON_KEY = "sb_publishable_NBhQ-TR8nlGx4A_-VeIYlw_X2IjXc5Z";
+
   let QUIZ_CONFIG = {
   "taskTitle": "长难句意群训练 · 代码11号",
   "sentences": [
@@ -824,9 +807,10 @@
     words: [],
     userCuts: new Set(),
     currentChunks: [],
-    // 每句存储格式：{ cuts: number[], trans: string[] }
     rawSubmissions: [],
-    lastReceiptCode: ""
+    lastReceiptCode: "",
+    lastCloudRow: null,
+    isSubmitting: false
   };
 
   function parseChunkedSentence(chunkedStr) {
@@ -849,7 +833,6 @@
     return { words, cuts };
   }
 
-  // 根据切分点数组将单词列表拆成意群短语数组
   function buildChunksFromCuts(words, cutSet) {
     const chunks = [];
     let current = [];
@@ -872,11 +855,12 @@
       return;
     }
     state.studentName = nameInput;
-    state.className = classInput || "学途卫士学员";
+    state.className = classInput || "未填年级";
     state.currentIndex = 0;
     state.rawSubmissions = [];
     state.startTime = Date.now();
     state.elapsedSeconds = 0;
+    state.isSubmitting = false;
 
     document.getElementById("viewLogin").classList.add("hidden");
     document.getElementById("viewStudentReceipt").classList.add("hidden");
@@ -912,7 +896,9 @@
     document.getElementById("stepTranslateSection").classList.add("hidden");
 
     const isLast = idx === total - 1;
-    document.getElementById("btnLockAndNext").textContent = isLast
+    const btn = document.getElementById("btnLockAndNext");
+    btn.disabled = false;
+    btn.textContent = isLast
       ? "完成全部 5 句并自动交卷 ✓"
       : "锁定本句并进入下一句 →";
 
@@ -956,7 +942,6 @@
     renderArena();
   }
 
-  // 进入第二步：按学生刚才切出的意群拆成中文输入框
   function proceedToTranslateStep() {
     const chunks = buildChunksFromCuts(state.words, state.userCuts);
     state.currentChunks = chunks;
@@ -989,8 +974,8 @@
     document.getElementById("stepCutSection").classList.remove("hidden");
   }
 
-  // 锁定切分与逐块译文，跳下一句
   function lockAndNextSentence() {
+    if (state.isSubmitting) return;
     const transArr = [];
     for (let i = 0; i < state.currentChunks.length; i++) {
       const inp = document.getElementById(`chunkInput_${i}`);
@@ -1034,7 +1019,6 @@
     return JSON.parse(jsonStr);
   }
 
-  // 兼容旧版数组格式与新版 {cuts, trans} 对象格式
   function normalizeSubmissionItem(subItem) {
     if (Array.isArray(subItem)) {
       return { cuts: subItem, trans: [] };
@@ -1045,8 +1029,133 @@
     return { cuts: [], trans: [] };
   }
 
+  function buildCloudRecord(payload) {
+    let totalAcc = 0;
+    const items = QUIZ_CONFIG.sentences.map((item, idx) => {
+      const parsed = parseChunkedSentence(item.chunkedText);
+      const norm = normalizeSubmissionItem(payload.s[idx]);
+      const userCutSet = new Set(norm.cuts);
+      const targetCutSet = parsed.cuts;
+
+      let correctCount = 0;
+      let missedCount = 0;
+      let wrongCount = 0;
+
+      targetCutSet.forEach(ci => {
+        if (userCutSet.has(ci)) correctCount++;
+        else missedCount++;
+      });
+      userCutSet.forEach(ci => {
+        if (!targetCutSet.has(ci)) wrongCount++;
+      });
+
+      const totalOps = targetCutSet.size + wrongCount;
+      const accuracy = totalOps === 0 ? 100 : Math.round((correctCount / totalOps) * 100);
+      totalAcc += accuracy;
+
+      const userMarkedWords = [];
+      parsed.words.forEach((w, wi) => {
+        userMarkedWords.push(w);
+        if (wi < parsed.words.length - 1) {
+          const inU = userCutSet.has(wi);
+          const inT = targetCutSet.has(wi);
+          if (inU && inT) userMarkedWords.push("/");
+          else if (inU && !inT) userMarkedWords.push("✗/");
+          else if (!inU && inT) userMarkedWords.push("[漏]");
+        }
+      });
+
+      return {
+        index: idx + 1,
+        source: item.source,
+        words: parsed.words,
+        userCuts: norm.cuts,
+        targetCuts: Array.from(targetCutSet).sort((a, b) => a - b),
+        userMarkedSentence: userMarkedWords.join(" "),
+        standardSentence: item.chunkedText,
+        studentChunks: buildChunksFromCuts(parsed.words, userCutSet),
+        studentTrans: norm.trans,
+        literalTrans: item.literalTrans,
+        grammarNote: item.grammarNote,
+        vocab: item.vocab,
+        stats: { correctCount, missedCount, wrongCount, accuracy }
+      };
+    });
+
+    const avgAccuracy = Math.round(totalAcc / items.length);
+    const mins = Math.floor(payload.t / 60);
+    const secs = String(payload.t % 60).padStart(2, "0");
+    const durationText = mins > 0 ? `${mins}分${secs}秒` : `${secs}秒`;
+
+    return {
+      code_id: QUIZ_CONFIG.taskTitle,
+      student_name: payload.n,
+      grade: payload.c,
+      summary: `切分准确率 ${avgAccuracy}% · 用时 ${durationText}`,
+      detail: {
+        taskTitle: QUIZ_CONFIG.taskTitle,
+        studentName: payload.n,
+        grade: payload.c,
+        elapsedSeconds: payload.t,
+        durationText,
+        submittedAtLocal: payload.d,
+        avgAccuracy,
+        items
+      }
+    };
+  }
+
+  async function syncSubmissionToSupabase(cloudRow) {
+    const statusEl = document.getElementById("cloudSyncStatus");
+    statusEl.className = "poster-tip syncing";
+    statusEl.innerHTML = "⏳ 正在将你的 5 句切分与直译答卷自动同步至教研老师后台，请稍候...";
+
+    try {
+      const backupKey = "xuetu_last_backup_" + Date.now();
+      localStorage.setItem(backupKey, JSON.stringify(cloudRow));
+    } catch (_) {}
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/sentence_submissions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_ANON_KEY,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(cloudRow)
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`HTTP ${res.status}: ${errText}`);
+      }
+
+      statusEl.className = "poster-tip";
+      statusEl.innerHTML = `✅ <strong>交卷成功！</strong>你的 5 句切分与直译已自动同步至教研老师后台。<br/>无需复制发送任何回执码，等待老师精批即可！`;
+    } catch (err) {
+      console.error("Supabase sync error:", err);
+      statusEl.className = "poster-tip error";
+      statusEl.innerHTML = `⚠️ 当前网络波动（${err.message}），答卷已安全暂存在本机。<br/><button class="btn-retry-sync" onclick="retryCloudSync()">点击重新同步至老师后台</button>`;
+    }
+  }
+
+  function retryCloudSync() {
+    if (state.lastCloudRow) {
+      syncSubmissionToSupabase(state.lastCloudRow);
+    }
+  }
+
   function finishStudentSubmission() {
+    if (state.isSubmitting) return;
+    state.isSubmitting = true;
     if (state.timerInterval) clearInterval(state.timerInterval);
+
+    const btn = document.getElementById("btnLockAndNext");
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "正在自动交卷...";
+    }
 
     const now = new Date();
     const stamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
@@ -1059,36 +1168,24 @@
       s: state.rawSubmissions
     };
 
-    const receiptCode = encodeReceiptPayload(payload);
-    state.lastReceiptCode = receiptCode;
+    state.lastReceiptCode = encodeReceiptPayload(payload);
+    const cloudRow = buildCloudRecord(payload);
+    state.lastCloudRow = cloudRow;
 
-    document.getElementById("receiptCodeDisplay").textContent = receiptCode;
     document.getElementById("viewQuiz").classList.add("hidden");
     document.getElementById("viewStudentReceipt").classList.remove("hidden");
 
     renderStudentReceiptPoster(payload);
-  }
-
-  function copyReceiptCode() {
-    const code = document.getElementById("receiptCodeDisplay").textContent;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(code).then(() => {
-        alert("交卷回执码已复制！请直接粘贴发送到微信学习群，等待老师批改。");
-      }).catch(() => {
-        alert("请长按上方灰色框内的 XT# 字母串全选复制后发送至微信群。");
-      });
-    } else {
-      alert("请长按上方灰色框内的 XT# 字母串全选复制后发送至微信群。");
-    }
+    syncSubmissionToSupabase(cloudRow);
   }
 
   function restartAll() {
+    state.isSubmitting = false;
     document.getElementById("viewStudentReceipt").classList.add("hidden");
     document.getElementById("viewTeacherReport").classList.add("hidden");
     document.getElementById("viewLogin").classList.remove("hidden");
   }
 
-  // ==================== 通用 Canvas 排版辅助 ====================
   function drawRoundedRect(ctx, x, y, w, h, r) {
     ctx.beginPath();
     ctx.moveTo(x + r, y);
@@ -1144,7 +1241,6 @@
     return lines;
   }
 
-  // ==================== 3A：绘制学生端【交卷凭证图】（含切分与学生顺句直译） ====================
   function renderStudentReceiptPoster(payload) {
     const canvas = document.getElementById("reportCanvas");
     const ctx = canvas.getContext("2d");
@@ -1244,15 +1340,15 @@
 
     const statusY = headerH + 12;
     drawRoundedRect(ctx, padX, statusY, cardW, 44, 10);
-    ctx.fillStyle = "#EFF6FF";
+    ctx.fillStyle = "#ECFDF5";
     ctx.fill();
-    ctx.strokeStyle = "#BFDBFE";
+    ctx.strokeStyle = "#A7F3D0";
     ctx.stroke();
 
     ctx.textAlign = "center";
-    ctx.fillStyle = "#1E40AF";
+    ctx.fillStyle = "#059669";
     ctx.font = "700 12.5px -apple-system, PingFang SC, sans-serif";
-    ctx.fillText("⏳ 切分与直译答卷已封存 · 等待教研老师逐句批改诊断", W / 2, statusY + 22);
+    ctx.fillText("✅ 答卷已自动同步至教研老师后台 · 等待逐句精批", W / 2, statusY + 22);
 
     let curY = statusY + 44 + 22;
     ctx.textAlign = "left";
@@ -1311,7 +1407,6 @@
         ly += 22;
       });
 
-      // 学员中文直译框
       const boxY = ly - 4;
       drawRoundedRect(ctx, padX + 12, boxY, cardW - 24, card.transBoxH, 7);
       ctx.fillStyle = "#F8FAFC";
@@ -1332,7 +1427,7 @@
     ctx.textAlign = "center";
     ctx.fillStyle = "#94A3B8";
     ctx.font = "500 10.5px -apple-system, PingFang SC, sans-serif";
-    ctx.fillText("学途卫士高中英语教研组 · 请将交卷图与回执码发送至学习群", W / 2, curY + 24);
+    ctx.fillText("学途卫士高中英语教研组 · 云端自动交卷存证", W / 2, curY + 24);
 
     document.getElementById("studentPosterImg").src = canvas.toDataURL("image/png");
   }
@@ -1345,7 +1440,6 @@
     link.click();
   }
 
-  // ==================== 3B：老师端批改台 & 生成【名师逐句精批诊断报告】 ====================
   function openGradeModal() {
     if (state.lastReceiptCode && !document.getElementById("gradeReceiptInput").value) {
       document.getElementById("gradeReceiptInput").value = state.lastReceiptCode;
@@ -1481,15 +1575,17 @@
         + grammarLines.length * lineHPlain + 6
         + vocabLines.length * lineHPlain + 8;
 
+      const userTokens = buildDiagnosticTokens(rec.words, rec.userCutSet, rec.targetCutSet);
+      const userLines = layoutTokens(ctx, userTokens, textMaxW);
+      const lineH = 22;
+
       if (rec.isPerfect) {
-        const height = 46 + knowledgeH + 10;
-        return { rec, height, userLines: [], stdLines: [], stuTransLines, literalLines, grammarLines, vocabLines, knowledgeH };
+        const diagBoxH = 22 + userLines.length * lineH + 4;
+        const height = 46 + diagBoxH + 8 + knowledgeH + 10;
+        return { rec, height, userLines, stdLines: [], diagBoxH, stuTransLines, literalLines, grammarLines, vocabLines, knowledgeH };
       } else {
-        const userTokens = buildDiagnosticTokens(rec.words, rec.userCutSet, rec.targetCutSet);
         const stdTokens = buildStandardTokens(rec.words, rec.targetCutSet);
-        const userLines = layoutTokens(ctx, userTokens, textMaxW);
         const stdLines = layoutTokens(ctx, stdTokens, textMaxW);
-        const lineH = 22;
         const diagBoxH = 20 + userLines.length * lineH + 22 + stdLines.length * lineH + 6;
         const height = 46 + diagBoxH + 8 + knowledgeH + 10;
         return { rec, height, userLines, stdLines, diagBoxH, stuTransLines, literalLines, grammarLines, vocabLines, knowledgeH };
@@ -1638,51 +1734,51 @@
 
       let innerY = curY + 46;
 
-      if (!rec.isPerfect) {
-        drawRoundedRect(ctx, padX + 12, innerY, cardW - 24, diagBoxH, 8);
-        ctx.fillStyle = "#F8FAFC";
-        ctx.fill();
+      drawRoundedRect(ctx, padX + 12, innerY, cardW - 24, diagBoxH, 8);
+      ctx.fillStyle = "#F8FAFC";
+      ctx.fill();
 
-        let dy = innerY + 12;
-        ctx.textAlign = "left";
-        ctx.fillStyle = "#DC2626";
-        ctx.font = "700 11px -apple-system, PingFang SC, sans-serif";
-        ctx.fillText("▸ 学员切分现场批注：", padX + 20, dy);
+      let dy = innerY + 12;
+      ctx.textAlign = "left";
+      ctx.fillStyle = rec.isPerfect ? "#059669" : "#DC2626";
+      ctx.font = "700 11px -apple-system, PingFang SC, sans-serif";
+      ctx.fillText(rec.isPerfect ? "▸ 英文原句与精准意群切分：" : "▸ 学员切分现场批注：", padX + 20, dy);
 
-        dy += 18;
-        userLines.forEach(line => {
-          let lx = padX + 20;
-          line.forEach(tok => {
-            if (tok.type === "word") {
-              ctx.fillStyle = "#1E293B";
-              ctx.font = "600 13px -apple-system, PingFang SC, sans-serif";
-              ctx.fillText(tok.text, lx, dy);
+      dy += 18;
+      userLines.forEach(line => {
+        let lx = padX + 20;
+        line.forEach(tok => {
+          if (tok.type === "word") {
+            ctx.fillStyle = "#1E293B";
+            ctx.font = "600 13px -apple-system, PingFang SC, sans-serif";
+            ctx.fillText(tok.text, lx, dy);
+          } else {
+            const pillH = 17;
+            drawRoundedRect(ctx, lx, dy - 9, tok.width, pillH, 4);
+            if (tok.type === "correct") {
+              ctx.fillStyle = "#DCFCE7";
+              ctx.fill();
+              ctx.fillStyle = "#059669";
+            } else if (tok.type === "wrong") {
+              ctx.fillStyle = "#FEE2E2";
+              ctx.fill();
+              ctx.fillStyle = "#DC2626";
             } else {
-              const pillH = 17;
-              drawRoundedRect(ctx, lx, dy - 9, tok.width, pillH, 4);
-              if (tok.type === "correct") {
-                ctx.fillStyle = "#DCFCE7";
-                ctx.fill();
-                ctx.fillStyle = "#059669";
-              } else if (tok.type === "wrong") {
-                ctx.fillStyle = "#FEE2E2";
-                ctx.fill();
-                ctx.fillStyle = "#DC2626";
-              } else {
-                ctx.fillStyle = "#FEF3C7";
-                ctx.fill();
-                ctx.fillStyle = "#D97706";
-              }
-              ctx.font = "800 11px -apple-system, PingFang SC, sans-serif";
-              ctx.textAlign = "center";
-              ctx.fillText(tok.text, lx + tok.width / 2, dy);
-              ctx.textAlign = "left";
+              ctx.fillStyle = "#FEF3C7";
+              ctx.fill();
+              ctx.fillStyle = "#D97706";
             }
-            lx += tok.width + 5;
-          });
-          dy += 22;
+            ctx.font = "800 11px -apple-system, PingFang SC, sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(tok.text, lx + tok.width / 2, dy);
+            ctx.textAlign = "left";
+          }
+          lx += tok.width + 5;
         });
+        dy += 22;
+      });
 
+      if (!rec.isPerfect) {
         dy += 4;
         ctx.fillStyle = "#059669";
         ctx.font = "700 11px -apple-system, PingFang SC, sans-serif";
@@ -1705,9 +1801,9 @@
           });
           dy += 22;
         });
-
-        innerY += diagBoxH + 8;
       }
+
+      innerY += diagBoxH + 8;
 
       drawRoundedRect(ctx, padX + 12, innerY, cardW - 24, knowledgeH, 8);
       ctx.fillStyle = "#F0F5FF";
@@ -1717,14 +1813,12 @@
       ctx.textAlign = "left";
       ctx.font = fontBody;
 
-      // 1. 学员直译
       ctx.fillStyle = "#B45309";
       stuTransLines.forEach(line => {
         ctx.fillText(line, padX + 20, ky);
         ky += lineHPlain;
       });
 
-      // 2. 标准直译
       ky += 5;
       ctx.fillStyle = "#059669";
       literalLines.forEach(line => {
@@ -1732,7 +1826,6 @@
         ky += lineHPlain;
       });
 
-      // 3. 句法拆解
       ky += 5;
       ctx.fillStyle = "#334155";
       grammarLines.forEach(line => {
@@ -1740,7 +1833,6 @@
         ky += lineHPlain;
       });
 
-      // 4. 高频单字
       ky += 5;
       ctx.fillStyle = "#2C55A0";
       vocabLines.forEach(line => {
@@ -1788,7 +1880,6 @@
     link.click();
   }
 
-  // ==================== 老师改题弹窗 ====================
   function openTeacherModal() {
     document.getElementById("editTaskTitle").value = QUIZ_CONFIG.taskTitle;
     document.getElementById("teacherJsonInput").value = JSON.stringify(QUIZ_CONFIG.sentences, null, 2);
@@ -1824,12 +1915,11 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "代码12号.html";
+    a.download = "代码2号.html";
     a.click();
     URL.revokeObjectURL(url);
   }
 
-  // ==================== 老师端权限无痕控制 ====================
   let tapCount = 0;
   let tapTimer = null;
 
@@ -1855,190 +1945,6 @@
       enableTeacherMode();
     }
   })();
-
-// === XUETU_CLOUD_SYNC_START ===
-  const SUPABASE_URL = "https://db.litao1986.ccwu.cc";
-  const SUPABASE_ANON_KEY = "sb_publishable_NBhQ-TR8nlGx4A_-VeIYlw_X2IjXc5Z";
-
-  function normalizeSubmissionItem(subItem) {
-    if (Array.isArray(subItem)) {
-      return { cuts: subItem, trans: [] };
-    }
-    if (subItem && typeof subItem === "object") {
-      return { cuts: subItem.cuts || [], trans: subItem.trans || [] };
-    }
-    return { cuts: [], trans: [] };
-  }
-
-  function buildCloudRecord(payload) {
-    const cfg = (typeof QUIZ_CONFIG !== "undefined" && QUIZ_CONFIG) || { taskTitle: document.title, sentences: [] };
-    const sentences = cfg.sentences || [];
-    let totalAcc = 0;
-
-    const items = sentences.map((item, idx) => {
-      const parsed = typeof parseChunkedSentence === "function"
-        ? parseChunkedSentence(item.chunkedText || "")
-        : { words: (item.chunkedText || "").replace(/\s*\/\s*/g, " ").trim().split(/\s+/).filter(Boolean), cuts: new Set() };
-
-      const norm = normalizeSubmissionItem((payload.s || [])[idx]);
-      const userCutSet = new Set(norm.cuts);
-      const targetCutSet = parsed.cuts;
-
-      let correctCount = 0;
-      let missedCount = 0;
-      let wrongCount = 0;
-
-      targetCutSet.forEach(ci => {
-        if (userCutSet.has(ci)) correctCount++;
-        else missedCount++;
-      });
-      userCutSet.forEach(ci => {
-        if (!targetCutSet.has(ci)) wrongCount++;
-      });
-
-      const totalOps = targetCutSet.size + wrongCount;
-      const accuracy = totalOps === 0 ? 100 : Math.round((correctCount / totalOps) * 100);
-      totalAcc += accuracy;
-
-      const userMarkedWords = [];
-      parsed.words.forEach((w, wi) => {
-        userMarkedWords.push(w);
-        if (wi < parsed.words.length - 1) {
-          const inU = userCutSet.has(wi);
-          const inT = targetCutSet.has(wi);
-          if (inU && inT) userMarkedWords.push("/");
-          else if (inU && !inT) userMarkedWords.push("✗/");
-          else if (!inU && inT) userMarkedWords.push("[漏]");
-        }
-      });
-
-      const studentChunks = typeof buildChunksFromCuts === "function"
-        ? buildChunksFromCuts(parsed.words, userCutSet)
-        : [parsed.words.join(" ")];
-
-      return {
-        index: idx + 1,
-        source: item.source || "",
-        words: parsed.words,
-        userCuts: norm.cuts,
-        targetCuts: Array.from(targetCutSet).sort((a, b) => a - b),
-        userMarkedSentence: userMarkedWords.join(" "),
-        standardSentence: item.chunkedText || "",
-        studentChunks: studentChunks,
-        studentTrans: norm.trans,
-        literalTrans: item.literalTrans || "",
-        grammarNote: item.grammarNote || "",
-        vocab: item.vocab || [],
-        stats: { correctCount, missedCount, wrongCount, accuracy }
-      };
-    });
-
-    const avgAccuracy = items.length > 0 ? Math.round(totalAcc / items.length) : 100;
-    const sec = payload.t || 0;
-    const mins = Math.floor(sec / 60);
-    const secs = String(sec % 60).padStart(2, "0");
-    const durationText = mins > 0 ? `${mins}分${secs}秒` : `${secs}秒`;
-    const taskTitle = cfg.taskTitle || document.title;
-
-    return {
-      code_id: taskTitle,
-      student_name: payload.n || "未命名学员",
-      grade: payload.c || "未填年级",
-      summary: `切分准确率 ${avgAccuracy}% · 用时 ${durationText}`,
-      detail: {
-        taskTitle: taskTitle,
-        studentName: payload.n || "未命名学员",
-        grade: payload.c || "未填年级",
-        elapsedSeconds: sec,
-        durationText: durationText,
-        submittedAtLocal: payload.d || "",
-        avgAccuracy: avgAccuracy,
-        items: items
-      }
-    };
-  }
-
-  async function syncSubmissionToSupabase(cloudRow) {
-    const statusEl = document.getElementById("cloudSyncStatus");
-    if (statusEl) {
-      statusEl.className = "poster-tip syncing";
-      statusEl.innerHTML = "⏳ 正在将你的切分与直译答卷自动同步至教研老师后台，请稍候...";
-    }
-
-    try {
-      localStorage.setItem("xuetu_last_backup_" + Date.now(), JSON.stringify(cloudRow));
-    } catch (_) {}
-
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/sentence_submissions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": SUPABASE_ANON_KEY,
-          "Prefer": "return=minimal"
-        },
-        body: JSON.stringify(cloudRow)
-      });
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`HTTP ${res.status}: ${errText}`);
-      }
-
-      if (statusEl) {
-        statusEl.className = "poster-tip";
-        statusEl.innerHTML = `✅ <strong>交卷成功！</strong>你的答卷已自动同步至教研老师后台。<br/>无需复制发送任何回执码，等待老师精批即可！`;
-      }
-    } catch (err) {
-      console.error("Supabase sync error:", err);
-      if (statusEl) {
-        statusEl.className = "poster-tip error";
-        statusEl.innerHTML = `⚠️ 当前网络波动（${err.message}），答卷已安全暂存在本机。<br/><button class="btn-retry-sync" onclick="retryCloudSync()">点击重新同步至老师后台</button>`;
-      }
-    }
-  }
-
-  function retryCloudSync() {
-    if (typeof state !== "undefined" && state.lastCloudRow) {
-      syncSubmissionToSupabase(state.lastCloudRow);
-    }
-  }
-
-  function triggerCloudSyncForPayload(payload) {
-    try {
-      const cloudRow = buildCloudRecord(payload);
-      if (typeof state !== "undefined") {
-        state.lastCloudRow = cloudRow;
-      }
-      syncSubmissionToSupabase(cloudRow);
-    } catch (e) {
-      console.error("Build cloud record error:", e);
-    }
-  }
-
-  // 安全隐藏旧版“交卷回执码”卡片与旧引导文案（绝不破坏DOM结构）
-  (function hideLegacyReceiptUi() {
-    function cleanUi() {
-      const receiptSec = document.getElementById("viewStudentReceipt");
-      if (!receiptSec) return;
-      receiptSec.querySelectorAll("div").forEach(el => {
-        if (el.id === "cloudSyncStatus") return;
-        const txt = (el.textContent || "").trim();
-        if (txt.includes("交卷回执码") && !el.querySelector("img") && txt.length < 3000) {
-          el.style.display = "none";
-        }
-        if (txt.includes("已成功封存你的") && txt.includes("发至微信群") && !el.querySelector("img") && txt.length < 500) {
-          el.style.display = "none";
-        }
-      });
-    }
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", cleanUi);
-    } else {
-      cleanUi();
-    }
-  })();
-// === XUETU_CLOUD_SYNC_END ===
 </script>
 </body>
 </html>
