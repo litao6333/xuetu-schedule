@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>学途卫士 · 高中英语长难句意群训练营（全40关闯关大厅）</title>
+  <style>
+    :root {
+      --navy-dark: #08182B;
+      --navy-mid: #11294D;
+      --academy-blue: #2C55A0;
+      --gold: #E2C08D;
+      --gold-dark: #B68B4C;
+      --bg-page: #F4F6FA;
+      --card-bg: #FFFFFF;
+      --text-main: #1E293B;
+      --text-sub: #64748B;
+      --border: #E2E8F0;
+      --emerald: #059669;
+      --emerald-bg: #ECFDF5;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 520px;
+      min-height: 100vh;
+      background: var(--bg-page);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 30px rgba(8, 24, 43, 0.08);
+    }
+
+    .hero-header {
+      background: linear-gradient(145deg, var(--navy-dark) 0%, var(--navy-mid) 100%);
+      color: #fff;
+      padding: 26px 20px 24px;
+      border-bottom-left-radius: 22px;
+      border-bottom-right-radius: 22px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(8, 24, 43, 0.18);
+    }
+
+    .hero-header::after {
+      content: "";
+      position: absolute;
+      right: -35px;
+      top: -35px;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(226, 192, 141, 0.24) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .brand-badge {
+      background: var(--gold);
+      color: var(--navy-dark);
+      font-weight: 800;
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 5px;
+      letter-spacing: 0.5px;
+    }
+
+    .progress-pill {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(226, 192, 141, 0.45);
+      color: var(--gold);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 99px;
+    }
+
+    .hero-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      margin-bottom: 5px;
+    }
+
+    .hero-sub {
+      font-size: 12.5px;
+      color: #CBD5E1;
+      line-height: 1.5;
+    }
+
+    .main-container {
+      padding: 16px 16px 36px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* 进度总览卡片 */
+    .stats-card {
+      background: #FFFFFF;
+      border-radius: 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+    }
+
+    .stats-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+    }
+
+    .stats-label {
+      color: var(--navy-dark);
+    }
+
+    .stats-num {
+      color: var(--academy-blue);
+    }
+
+    .progress-track {
+      height: 8px;
+      background: #E2E8F0;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--academy-blue), var(--gold-dark));
+      border-radius: 99px;
+      transition: width 0.35s ease;
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .filter-btn {
+      flex: 1;
+      padding: 7px 6px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #F8FAFC;
+      color: var(--text-sub);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filter-btn.active {
+      background: var(--navy-dark);
+      color: var(--gold);
+      border-color: var(--navy-dark);
+    }
+
+    /* 搜索框 */
+    .search-box {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 36px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: #FFFFFF;
+      font-size: 13.5px;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--academy-blue);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: #94A3B8;
+    }
+
+    /* 关卡网格 */
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .level-card {
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+      transition: transform 0.12s, border-color 0.15s;
+    }
+
+    .level-card.done {
+      border-color: #A7F3D0;
+      background: linear-gradient(180deg, #FFFFFF 0%, #F4FBF7 100%);
+    }
+
+    .level-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .level-num {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--navy-dark);
+    }
+
+    .status-toggle {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 99px;
+      border: 1px solid #CBD5E1;
+      background: #F8FAFC;
+      color: var(--text-sub);
+      cursor: pointer;
+    }
+
+    .level-card.done .status-toggle {
+      background: var(--emerald-bg);
+      border-color: #6EE7B7;
+      color: var(--emerald);
+    }
+
+    .level-meta {
+      font-size: 11.5px;
+      color: var(--text-sub);
+    }
+
+    .btn-enter {
+      display: block;
+      width: 100%;
+      text-align: center;
+      text-decoration: none;
+      padding: 8px 0;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--navy-dark), var(--academy-blue));
+      color: #FFFFFF;
+    }
+
+    .level-card.done .btn-enter {
+      background: #EFF6FF;
+      color: var(--academy-blue);
+      border: 1px solid #BFDBFE;
+    }
+
+    .footer-tip {
+      text-align: center;
+      font-size: 11.5px;
+      color: #94A3B8;
+      margin-top: 6px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-shell">
+  <header class="hero-header">
+    <div class="brand-row">
+      <span class="brand-badge">XUETU GUARD · 学途卫士</span>
+      <span class="progress-pill" id="headerCountPill">已打卡 0 / 40 关</span>
+    </div>
+    <h1 class="hero-title">高中英语长难句意群训练营</h1>
+    <p class="hero-sub">天津高考真题精编（全 40 关 · 每关 5 句）<br/>点击关卡进入练习，交卷后自动同步教研老师后台精批</p>
+  </header>
+
+  <main class="main-container">
+    <div class="stats-card">
+      <div class="stats-top">
+        <span class="stats-label">📈 个人闯关总进度</span>
+        <span class="stats-num" id="progressPercentText">0%（0/40）</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressBarFill"></div>
+      </div>
+      <div class="filter-row">
+        <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">全部 40 关</button>
+        <button class="filter-btn" data-filter="todo" onclick="setFilter('todo', this)">待完成</button>
+        <button class="filter-btn" data-filter="done" onclick="setFilter('done', this)">已打卡</button>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" class="search-input" placeholder="输入关数快速定位（如：1、15、32）..." oninput="renderLevels()" />
+    </div>
+
+    <div class="level-grid" id="levelGrid"></div>
+
+    <div class="footer-tip">
+      💡 提示：点击微信右上角「···」选择<strong>收藏</strong>或<strong>浮窗</strong>，下次练下一关直接点开即可<br/>
+      每次交卷无需复制回执码，系统自动同步至教研老师阅卷中心
+    </div>
+  </main>
+</div>
+
+<script>
+  const STORAGE_DONE_KEY = "xuetu_student_completed_levels_v1";
+  let currentFilter = "all";
+
+  const LEVELS = Array.from({ length: 40 }, (_, idx) => {
+    const num = idx + 1;
+    return {
+      num,
+      title: `代码${num}号`,
+      file: `代码${num}号.html`,
+      desc: "2008-2017 天津高考真题 · 5句精练"
+    };
+  });
+
+  function getDoneSet() {
+    try {
+      const raw = localStorage.getItem(STORAGE_DONE_KEY);
+      if (raw) {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr)) return new Set(arr);
+      }
+    } catch (_) {}
+    return new Set();
+  }
+
+  function saveDoneSet(doneSet) {
+    try {
+      localStorage.setItem(STORAGE_DONE_KEY, JSON.stringify(Array.from(doneSet)));
+    } catch (_) {}
+  }
+
+  function toggleDone(num, event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const doneSet = getDoneSet();
+    if (doneSet.has(num)) {
+      doneSet.delete(num);
+    } else {
+      doneSet.add(num);
+    }
+    saveDoneSet(doneSet);
+    renderLevels();
+  }
+
+  function markStarted(num) {
+    // 记录最近点击过的关卡，方便学生回看
+    try {
+      localStorage.setItem("xuetu_student_last_level", String(num));
+    } catch (_) {}
+  }
+
+  function setFilter(filterKey, btnEl) {
+    currentFilter = filterKey;
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btnEl.classList.add("active");
+    renderLevels();
+  }
+
+  function updateProgressHeader(doneCount) {
+    const pct = Math.round((doneCount / 40) * 100);
+    document.getElementById("headerCountPill").textContent = `已打卡 ${doneCount} / 40 关`;
+    document.getElementById("progressPercentText").textContent = `${pct}%（${doneCount}/40）`;
+    document.getElementById("progressBarFill").style.width = `${pct}%`;
+  }
+
+  function renderLevels() {
+    const doneSet = getDoneSet();
+    updateProgressHeader(doneSet.size);
+
+    const kw = document.getElementById("searchInput").value.trim().toLowerCase();
+    const grid = document.getElementById("levelGrid");
+    grid.innerHTML = "";
+
+    const filtered = LEVELS.filter(item => {
+      const isDone = doneSet.has(item.num);
+      if (currentFilter === "done" && !isDone) return false;
+      if (currentFilter === "todo" && isDone) return false;
+      if (kw) {
+        const matchStr = `${item.num} ${item.title}`.toLowerCase();
+        if (!matchStr.includes(kw)) return false;
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: #94A3B8; padding: 32px 0; font-size: 13px;">暂无匹配的关卡记录</div>`;
+      return;
+    }
+
+    filtered.forEach(item => {
+      const isDone = doneSet.has(item.num);
+      const card = document.createElement("div");
+      card.className = "level-card" + (isDone ? " done" : "");
+      card.innerHTML = `
+        <div class="level-top">
+          <span class="level-num">${item.title}</span>
+          <button class="status-toggle" onclick="toggleDone(${item.num}, event)" title="点击切换打卡状态">
+            ${isDone ? "✓ 已完成" : "○ 未打卡"}
+          </button>
+        </div>
+        <div class="level-meta">${item.desc}</div>
+        <a class="btn-enter" href="./${item.file}" onclick="markStarted(${item.num})">
+          ${isDone ? "再次复习 →" : "进入闯关 →"}
+        </a>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  renderLevels();
+</script>
+</body>
+</html>
