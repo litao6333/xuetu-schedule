@@ -374,6 +374,7 @@
   </div>
 </main>
 
+<!-- 诊断海报预览弹窗 -->
 <div class="modal-mask" id="posterModal">
   <div class="modal-card">
     <div style="font-weight: 800; font-size: 15px; color: var(--navy-dark);">
@@ -387,6 +388,20 @@
   </div>
 </div>
 
+<!-- 自定义删除确认弹窗（不依赖浏览器原生 confirm） -->
+<div class="modal-mask" id="deleteConfirmModal">
+  <div class="modal-card" style="max-width: 380px;">
+    <div style="font-weight: 800; font-size: 16px; color: var(--crimson);">
+      🗑️ 确认删除交卷记录？
+    </div>
+    <div id="deleteConfirmText" style="font-size: 13.5px; color: var(--text-main); line-height: 1.6;"></div>
+    <div class="modal-btns">
+      <button class="btn-outline" style="flex: 1;" onclick="closeDeleteModal()">取消</button>
+      <button class="btn-danger-sm" id="btnConfirmDeleteExec" style="flex: 1; padding: 10px;" onclick="executeDeleteSubmission()">确认永久删除</button>
+    </div>
+  </div>
+</div>
+
 <canvas id="reportCanvas" class="hidden"></canvas>
 
 <script>
@@ -395,6 +410,7 @@
 
   let allRecords = [];
   let expandedIds = new Set();
+  let pendingDeleteIndex = -1;
 
   function formatChinaTime(isoStr) {
     if (!isoStr) return "";
@@ -428,17 +444,48 @@
     }
   }
 
-  async function deleteSubmission(id, studentName, codeId) {
-    const ok = confirm(`确定要删除这条交卷记录吗？\n\n学员：${studentName}\n关卡：${codeId}\n\n删除后将从云端数据库永久移除，不可恢复。`);
-    if (!ok) return;
+  function promptDeleteByIndex(idx) {
+    const row = allRecords[idx];
+    if (!row) return;
+    pendingDeleteIndex = idx;
+    document.getElementById("deleteConfirmText").innerHTML =
+      `学员：<strong>${row.student_name || "未命名学员"}</strong>（${row.grade || ""}）<br/>关卡：<strong>${row.code_id || "未标注关卡"}</strong><br/><span style="color:#64748B;font-size:12px;">删除后将从云端数据库永久移除，不可恢复。</span>`;
+    const btn = document.getElementById("btnConfirmDeleteExec");
+    btn.disabled = false;
+    btn.textContent = "确认永久删除";
+    document.getElementById("deleteConfirmModal").classList.add("show");
+  }
+
+  function closeDeleteModal() {
+    document.getElementById("deleteConfirmModal").classList.remove("show");
+    pendingDeleteIndex = -1;
+  }
+
+  async function executeDeleteSubmission() {
+    const row = allRecords[pendingDeleteIndex];
+    if (!row) return;
+
+    const btn = document.getElementById("btnConfirmDeleteExec");
+    btn.disabled = true;
+    btn.textContent = "正在删除...";
 
     try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/sentence_submissions?id=eq.${id}`, {
+      // 兼容主键为 id 或 uuid 或无显式 id 的情况
+      let filterQuery = "";
+      if (row.id !== undefined && row.id !== null) {
+        filterQuery = `id=eq.${encodeURIComponent(row.id)}`;
+      } else if (row.created_at) {
+        filterQuery = `created_at=eq.${encodeURIComponent(row.created_at)}`;
+      } else {
+        throw new Error("未找到该记录的唯一主键字段（id / created_at）");
+      }
+
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/sentence_submissions?${filterQuery}`, {
         method: "DELETE",
         headers: {
           "apikey": SUPABASE_ANON_KEY,
           "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-          "Prefer": "return=minimal"
+          "Prefer": "return=representation"
         }
       });
 
@@ -447,17 +494,19 @@
         throw new Error(`HTTP ${res.status}: ${txt}`);
       }
 
-      allRecords = allRecords.filter(r => r.id !== id);
-      expandedIds.delete(id);
+      allRecords.splice(pendingDeleteIndex, 1);
+      closeDeleteModal();
       renderList();
     } catch (err) {
-      alert("删除失败，请检查网络或数据库 DELETE 权限：\n" + err.message);
+      btn.disabled = false;
+      btn.textContent = "确认永久删除";
+      alert("删除失败：\n" + err.message + "\n\n如提示权限不足，请在 Supabase SQL Editor 执行：\nGRANT DELETE ON TABLE public.sentence_submissions TO anon;");
     }
   }
 
-  function toggleExpand(id) {
-    if (expandedIds.has(id)) expandedIds.delete(id);
-    else expandedIds.add(id);
+  function toggleExpand(rowKey) {
+    if (expandedIds.has(rowKey)) expandedIds.delete(rowKey);
+    else expandedIds.add(rowKey);
     renderList();
   }
 
@@ -466,7 +515,8 @@
     const kwCode = document.getElementById("filterCode").value.trim().toLowerCase();
     const listEl = document.getElementById("submissionList");
 
-    const filtered = allRecords.filter(r => {
+    const indexedRecords = allRecords.map((r, idx) => ({ r, idx }));
+    const filtered = indexedRecords.filter(({ r }) => {
       const nOk = !kwName || (r.student_name || "").toLowerCase().includes(kwName);
       const cOk = !kwCode || (r.code_id || "").toLowerCase().includes(kwCode);
       return nOk && cOk;
@@ -480,11 +530,12 @@
     }
 
     listEl.innerHTML = "";
-    filtered.forEach(row => {
+    filtered.forEach(({ r: row, idx }) => {
       const detail = row.detail || {};
       const items = detail.items || [];
       const timeLabel = detail.submittedAtLocal || formatChinaTime(row.created_at);
-      const isExpanded = expandedIds.has(row.id);
+      const rowKey = String(row.id ?? row.created_at ?? idx);
+      const isExpanded = expandedIds.has(rowKey);
 
       const card = document.createElement("div");
       card.className = "sub-card";
@@ -514,15 +565,12 @@
           <div class="sub-detail-drawer">
             ${sentencesHtml}
             <div class="note-edit-row">
-              <input type="text" class="note-input" id="noteInput_${row.id}" value="红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。" />
-              <button class="btn-primary-sm" onclick="generatePosterForRecord(${row.id})">✨ 出诊断长图</button>
+              <input type="text" class="note-input" id="noteInput_${idx}" value="红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。" />
+              <button class="btn-primary-sm" onclick="generatePosterByIndex(${idx})">✨ 出诊断长图</button>
             </div>
           </div>
         `;
       }
-
-      const safeName = (row.student_name || "未命名学员").replace(/'/g, "\\'");
-      const safeCode = (row.code_id || "未标注关卡").replace(/'/g, "\\'");
 
       card.innerHTML = `
         <div class="sub-header">
@@ -535,9 +583,9 @@
             <div class="sub-info-line">交卷时间：${timeLabel} &nbsp;|&nbsp; ${row.summary || ""}</div>
           </div>
           <div class="sub-actions">
-            <button class="btn-outline" onclick="toggleExpand(${row.id})">${isExpanded ? "收起明细 ▲" : "展开逐句批改"}</button>
-            <button class="btn-primary-sm" onclick="generatePosterForRecord(${row.id})">生成诊断长图</button>
-            <button class="btn-danger-sm" onclick="deleteSubmission(${row.id}, '${safeName}', '${safeCode}')">🗑️ 删除</button>
+            <button class="btn-outline" onclick="toggleExpand('${rowKey}')">${isExpanded ? "收起明细 ▲" : "展开逐句批改"}</button>
+            <button class="btn-primary-sm" onclick="generatePosterByIndex(${idx})">生成诊断长图</button>
+            <button class="btn-danger-sm" onclick="promptDeleteByIndex(${idx})">🗑️ 删除</button>
           </div>
         </div>
         ${drawerHtml}
@@ -627,14 +675,14 @@
     return tokens;
   }
 
-  function generatePosterForRecord(id) {
-    const row = allRecords.find(r => r.id === id);
+  function generatePosterByIndex(idx) {
+    const row = allRecords[idx];
     if (!row || !row.detail) {
       alert("该记录缺少完整题目明细，无法生成长图。");
       return;
     }
 
-    const noteInp = document.getElementById(`noteInput_${id}`);
+    const noteInp = document.getElementById(`noteInput_${idx}`);
     const customNote = (noteInp && noteInp.value.trim()) || "红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。";
 
     const detail = row.detail;
