@@ -249,6 +249,16 @@
       gap: 12px;
     }
 
+    .edit-tip-banner {
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      color: #1E40AF;
+      font-size: 12.5px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
     .sentence-review-box {
       background: #F8FAFC;
       border: 1px solid #E2E8F0;
@@ -270,6 +280,53 @@
       line-height: 1.6;
     }
 
+    .sr-edit-group {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      background: #FFFFFF;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #E2E8F0;
+    }
+
+    .sr-edit-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-sub);
+      margin-bottom: 2px;
+      display: block;
+    }
+
+    .sr-textarea {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 7px;
+      font-size: 12.5px;
+      font-family: inherit;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      color: var(--text-main);
+    }
+
+    .sr-textarea:focus {
+      border-color: var(--academy-blue);
+      background: #F8FAFC;
+    }
+
+    .sr-textarea.teacher-custom {
+      border-color: #FCD34D;
+      background: #FFFBEB;
+    }
+
+    .sr-textarea.teacher-custom:focus {
+      border-color: var(--amber);
+      background: #FFFFFF;
+    }
+
     .note-edit-row {
       display: flex;
       gap: 8px;
@@ -279,10 +336,15 @@
 
     .note-input {
       flex: 1;
-      padding: 8px 10px;
+      padding: 9px 11px;
       border: 1.5px solid #CBD5E1;
       border-radius: 8px;
       font-size: 12.5px;
+    }
+
+    .note-input:focus {
+      border-color: var(--academy-blue);
+      outline: none;
     }
 
     .empty-state {
@@ -388,7 +450,7 @@
   </div>
 </div>
 
-<!-- 自定义删除确认弹窗（不依赖浏览器原生 confirm） -->
+<!-- 自定义删除确认弹窗 -->
 <div class="modal-mask" id="deleteConfirmModal">
   <div class="modal-card" style="max-width: 380px;">
     <div style="font-weight: 800; font-size: 16px; color: var(--crimson);">
@@ -411,6 +473,15 @@
   let allRecords = [];
   let expandedIds = new Set();
   let pendingDeleteIndex = -1;
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
 
   function formatChinaTime(isoStr) {
     if (!isoStr) return "";
@@ -470,7 +541,6 @@
     btn.textContent = "正在删除...";
 
     try {
-      // 兼容主键为 id 或 uuid 或无显式 id 的情况
       let filterQuery = "";
       if (row.id !== undefined && row.id !== null) {
         filterQuery = `id=eq.${encodeURIComponent(row.id)}`;
@@ -510,6 +580,20 @@
     renderList();
   }
 
+  function updateItemField(recIdx, itemIdx, field, value) {
+    const row = allRecords[recIdx];
+    if (row && row.detail && row.detail.items && row.detail.items[itemIdx]) {
+      row.detail.items[itemIdx][field] = value;
+    }
+  }
+
+  function updateOverallNote(recIdx, value) {
+    const row = allRecords[recIdx];
+    if (row) {
+      row._customOverallNote = value;
+    }
+  }
+
   function renderList() {
     const kwName = document.getElementById("filterName").value.trim().toLowerCase();
     const kwCode = document.getElementById("filterCode").value.trim().toLowerCase();
@@ -536,13 +620,16 @@
       const timeLabel = detail.submittedAtLocal || formatChinaTime(row.created_at);
       const rowKey = String(row.id ?? row.created_at ?? idx);
       const isExpanded = expandedIds.has(rowKey);
+      const overallNote = row._customOverallNote !== undefined
+        ? row._customOverallNote
+        : "红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。";
 
       const card = document.createElement("div");
       card.className = "sub-card";
 
       let drawerHtml = "";
       if (isExpanded) {
-        const sentencesHtml = items.map(it => {
+        const sentencesHtml = items.map((it, itemIdx) => {
           const st = it.stats || {};
           const stuTrans = (it.studentTrans || []).join(" / ") || "（未填写）";
           return `
@@ -556,16 +643,31 @@
               <div class="sr-line"><strong>学员切分：</strong>${it.userMarkedSentence || ""}</div>
               <div class="sr-line" style="color: #059669;"><strong>标准切分：</strong>${it.standardSentence || ""}</div>
               <div class="sr-line" style="color: #B45309;"><strong>学员直译：</strong>${stuTrans}</div>
-              <div class="sr-line" style="color: #2C55A0;"><strong>标准直译：</strong>${it.literalTrans || ""}</div>
+
+              <div class="sr-edit-group">
+                <div>
+                  <label class="sr-edit-label">📖 标准顺句直译（可直接删改）：</label>
+                  <textarea class="sr-textarea" rows="2" oninput="updateItemField(${idx}, ${itemIdx}, 'literalTrans', this.value)">${escapeHtml(it.literalTrans || "")}</textarea>
+                </div>
+                <div>
+                  <label class="sr-edit-label">🔍 句法结构拆解（可直接删改）：</label>
+                  <textarea class="sr-textarea" rows="2" oninput="updateItemField(${idx}, ${itemIdx}, 'grammarNote', this.value)">${escapeHtml(it.grammarNote || "")}</textarea>
+                </div>
+                <div>
+                  <label class="sr-edit-label" style="color: #B45309;">👨‍🏫 老师针对性逐句点评（选填，填写后自动高亮显示在长图该题下方）：</label>
+                  <textarea class="sr-textarea teacher-custom" rows="2" placeholder="例如：注意这里的 that 引导的是同位语从句而不是定语从句，翻译时要顺着翻..." oninput="updateItemField(${idx}, ${itemIdx}, 'teacherComment', this.value)">${escapeHtml(it.teacherComment || "")}</textarea>
+                </div>
+              </div>
             </div>
           `;
         }).join("");
 
         drawerHtml = `
           <div class="sub-detail-drawer">
+            <div class="edit-tip-banner">✏️ 提示：下方所有批注均可直接打字删改或补充，修改完成后点击「✨ 出诊断长图」即可生成最新版海报。</div>
             ${sentencesHtml}
             <div class="note-edit-row">
-              <input type="text" class="note-input" id="noteInput_${idx}" value="红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。" />
+              <input type="text" class="note-input" id="noteInput_${idx}" value="${escapeHtml(overallNote)}" oninput="updateOverallNote(${idx}, this.value)" placeholder="输入文末名师总评寄语..." />
               <button class="btn-primary-sm" onclick="generatePosterByIndex(${idx})">✨ 出诊断长图</button>
             </div>
           </div>
@@ -583,7 +685,7 @@
             <div class="sub-info-line">交卷时间：${timeLabel} &nbsp;|&nbsp; ${row.summary || ""}</div>
           </div>
           <div class="sub-actions">
-            <button class="btn-outline" onclick="toggleExpand('${rowKey}')">${isExpanded ? "收起明细 ▲" : "展开逐句批改"}</button>
+            <button class="btn-outline" onclick="toggleExpand('${rowKey}')">${isExpanded ? "收起明细 ▲" : "展开逐句批改/编辑"}</button>
             <button class="btn-primary-sm" onclick="generatePosterByIndex(${idx})">生成诊断长图</button>
             <button class="btn-danger-sm" onclick="promptDeleteByIndex(${idx})">🗑️ 删除</button>
           </div>
@@ -633,19 +735,26 @@
 
   function wrapPlainText(ctx, text, maxWidth, font) {
     ctx.font = font;
+    const paragraphs = String(text || "").split(/\r?\n/);
     const lines = [];
-    let currentLine = "";
-    for (let i = 0; i < text.length; i++) {
-      const ch = text[i];
-      const testLine = currentLine + ch;
-      if (ctx.measureText(testLine).width > maxWidth && currentLine.length > 0) {
-        lines.push(currentLine);
-        currentLine = ch;
-      } else {
-        currentLine = testLine;
+    paragraphs.forEach(para => {
+      if (para === "") {
+        lines.push("");
+        return;
       }
-    }
-    if (currentLine.length > 0) lines.push(currentLine);
+      let currentLine = "";
+      for (let i = 0; i < para.length; i++) {
+        const ch = para[i];
+        const testLine = currentLine + ch;
+        if (ctx.measureText(testLine).width > maxWidth && currentLine.length > 0) {
+          lines.push(currentLine);
+          currentLine = ch;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      if (currentLine.length > 0) lines.push(currentLine);
+    });
     return lines;
   }
 
@@ -683,7 +792,9 @@
     }
 
     const noteInp = document.getElementById(`noteInput_${idx}`);
-    const customNote = (noteInp && noteInp.value.trim()) || "红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。";
+    const customNote = noteInp
+      ? (noteInp.value.trim() || "红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。")
+      : (row._customOverallNote || "红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。");
 
     const detail = row.detail;
     const items = detail.items || [];
@@ -701,6 +812,7 @@
     const rankTitle = avgAcc >= 90 ? "句法大师" : avgAcc >= 75 ? "勤思笃行" : "稳步进阶";
 
     const fontBody = "500 11.5px -apple-system, PingFang SC, sans-serif";
+    const fontTeacher = "700 11.5px -apple-system, PingFang SC, sans-serif";
     const lineHPlain = 17;
 
     const itemLayouts = items.map(it => {
@@ -718,11 +830,21 @@
       const vocabStr = "💡 高频核心单字：" + (it.vocab || []).map(v => `${v.word}（${v.mean}）`).join(" · ");
       const vocabLines = wrapPlainText(ctx, vocabStr, textMaxW, fontBody);
 
+      const tComment = (it.teacherComment || "").trim();
+      const teacherLines = tComment
+        ? wrapPlainText(ctx, "👨‍🏫 名师精批点评：" + tComment, textMaxW, fontTeacher)
+        : [];
+
+      const teacherExtraH = teacherLines.length > 0
+        ? (teacherLines.length * lineHPlain + 12)
+        : 0;
+
       const knowledgeH = 12
         + stuTransLines.length * lineHPlain + 6
         + literalLines.length * lineHPlain + 6
         + grammarLines.length * lineHPlain + 6
-        + vocabLines.length * lineHPlain + 8;
+        + vocabLines.length * lineHPlain
+        + teacherExtraH + 8;
 
       const userTokens = buildDiagnosticTokens(it.words || [], userCutSet, targetCutSet);
       const userLines = layoutTokens(ctx, userTokens, textMaxW);
@@ -731,13 +853,13 @@
       if (isPerfect) {
         const diagBoxH = 22 + userLines.length * lineH + 4;
         const height = 46 + diagBoxH + 8 + knowledgeH + 10;
-        return { it, st, isPerfect, height, userLines, stdLines: [], diagBoxH, stuTransLines, literalLines, grammarLines, vocabLines, knowledgeH };
+        return { it, st, isPerfect, height, userLines, stdLines: [], diagBoxH, stuTransLines, literalLines, grammarLines, vocabLines, teacherLines, knowledgeH };
       } else {
         const stdTokens = buildStandardTokens(it.words || [], targetCutSet);
         const stdLines = layoutTokens(ctx, stdTokens, textMaxW);
         const diagBoxH = 20 + userLines.length * lineH + 22 + stdLines.length * lineH + 6;
         const height = 46 + diagBoxH + 8 + knowledgeH + 10;
-        return { it, st, isPerfect, height, userLines, stdLines, diagBoxH, stuTransLines, literalLines, grammarLines, vocabLines, knowledgeH };
+        return { it, st, isPerfect, height, userLines, stdLines, diagBoxH, stuTransLines, literalLines, grammarLines, vocabLines, teacherLines, knowledgeH };
       }
     });
 
@@ -846,7 +968,7 @@
 
     curY += 16;
 
-    itemLayouts.forEach(({ it, st, isPerfect, height, userLines, stdLines, diagBoxH, stuTransLines, literalLines, grammarLines, vocabLines, knowledgeH }) => {
+    itemLayouts.forEach(({ it, st, isPerfect, height, userLines, stdLines, diagBoxH, stuTransLines, literalLines, grammarLines, vocabLines, teacherLines, knowledgeH }) => {
       drawRoundedRect(ctx, padX, curY, cardW, height, 10);
       ctx.fillStyle = "#FFFFFF";
       ctx.fill();
@@ -974,6 +1096,17 @@
       ky += 5;
       ctx.fillStyle = "#2C55A0";
       vocabLines.forEach(line => { ctx.fillText(line, padX + 20, ky); ky += lineHPlain; });
+
+      if (teacherLines.length > 0) {
+        ky += 6;
+        const boxH = teacherLines.length * lineHPlain + 6;
+        drawRoundedRect(ctx, padX + 16, ky - 11, cardW - 32, boxH, 5);
+        ctx.fillStyle = "#FEF3C7";
+        ctx.fill();
+        ctx.fillStyle = "#92400E";
+        ctx.font = fontTeacher;
+        teacherLines.forEach(line => { ctx.fillText(line, padX + 22, ky); ky += lineHPlain; });
+      }
 
       curY += height + 12;
     });
