@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>学途卫士 · 天津高考英语长难句意群与直译训练</title>
+  <style>
+    :root {
+      --navy-dark: #08182B;
+      --navy-mid: #11294D;
+      --academy-blue: #2C55A0;
+      --gold: #E2C08D;
+      --gold-dark: #B68B4C;
+      --bg-page: #F4F6FA;
+      --card-bg: #FFFFFF;
+      --text-main: #1E293B;
+      --text-sub: #64748B;
+      --border: #E2E8F0;
+      --emerald: #059669;
+      --emerald-bg: #ECFDF5;
+      --crimson: #DC2626;
+      --crimson-bg: #FEF2F2;
+      --amber: #D97706;
+      --amber-bg: #FFFBEB;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      background: var(--bg-page);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 0 30px rgba(8, 24, 43, 0.08);
+    }
+
+    .topbar {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-mid) 100%);
+      color: #fff;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      box-shadow: 0 2px 12px rgba(8, 24, 43, 0.2);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-tag {
+      background: var(--gold);
+      color: var(--navy-dark);
+      font-weight: 800;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-teacher {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(226, 192, 141, 0.45);
+      color: var(--gold);
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 5px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-teacher.grade-btn {
+      background: rgba(226, 192, 141, 0.2);
+      color: #FFF;
+      border-color: var(--gold);
+    }
+
+    .content-area {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    }
+
+    .welcome-banner {
+      background: linear-gradient(145deg, var(--navy-dark), var(--navy-mid));
+      color: #fff;
+      border-radius: 14px;
+      padding: 22px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .welcome-banner::after {
+      content: "";
+      position: absolute;
+      right: -30px;
+      top: -30px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(226, 192, 141, 0.22) 0%, transparent 70%);
+    }
+
+    .welcome-sub {
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .welcome-h1 {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .welcome-desc {
+      font-size: 13px;
+      color: #CBD5E1;
+      line-height: 1.6;
+    }
+
+    .form-group {
+      margin-top: 14px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: var(--academy-blue);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, var(--navy-dark), var(--academy-blue));
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 16px;
+      box-shadow: 0 4px 12px rgba(44, 85, 160, 0.25);
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .progress-badge {
+      background: #EFF6FF;
+      color: var(--academy-blue);
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .timer-text {
+      color: var(--text-sub);
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+    }
+
+    .progress-track {
+      height: 6px;
+      background: #E2E8F0;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--academy-blue), var(--gold-dark));
+      transition: width 0.3s ease;
+    }
+
+    .source-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--academy-blue);
+      background: #EFF6FF;
+      padding: 3px 8px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+
+    .instruction-tip {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-bottom: 14px;
+      background: #F8FAFC;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border-left: 3px solid var(--gold-dark);
+    }
+
+    .sentence-arena {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      row-gap: 10px;
+      padding: 14px 12px;
+      background: #F8FAFC;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 12px;
+      user-select: none;
+    }
+
+    .word-token {
+      font-size: 17px;
+      font-weight: 600;
+      color: #0F172A;
+      padding: 3px 2px;
+      letter-spacing: 0.2px;
+    }
+
+    .cut-slot {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 32px;
+      padding: 0 3px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+
+    .cut-slot:hover {
+      background: rgba(226, 192, 141, 0.25);
+    }
+
+    .cut-slot .slot-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #CBD5E1;
+      transition: all 0.15s;
+    }
+
+    .cut-slot.active .slot-dot {
+      display: none;
+    }
+
+    .cut-slot.active::after {
+      content: "/";
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--gold-dark);
+      background: #FEF3C7;
+      border: 1.5px solid var(--gold-dark);
+      border-radius: 5px;
+      padding: 0 5px;
+      line-height: 1.2;
+    }
+
+    .chunk-trans-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .chunk-trans-item {
+      background: #F8FAFC;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .chunk-en-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .chunk-num {
+      background: var(--navy-dark);
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .chunk-en-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0F172A;
+      line-height: 1.45;
+    }
+
+    .chunk-cn-input {
+      width: 100%;
+      padding: 9px 11px;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #1E293B;
+      background: #FFFFFF;
+      outline: none;
+    }
+
+    .chunk-cn-input:focus {
+      border-color: var(--academy-blue);
+      box-shadow: 0 0 0 3px rgba(44, 85, 160, 0.1);
+    }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      background: #F1F5F9;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-submit {
+      flex: 2;
+      background: linear-gradient(135deg, var(--navy-dark), var(--academy-blue));
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .poster-tip {
+      background: var(--emerald-bg);
+      border: 1px solid #A7F3D0;
+      color: var(--emerald);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      padding: 12px;
+      border-radius: 10px;
+      line-height: 1.6;
+    }
+
+    .poster-tip.syncing {
+      background: #EFF6FF;
+      border-color: #BFDBFE;
+      color: var(--academy-blue);
+    }
+
+    .poster-tip.error {
+      background: var(--crimson-bg);
+      border-color: #FECACA;
+      color: var(--crimson);
+    }
+
+    .btn-retry-sync {
+      margin-top: 8px;
+      background: var(--crimson);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .poster-preview-wrap {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(8, 24, 43, 0.15);
+      background: #fff;
+    }
+
+    .poster-preview-wrap img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .btn-gold {
+      flex: 2;
+      background: linear-gradient(135deg, #E2C08D, #C99E5B);
+      color: var(--navy-dark);
+      border: none;
+      border-radius: 10px;
+      padding: 13px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(182, 139, 76, 0.3);
+    }
+
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 24, 43, 0.65);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-mask.show {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #fff;
+      width: 100%;
+      max-width: 450px;
+      max-height: 88vh;
+      border-radius: 14px;
+      padding: 18px;
+      overflow-y: auto;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--navy-dark);
+      margin-bottom: 6px;
+    }
+
+    .modal-hint {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .teacher-textarea {
+      width: 100%;
+      height: 180px;
+      font-family: monospace;
+      font-size: 12px;
+      padding: 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      line-height: 1.5;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand-group">
+      <span class="brand-tag" onclick="secretTapUnlock()" style="cursor:pointer;">学途卫士</span>
+      <span class="brand-title" id="headerTaskTitle">长难句意群训练 · 长难句0040</span>
+    </div>
+    <div class="top-actions hidden" id="teacherTopActions">
+      <button class="btn-teacher grade-btn" onclick="openGradeModal()">👨‍🏫 老师批改</button>
+      <button class="btn-teacher" onclick="openTeacherModal()">⚙️ 改题</button>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <!-- 阶段 1：学生实名登录 -->
+    <section id="viewLogin" class="card">
+      <div class="welcome-banner">
+        <div class="welcome-sub">学途卫士 · 高中英语课后专项</div>
+        <h1 class="welcome-h1" id="bannerTitle">天津高考真题 · 意群切分与直译</h1>
+        <p class="welcome-desc">第一步：点击单词间的圆点切分意群（/）；第二步：按切出来的意群逐块填写顺句中文直译。全部完成后点击交卷，系统将自动同步至教研老师后台进行一对一精批。</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">学员姓名（必填）</label>
+        <input type="text" id="inputStudentName" class="form-input" placeholder="请输入你的真实姓名" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">所在年级</label>
+        <input type="text" id="inputClassName" class="form-input" placeholder="高一/高二/高三" />
+      </div>
+
+      <button class="btn-primary" onclick="startChallenge()">开始今日 5 句切分与直译 →</button>
+    </section>
+
+    <!-- 阶段 2：学生盲切 + 逐块直译区 -->
+    <section id="viewQuiz" class="card hidden">
+      <div class="progress-header">
+        <span class="progress-badge" id="progressText">第 1 / 5 句</span>
+        <span class="timer-text">⏱ 已用时 <span id="timerDisplay">00:00</span></span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressBar" style="width: 20%;"></div>
+      </div>
+
+      <!-- 步骤 2.1：切分意群 -->
+      <div id="stepCutSection" style="margin-top: 14px;">
+        <span class="source-tag" id="sentenceSource">天津高考真题</span>
+        <div class="instruction-tip">
+          <strong>第一步 · 切分意群：</strong>点击下方单词之间的灰色圆点切出意群停顿（/），切好后进入下一步填写逐块中文直译
+        </div>
+
+        <div class="sentence-arena" id="sentenceArena"></div>
+
+        <div class="action-row">
+          <button class="btn-secondary" onclick="clearCurrentCuts()">清空重切</button>
+          <button class="btn-submit" onclick="proceedToTranslateStep()">确认切分，填写意群直译 →</button>
+        </div>
+      </div>
+
+      <!-- 步骤 2.2：按切出的意群逐块填写顺句直译 -->
+      <div id="stepTranslateSection" class="hidden" style="margin-top: 14px;">
+        <span class="source-tag" id="sentenceSourceTrans">天津高考真题</span>
+        <div class="instruction-tip">
+          <strong>第二步 · 顺句直译：</strong>按你刚才切分的英文意群，顺着语序逐块写出中文意思（不倒装）
+        </div>
+
+        <div class="chunk-trans-list" id="chunkTransList"></div>
+
+        <div class="action-row">
+          <button class="btn-secondary" onclick="backToCutStep()">← 返回重切</button>
+          <button class="btn-submit" id="btnLockAndNext" onclick="lockAndNextSentence()">锁定本句并进入下一句 →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 阶段 3A：学生交卷完成页（云端自动同步，免回执码） -->
+    <section id="viewStudentReceipt" class="card hidden">
+      <div class="poster-tip syncing" id="cloudSyncStatus">
+        ⏳ 正在将你的 5 句切分与直译答卷自动同步至教研老师后台，请稍候...
+      </div>
+
+      <div class="poster-preview-wrap" style="margin-top: 12px;">
+        <img id="studentPosterImg" alt="学员原始切分与直译答卷" />
+      </div>
+
+      <div class="action-row" style="margin-top: 14px;">
+        <button class="btn-gold" onclick="downloadStudentPoster()">📥 保存个人交卷留念图</button>
+        <button class="btn-secondary" onclick="restartAll()">返回首页</button>
+      </div>
+    </section>
+
+    <!-- 阶段 3B：老师端专属《名师逐句精批诊断报告》输出页 -->
+    <section id="viewTeacherReport" class="card hidden">
+      <div class="poster-tip">
+        👨‍🏫 名师精批诊断报告已生成！长按保存长图直接发给学生/家长即可
+      </div>
+
+      <div class="poster-preview-wrap" style="margin-top: 12px;">
+        <img id="teacherPosterImg" alt="学途卫士名师精批诊断报告" />
+      </div>
+
+      <div class="action-row" style="margin-top: 14px;">
+        <button class="btn-gold" onclick="downloadTeacherPoster()">📥 保存精批诊断长图</button>
+        <button class="btn-secondary" onclick="openGradeModal()">批改下一位</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- 老师端：兼容历史回执码批改弹窗 -->
+<div class="modal-mask" id="gradeModal">
+  <div class="modal-card">
+    <div class="modal-title">👨‍🏫 老师专属批改台（兼容历史回执码）</div>
+    <div class="modal-hint">
+      新版答卷已自动同步云端（可直接在 <code>teacher.html</code> 查看）。如需批改旧版<strong>【交卷回执码】</strong>（以 <code>XT#</code> 开头），粘贴在下方即可生成诊断长图。
+    </div>
+    <div class="form-group" style="margin-top: 0;">
+      <label class="form-label">粘贴学员交卷回执码</label>
+      <textarea id="gradeReceiptInput" class="teacher-textarea" style="height: 95px;" placeholder="例如：XT#eyJuIjoi..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">教研老师寄语（可选，将印在报告底部）</label>
+      <input type="text" id="teacherCustomNote" class="form-input" style="padding: 9px 12px; font-size: 13px;" value="红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。" />
+    </div>
+    <div class="action-row" style="margin-top: 14px;">
+      <button class="btn-secondary" onclick="closeGradeModal()">取消</button>
+      <button class="btn-submit" onclick="generateTeacherDiagnosisFromCode()">✨ 立即生成精批诊断图</button>
+    </div>
+  </div>
+</div>
+
+<!-- 老师后台改题弹窗 -->
+<div class="modal-mask" id="teacherModal">
+  <div class="modal-card">
+    <div class="modal-title">⚙️ 老师每日可视化改题</div>
+    <div class="modal-hint">
+      在英文句子中直接用 <strong>/</strong> 标出标准意群切分点即可（前后留空格）。改完点击「应用预览」可立即测试，或点击「导出HTML」下载后上传至 GitHub 仓库。
+    </div>
+    <div class="form-group" style="margin-top: 0; margin-bottom: 10px;">
+      <label class="form-label">任务标题</label>
+      <input type="text" id="editTaskTitle" class="form-input" style="padding: 8px 10px; font-size: 13px;" />
+    </div>
+    <textarea id="teacherJsonInput" class="teacher-textarea"></textarea>
+    <div class="action-row" style="margin-top: 12px;">
+      <button class="btn-secondary" onclick="closeTeacherModal()">取消</button>
+      <button class="btn-secondary" style="background: #EFF6FF; color: #2C55A0;" onclick="applyTeacherData()">应用预览</button>
+      <button class="btn-submit" onclick="exportUpdatedHtml()">📦 导出HTML</button>
+    </div>
+  </div>
+</div>
+
+<canvas id="reportCanvas" class="hidden"></canvas>
+
+<script>
+  const SUPABASE_URL = "https://db.litao1986.ccwu.cc";
+  const SUPABASE_ANON_KEY = "sb_publishable_NBhQ-TR8nlGx4A_-VeIYlw_X2IjXc5Z";
+
+  let QUIZ_CONFIG = {
+  "taskTitle": "长难句意群训练 · 长难句0040",
+  "sentences": [
+    {
+      "source": "2011年天津卷 · 阅读表达",
+      "chunkedText": "The Program allows students to take part in various projects / dealing with issues / such as literacy, homelessness and the environment.",
+      "literalTrans": "该项目允许学生参与各种公益项目 / 处理各类社会问题的项目 / 比如扫盲、无家可归者救助和环境保护。",
+      "grammarNote": "allow sb. to do 允许某人做某事；dealing with... 现在分词短语作后置定语修饰 projects。",
+      "vocab": [
+        {
+          "word": "take part in",
+          "mean": "参与"
+        },
+        {
+          "word": "deal with",
+          "mean": "处理/应对"
+        },
+        {
+          "word": "issue",
+          "mean": "问题/议题"
+        }
+      ]
+    },
+    {
+      "source": "2012年天津卷 · 阅读表达",
+      "chunkedText": "After battling the water for two days, / she had to give up / for the sake of her own health and safety.",
+      "literalTrans": "在与海浪搏斗了两天之后， / 她不得不放弃 / 为了她自身的健康和安全着想。",
+      "grammarNote": "After battling... 介词短语作时间状语；for the sake of 固定搭配“为了……的缘故”。",
+      "vocab": [
+        {
+          "word": "battle",
+          "mean": "搏斗/抗争"
+        },
+        {
+          "word": "give up",
+          "mean": "放弃"
+        },
+        {
+          "word": "for the sake of",
+          "mean": "为了……起见"
+        }
+      ]
+    },
+    {
+      "source": "2016年天津卷 · 阅读表达",
+      "chunkedText": "I learned / that if you fall in love with something / and do it all the time, / you will get better at it.",
+      "literalTrans": "我领悟到了 / 如果你爱上一件事 / 并且一直坚持去做， / 你就会在这件事上变得越来越擅长。",
+      "grammarNote": "that 引导宾语从句，内部嵌套 if 引导的条件状语从句；fall in love with 爱上；get better at 变得更擅长。",
+      "vocab": [
+        {
+          "word": "fall in love with",
+          "mean": "爱上"
+        },
+        {
+          "word": "all the time",
+          "mean": "一直/始终"
+        },
+        {
+          "word": "get better at",
+          "mean": "变得更擅长"
+        }
+      ]
+    },
+    {
+      "source": "2017年天津卷 · 阅读理解 D篇",
+      "chunkedText": "During these waits, / the brain slips away from the body and wanders about / until the water runs over the edge of the counter / and onto your socks.",
+      "literalTrans": "在这些等待期间， / 大脑会脱离身体开始走神 / 直到水漫过操作台边缘 / 流到你的袜子上。",
+      "grammarNote": "slip away 溜走/走神；until 引导时间状语从句，run over 溢出。",
+      "vocab": [
+        {
+          "word": "wander",
+          "mean": "走神/漫游"
+        },
+        {
+          "word": "edge",
+          "mean": "边缘"
+        },
+        {
+          "word": "counter",
+          "mean": "操作台/柜台"
+        }
+      ]
+    },
+    {
+      "source": "2010年天津卷 · 阅读表达",
+      "chunkedText": "Shaw, an animal lover, said / he couldn't bear to part with a dog / which usually lives about eight to ten years / and get used to a new one.",
+      "literalTrans": "肖是一位动物爱好者，他说 / 他无法忍受与一只狗生离死别 / 狗的寿命通常只有八到十年左右 / 然后再去重新适应一只新狗。",
+      "grammarNote": "an animal lover 作同位语；bear to do 忍受做某事；part with 与……分开；which 引导定语从句修饰 dog。",
+      "vocab": [
+        {
+          "word": "bear",
+          "mean": "忍受"
+        },
+        {
+          "word": "part with",
+          "mean": "与……分开"
+        },
+        {
+          "word": "get used to",
+          "mean": "习惯于"
+        }
+      ]
+    }
+  ]
+};
+
+  let state = {
+    studentName: "",
+    className: "",
+    currentIndex: 0,
+    startTime: 0,
+    timerInterval: null,
+    elapsedSeconds: 0,
+    words: [],
+    userCuts: new Set(),
+    currentChunks: [],
+    rawSubmissions: [],
+    lastReceiptCode: "",
+    lastCloudRow: null,
+    isSubmitting: false
+  };
+
+  function parseChunkedSentence(chunkedStr) {
+    const tokens = chunkedStr.trim().split(/\s+/);
+    const words = [];
+    const cuts = new Set();
+    tokens.forEach(tok => {
+      if (tok === "/") {
+        if (words.length > 0) cuts.add(words.length - 1);
+      } else if (tok.endsWith("/") && tok.length > 1) {
+        words.push(tok.slice(0, -1));
+        cuts.add(words.length - 1);
+      } else if (tok.startsWith("/") && tok.length > 1) {
+        if (words.length > 0) cuts.add(words.length - 1);
+        words.push(tok.slice(1));
+      } else {
+        words.push(tok);
+      }
+    });
+    return { words, cuts };
+  }
+
+  function buildChunksFromCuts(words, cutSet) {
+    const chunks = [];
+    let current = [];
+    words.forEach((w, idx) => {
+      current.push(w);
+      if (cutSet.has(idx) || idx === words.length - 1) {
+        chunks.push(current.join(" "));
+        current = [];
+      }
+    });
+    return chunks;
+  }
+
+  function startChallenge() {
+    const nameInput = document.getElementById("inputStudentName").value.trim();
+    const classInput = document.getElementById("inputClassName").value.trim();
+    if (!nameInput) {
+      alert("请先输入学员姓名再开始训练哦！");
+      document.getElementById("inputStudentName").focus();
+      return;
+    }
+    state.studentName = nameInput;
+    state.className = classInput || "未填年级";
+    state.currentIndex = 0;
+    state.rawSubmissions = [];
+    state.startTime = Date.now();
+    state.elapsedSeconds = 0;
+    state.isSubmitting = false;
+
+    document.getElementById("viewLogin").classList.add("hidden");
+    document.getElementById("viewStudentReceipt").classList.add("hidden");
+    document.getElementById("viewTeacherReport").classList.add("hidden");
+    document.getElementById("viewQuiz").classList.remove("hidden");
+
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    state.timerInterval = setInterval(() => {
+      state.elapsedSeconds = Math.floor((Date.now() - state.startTime) / 1000);
+      const mins = String(Math.floor(state.elapsedSeconds / 60)).padStart(2, "0");
+      const secs = String(state.elapsedSeconds % 60).padStart(2, "0");
+      document.getElementById("timerDisplay").textContent = `${mins}:${secs}`;
+    }, 1000);
+
+    loadSentence(0);
+  }
+
+  function loadSentence(idx) {
+    state.currentIndex = idx;
+    state.userCuts = new Set();
+
+    const total = QUIZ_CONFIG.sentences.length;
+    const item = QUIZ_CONFIG.sentences[idx];
+    const parsed = parseChunkedSentence(item.chunkedText);
+    state.words = parsed.words;
+
+    document.getElementById("progressText").textContent = `第 ${idx + 1} / ${total} 句`;
+    document.getElementById("progressBar").style.width = `${((idx + 1) / total) * 100}%`;
+    document.getElementById("sentenceSource").textContent = item.source;
+    document.getElementById("sentenceSourceTrans").textContent = item.source;
+
+    document.getElementById("stepCutSection").classList.remove("hidden");
+    document.getElementById("stepTranslateSection").classList.add("hidden");
+
+    const isLast = idx === total - 1;
+    const btn = document.getElementById("btnLockAndNext");
+    btn.disabled = false;
+    btn.textContent = isLast
+      ? "完成全部 5 句并自动交卷 ✓"
+      : "锁定本句并进入下一句 →";
+
+    renderArena();
+  }
+
+  function renderArena() {
+    const arena = document.getElementById("sentenceArena");
+    arena.innerHTML = "";
+
+    state.words.forEach((word, i) => {
+      const span = document.createElement("span");
+      span.className = "word-token";
+      span.textContent = word;
+      arena.appendChild(span);
+
+      if (i < state.words.length - 1) {
+        const slot = document.createElement("span");
+        slot.className = "cut-slot";
+        const dot = document.createElement("span");
+        dot.className = "slot-dot";
+        slot.appendChild(dot);
+
+        if (state.userCuts.has(i)) slot.classList.add("active");
+        slot.onclick = () => {
+          if (state.userCuts.has(i)) {
+            state.userCuts.delete(i);
+            slot.classList.remove("active");
+          } else {
+            state.userCuts.add(i);
+            slot.classList.add("active");
+          }
+        };
+        arena.appendChild(slot);
+      }
+    });
+  }
+
+  function clearCurrentCuts() {
+    state.userCuts.clear();
+    renderArena();
+  }
+
+  function proceedToTranslateStep() {
+    const chunks = buildChunksFromCuts(state.words, state.userCuts);
+    state.currentChunks = chunks;
+
+    const listEl = document.getElementById("chunkTransList");
+    listEl.innerHTML = "";
+
+    chunks.forEach((chunkStr, cIdx) => {
+      const card = document.createElement("div");
+      card.className = "chunk-trans-item";
+      card.innerHTML = `
+        <div class="chunk-en-header">
+          <span class="chunk-num">意群 ${cIdx + 1}</span>
+          <span class="chunk-en-text">${chunkStr}</span>
+        </div>
+        <input type="text" class="chunk-cn-input" id="chunkInput_${cIdx}" placeholder="请顺句直译这一块的中文意思..." />
+      `;
+      listEl.appendChild(card);
+    });
+
+    document.getElementById("stepCutSection").classList.add("hidden");
+    document.getElementById("stepTranslateSection").classList.remove("hidden");
+
+    const firstInput = document.getElementById("chunkInput_0");
+    if (firstInput) firstInput.focus();
+  }
+
+  function backToCutStep() {
+    document.getElementById("stepTranslateSection").classList.add("hidden");
+    document.getElementById("stepCutSection").classList.remove("hidden");
+  }
+
+  function lockAndNextSentence() {
+    if (state.isSubmitting) return;
+    const transArr = [];
+    for (let i = 0; i < state.currentChunks.length; i++) {
+      const inp = document.getElementById(`chunkInput_${i}`);
+      const val = inp ? inp.value.trim() : "";
+      if (!val) {
+        alert(`请先填写「意群 ${i + 1}」的中文直译再提交本句哦！`);
+        if (inp) inp.focus();
+        return;
+      }
+      transArr.push(val);
+    }
+
+    state.rawSubmissions[state.currentIndex] = {
+      cuts: Array.from(state.userCuts).sort((a, b) => a - b),
+      trans: transArr
+    };
+
+    if (state.currentIndex < QUIZ_CONFIG.sentences.length - 1) {
+      loadSentence(state.currentIndex + 1);
+    } else {
+      finishStudentSubmission();
+    }
+  }
+
+  function encodeReceiptPayload(obj) {
+    const jsonStr = JSON.stringify(obj);
+    const bytes = new TextEncoder().encode(jsonStr);
+    let binStr = "";
+    bytes.forEach(b => { binStr += String.fromCharCode(b); });
+    return "XT#" + btoa(binStr);
+  }
+
+  function decodeReceiptPayload(codeStr) {
+    const clean = codeStr.trim();
+    if (!clean.startsWith("XT#")) throw new Error("回执码必须以 XT# 开头");
+    const b64 = clean.slice(3);
+    const binStr = atob(b64);
+    const bytes = new Uint8Array(binStr.length);
+    for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+    const jsonStr = new TextDecoder().decode(bytes);
+    return JSON.parse(jsonStr);
+  }
+
+  function normalizeSubmissionItem(subItem) {
+    if (Array.isArray(subItem)) {
+      return { cuts: subItem, trans: [] };
+    }
+    if (subItem && typeof subItem === "object") {
+      return { cuts: subItem.cuts || [], trans: subItem.trans || [] };
+    }
+    return { cuts: [], trans: [] };
+  }
+
+  function buildCloudRecord(payload) {
+    let totalAcc = 0;
+    const items = QUIZ_CONFIG.sentences.map((item, idx) => {
+      const parsed = parseChunkedSentence(item.chunkedText);
+      const norm = normalizeSubmissionItem(payload.s[idx]);
+      const userCutSet = new Set(norm.cuts);
+      const targetCutSet = parsed.cuts;
+
+      let correctCount = 0;
+      let missedCount = 0;
+      let wrongCount = 0;
+
+      targetCutSet.forEach(ci => {
+        if (userCutSet.has(ci)) correctCount++;
+        else missedCount++;
+      });
+      userCutSet.forEach(ci => {
+        if (!targetCutSet.has(ci)) wrongCount++;
+      });
+
+      const totalOps = targetCutSet.size + wrongCount;
+      const accuracy = totalOps === 0 ? 100 : Math.round((correctCount / totalOps) * 100);
+      totalAcc += accuracy;
+
+      const userMarkedWords = [];
+      parsed.words.forEach((w, wi) => {
+        userMarkedWords.push(w);
+        if (wi < parsed.words.length - 1) {
+          const inU = userCutSet.has(wi);
+          const inT = targetCutSet.has(wi);
+          if (inU && inT) userMarkedWords.push("/");
+          else if (inU && !inT) userMarkedWords.push("✗/");
+          else if (!inU && inT) userMarkedWords.push("[漏]");
+        }
+      });
+
+      return {
+        index: idx + 1,
+        source: item.source,
+        words: parsed.words,
+        userCuts: norm.cuts,
+        targetCuts: Array.from(targetCutSet).sort((a, b) => a - b),
+        userMarkedSentence: userMarkedWords.join(" "),
+        standardSentence: item.chunkedText,
+        studentChunks: buildChunksFromCuts(parsed.words, userCutSet),
+        studentTrans: norm.trans,
+        literalTrans: item.literalTrans,
+        grammarNote: item.grammarNote,
+        vocab: item.vocab,
+        stats: { correctCount, missedCount, wrongCount, accuracy }
+      };
+    });
+
+    const avgAccuracy = Math.round(totalAcc / items.length);
+    const mins = Math.floor(payload.t / 60);
+    const secs = String(payload.t % 60).padStart(2, "0");
+    const durationText = mins > 0 ? `${mins}分${secs}秒` : `${secs}秒`;
+
+    return {
+      code_id: QUIZ_CONFIG.taskTitle,
+      student_name: payload.n,
+      grade: payload.c,
+      summary: `切分准确率 ${avgAccuracy}% · 用时 ${durationText}`,
+      detail: {
+        taskTitle: QUIZ_CONFIG.taskTitle,
+        studentName: payload.n,
+        grade: payload.c,
+        elapsedSeconds: payload.t,
+        durationText,
+        submittedAtLocal: payload.d,
+        avgAccuracy,
+        items
+      }
+    };
+  }
+
+  async function syncSubmissionToSupabase(cloudRow) {
+    const statusEl = document.getElementById("cloudSyncStatus");
+    statusEl.className = "poster-tip syncing";
+    statusEl.innerHTML = "⏳ 正在将你的 5 句切分与直译答卷自动同步至教研老师后台，请稍候...";
+
+    try {
+      const backupKey = "xuetu_last_backup_" + Date.now();
+      localStorage.setItem(backupKey, JSON.stringify(cloudRow));
+    } catch (_) {}
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/sentence_submissions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_ANON_KEY,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(cloudRow)
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`HTTP ${res.status}: ${errText}`);
+      }
+
+      statusEl.className = "poster-tip";
+      statusEl.innerHTML = `✅ <strong>交卷成功！</strong>你的 5 句切分与直译已自动同步至教研老师后台。<br/>无需复制发送任何回执码，等待老师精批即可！`;
+    } catch (err) {
+      console.error("Supabase sync error:", err);
+      statusEl.className = "poster-tip error";
+      statusEl.innerHTML = `⚠️ 当前网络波动（${err.message}），答卷已安全暂存在本机。<br/><button class="btn-retry-sync" onclick="retryCloudSync()">点击重新同步至老师后台</button>`;
+    }
+  }
+
+  function retryCloudSync() {
+    if (state.lastCloudRow) {
+      syncSubmissionToSupabase(state.lastCloudRow);
+    }
+  }
+
+  function finishStudentSubmission() {
+    if (state.isSubmitting) return;
+    state.isSubmitting = true;
+    if (state.timerInterval) clearInterval(state.timerInterval);
+
+    const btn = document.getElementById("btnLockAndNext");
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "正在自动交卷...";
+    }
+
+    const now = new Date();
+    const stamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+    const payload = {
+      n: state.studentName,
+      c: state.className,
+      t: state.elapsedSeconds,
+      d: stamp,
+      s: state.rawSubmissions
+    };
+
+    state.lastReceiptCode = encodeReceiptPayload(payload);
+    const cloudRow = buildCloudRecord(payload);
+    state.lastCloudRow = cloudRow;
+
+    document.getElementById("viewQuiz").classList.add("hidden");
+    document.getElementById("viewStudentReceipt").classList.remove("hidden");
+
+    renderStudentReceiptPoster(payload);
+    syncSubmissionToSupabase(cloudRow);
+  }
+
+  function restartAll() {
+    state.isSubmitting = false;
+    document.getElementById("viewStudentReceipt").classList.add("hidden");
+    document.getElementById("viewTeacherReport").classList.add("hidden");
+    document.getElementById("viewLogin").classList.remove("hidden");
+  }
+
+  function drawRoundedRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function layoutTokens(ctx, tokens, maxWidth) {
+    const lines = [];
+    let currentLine = [];
+    let currentWidth = 0;
+    const spaceW = 5;
+
+    tokens.forEach(tok => {
+      ctx.font = tok.type === "word"
+        ? "600 13px -apple-system, PingFang SC, sans-serif"
+        : "800 13px -apple-system, PingFang SC, sans-serif";
+      const pad = tok.type === "word" ? 0 : 8;
+      const w = ctx.measureText(tok.text).width + pad;
+
+      if (currentLine.length > 0 && currentWidth + spaceW + w > maxWidth) {
+        lines.push(currentLine);
+        currentLine = [{ ...tok, width: w }];
+        currentWidth = w;
+      } else {
+        if (currentLine.length > 0) currentWidth += spaceW;
+        currentLine.push({ ...tok, width: w });
+        currentWidth += w;
+      }
+    });
+    if (currentLine.length > 0) lines.push(currentLine);
+    return lines;
+  }
+
+  function wrapPlainText(ctx, text, maxWidth, font) {
+    ctx.font = font;
+    const lines = [];
+    let currentLine = "";
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      const testLine = currentLine + ch;
+      if (ctx.measureText(testLine).width > maxWidth && currentLine.length > 0) {
+        lines.push(currentLine);
+        currentLine = ch;
+      } else {
+        currentLine = testLine;
+      }
+    }
+    if (currentLine.length > 0) lines.push(currentLine);
+    return lines;
+  }
+
+  function renderStudentReceiptPoster(payload) {
+    const canvas = document.getElementById("reportCanvas");
+    const ctx = canvas.getContext("2d");
+    const dpr = 3;
+    const W = 440;
+    const padX = 20;
+    const cardW = W - padX * 2;
+    const textMaxW = cardW - 40;
+    const fontTrans = "500 11.5px -apple-system, PingFang SC, sans-serif";
+
+    const mins = Math.floor(payload.t / 60);
+    const secs = String(payload.t % 60).padStart(2, "0");
+    const timeStr = mins > 0 ? `${mins}分${secs}秒` : `${secs}秒`;
+
+    const sentenceCards = QUIZ_CONFIG.sentences.map((item, idx) => {
+      const parsed = parseChunkedSentence(item.chunkedText);
+      const norm = normalizeSubmissionItem(payload.s[idx]);
+      const userCutSet = new Set(norm.cuts);
+
+      const tokens = [];
+      parsed.words.forEach((w, wi) => {
+        tokens.push({ text: w, type: "word" });
+        if (wi < parsed.words.length - 1 && userCutSet.has(wi)) {
+          tokens.push({ text: "/", type: "cut" });
+        }
+      });
+      const lines = layoutTokens(ctx, tokens, textMaxW);
+
+      const joinedStudentTrans = norm.trans.length > 0
+        ? "✍️ 学员顺句直译：" + norm.trans.join(" / ")
+        : "✍️ 学员顺句直译：（未填写）";
+      const transLines = wrapPlainText(ctx, joinedStudentTrans, textMaxW - 12, fontTrans);
+      const transBoxH = 12 + transLines.length * 17 + 8;
+
+      const height = 44 + lines.length * 22 + 6 + transBoxH + 10;
+      return { idx, source: item.source, cutCount: userCutSet.size, lines, transLines, transBoxH, height };
+    });
+
+    const headerH = 172;
+    const infoBarH = 66;
+    const listTitleH = 42;
+    const itemsH = sentenceCards.reduce((s, c) => s + c.height + 10, 0);
+    const footerH = 76;
+    const H = headerH + infoBarH + listTitleH + itemsH + footerH;
+
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.scale(dpr, dpr);
+
+    ctx.fillStyle = "#F1F5F9";
+    ctx.fillRect(0, 0, W, H);
+
+    const grad = ctx.createLinearGradient(0, 0, W, headerH);
+    grad.addColorStop(0, "#08182B");
+    grad.addColorStop(1, "#11294D");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, headerH);
+
+    drawRoundedRect(ctx, padX, 20, 74, 22, 5);
+    ctx.fillStyle = "#E2C08D";
+    ctx.fill();
+    ctx.fillStyle = "#08182B";
+    ctx.font = "800 11px -apple-system, PingFang SC, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("学途卫士", padX + 37, 31);
+
+    ctx.fillStyle = "#CBD5E1";
+    ctx.font = "600 11px -apple-system, PingFang SC, sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText("学员课后意群切分与直译交卷单", padX + 84, 31);
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "800 20px -apple-system, PingFang SC, sans-serif";
+    ctx.fillText(QUIZ_CONFIG.taskTitle, padX, 66);
+
+    ctx.fillStyle = "#94A3B8";
+    ctx.font = "500 11px -apple-system, PingFang SC, sans-serif";
+    ctx.fillText(`交卷时间：${payload.d}  ·  专注用时：${timeStr}`, padX, 92);
+
+    drawRoundedRect(ctx, padX, 112, cardW, 40, 9);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(226, 192, 141, 0.35)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "700 13px -apple-system, PingFang SC, sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText(`学员：${payload.n}`, padX + 14, 132);
+
+    ctx.fillStyle = "#E2C08D";
+    ctx.font = "600 12px -apple-system, PingFang SC, sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText(payload.c, W - padX - 14, 132);
+
+    const statusY = headerH + 12;
+    drawRoundedRect(ctx, padX, statusY, cardW, 44, 10);
+    ctx.fillStyle = "#ECFDF5";
+    ctx.fill();
+    ctx.strokeStyle = "#A7F3D0";
+    ctx.stroke();
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#059669";
+    ctx.font = "700 12.5px -apple-system, PingFang SC, sans-serif";
+    ctx.fillText("✅ 答卷已自动同步至教研老师后台 · 等待逐句精批", W / 2, statusY + 22);
+
+    let curY = statusY + 44 + 22;
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#0F172A";
+    ctx.font = "800 14px -apple-system, PingFang SC, sans-serif";
+    ctx.fillText("学员原始切分与顺句直译记录", padX, curY);
+
+    curY += 14;
+
+    sentenceCards.forEach(card => {
+      drawRoundedRect(ctx, padX, curY, cardW, card.height, 10);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fill();
+      ctx.strokeStyle = "#E2E8F0";
+      ctx.stroke();
+
+      drawRoundedRect(ctx, padX + 12, curY + 11, 46, 20, 5);
+      ctx.fillStyle = "#0F172A";
+      ctx.fill();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "700 11px -apple-system, PingFang SC, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(`第 ${card.idx + 1} 句`, padX + 35, curY + 21);
+
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#64748B";
+      ctx.font = "600 11px -apple-system, PingFang SC, sans-serif";
+      ctx.fillText(card.source, padX + 66, curY + 21);
+
+      ctx.textAlign = "right";
+      ctx.fillStyle = "#B68B4C";
+      ctx.font = "700 11px -apple-system, PingFang SC, sans-serif";
+      ctx.fillText(`共切 ${card.cutCount} 刀`, W - padX - 14, curY + 21);
+
+      let ly = curY + 44;
+      card.lines.forEach(line => {
+        let lx = padX + 16;
+        line.forEach(tok => {
+          if (tok.type === "word") {
+            ctx.fillStyle = "#1E293B";
+            ctx.font = "600 13px -apple-system, PingFang SC, sans-serif";
+            ctx.textAlign = "left";
+            ctx.fillText(tok.text, lx, ly);
+          } else {
+            drawRoundedRect(ctx, lx, ly - 9, tok.width, 17, 4);
+            ctx.fillStyle = "#FEF3C7";
+            ctx.fill();
+            ctx.fillStyle = "#B68B4C";
+            ctx.font = "900 12px -apple-system, PingFang SC, sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText("/", lx + tok.width / 2, ly);
+            ctx.textAlign = "left";
+          }
+          lx += tok.width + 5;
+        });
+        ly += 22;
+      });
+
+      const boxY = ly - 4;
+      drawRoundedRect(ctx, padX + 12, boxY, cardW - 24, card.transBoxH, 7);
+      ctx.fillStyle = "#F8FAFC";
+      ctx.fill();
+
+      let ty = boxY + 13;
+      ctx.textAlign = "left";
+      ctx.font = fontTrans;
+      ctx.fillStyle = "#334155";
+      card.transLines.forEach(tLine => {
+        ctx.fillText(tLine, padX + 18, ty);
+        ty += 17;
+      });
+
+      curY += card.height + 10;
+    });
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#94A3B8";
+    ctx.font = "500 10.5px -apple-system, PingFang SC, sans-serif";
+    ctx.fillText("学途卫士高中英语教研组 · 云端自动交卷存证", W / 2, curY + 24);
+
+    document.getElementById("studentPosterImg").src = canvas.toDataURL("image/png");
+  }
+
+  function downloadStudentPoster() {
+    const img = document.getElementById("studentPosterImg");
+    const link = document.createElement("a");
+    link.download = `学途卫士_交卷答卷_${state.studentName}.png`;
+    link.href = img.src;
+    link.click();
+  }
+
+  function openGradeModal() {
+    if (state.lastReceiptCode && !document.getElementById("gradeReceiptInput").value) {
+      document.getElementById("gradeReceiptInput").value = state.lastReceiptCode;
+    }
+    document.getElementById("gradeModal").classList.add("show");
+  }
+
+  function closeGradeModal() {
+    document.getElementById("gradeModal").classList.remove("show");
+  }
+
+  function buildDiagnosticTokens(words, userCutSet, targetCutSet) {
+    const tokens = [];
+    words.forEach((word, i) => {
+      tokens.push({ text: word, type: "word" });
+      if (i < words.length - 1) {
+        const inUser = userCutSet.has(i);
+        const inTarget = targetCutSet.has(i);
+        if (inUser && inTarget) {
+          tokens.push({ text: "/", type: "correct" });
+        } else if (inUser && !inTarget) {
+          tokens.push({ text: "✗/", type: "wrong" });
+        } else if (!inUser && inTarget) {
+          tokens.push({ text: "[漏]", type: "missed" });
+        }
+      }
+    });
+    return tokens;
+  }
+
+  function buildStandardTokens(words, targetCutSet) {
+    const tokens = [];
+    words.forEach((word, i) => {
+      tokens.push({ text: word, type: "word" });
+      if (i < words.length - 1 && targetCutSet.has(i)) {
+        tokens.push({ text: "/", type: "std" });
+      }
+    });
+    return tokens;
+  }
+
+  function generateTeacherDiagnosisFromCode() {
+    const code = document.getElementById("gradeReceiptInput").value.trim();
+    const customNote = document.getElementById("teacherCustomNote").value.trim() || "红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。";
+    if (!code) {
+      alert("请先粘贴学生发来的 XT# 交卷回执码！");
+      return;
+    }
+    try {
+      const payload = decodeReceiptPayload(code);
+      closeGradeModal();
+      document.getElementById("viewLogin").classList.add("hidden");
+      document.getElementById("viewQuiz").classList.add("hidden");
+      document.getElementById("viewStudentReceipt").classList.add("hidden");
+      document.getElementById("viewTeacherReport").classList.remove("hidden");
+
+      renderTeacherDiagnosisPoster(payload, customNote);
+    } catch (e) {
+      alert("回执码解析失败，请确认是否完整复制了以 XT# 开头的全部字符：\n" + e.message);
+    }
+  }
+
+  function renderTeacherDiagnosisPoster(payload, customNote) {
+    const canvas = document.getElementById("reportCanvas");
+    const ctx = canvas.getContext("2d");
+    const dpr = 3;
+    const W = 440;
+    const padX = 20;
+    const cardW = W - padX * 2;
+    const innerPad = 14;
+    const textMaxW = cardW - innerPad * 2 - 16;
+
+    const records = QUIZ_CONFIG.sentences.map((item, idx) => {
+      const parsed = parseChunkedSentence(item.chunkedText);
+      const norm = normalizeSubmissionItem(payload.s[idx]);
+      const userCutSet = new Set(norm.cuts);
+      const targetCutSet = parsed.cuts;
+
+      let correctCount = 0;
+      let missedCount = 0;
+      let wrongCount = 0;
+
+      targetCutSet.forEach(ci => {
+        if (userCutSet.has(ci)) correctCount++;
+        else missedCount++;
+      });
+      userCutSet.forEach(ci => {
+        if (!targetCutSet.has(ci)) wrongCount++;
+      });
+
+      const totalOps = targetCutSet.size + wrongCount;
+      const accuracy = totalOps === 0 ? 100 : Math.round((correctCount / totalOps) * 100);
+      const isPerfect = missedCount === 0 && wrongCount === 0;
+
+      return {
+        index: idx,
+        source: item.source,
+        words: parsed.words,
+        userCutSet,
+        targetCutSet,
+        studentTrans: norm.trans,
+        correctCount,
+        missedCount,
+        wrongCount,
+        accuracy,
+        isPerfect
+      };
+    });
+
+    const avgAcc = Math.round(records.reduce((s, r) => s + r.accuracy, 0) / records.length);
+    const mins = Math.floor(payload.t / 60);
+    const secs = String(payload.t % 60).padStart(2, "0");
+    const timeStr = mins > 0 ? `${mins}分${secs}秒` : `${secs}秒`;
+    const rankTitle = avgAcc >= 90 ? "句法大师" : avgAcc >= 75 ? "勤思笃行" : "稳步进阶";
+
+    const fontBody = "500 11.5px -apple-system, PingFang SC, sans-serif";
+    const lineHPlain = 17;
+
+    const itemLayouts = records.map(rec => {
+      const itemData = QUIZ_CONFIG.sentences[rec.index];
+      const stuTransText = rec.studentTrans && rec.studentTrans.length > 0
+        ? "✍️ 学员顺句直译：" + rec.studentTrans.join(" / ")
+        : "✍️ 学员顺句直译：（未填写）";
+      const stuTransLines = wrapPlainText(ctx, stuTransText, textMaxW, fontBody);
+      const literalLines = wrapPlainText(ctx, "📖 标准顺句直译：" + itemData.literalTrans, textMaxW, fontBody);
+      const grammarLines = wrapPlainText(ctx, "🔍 句法结构拆解：" + itemData.grammarNote, textMaxW, fontBody);
+      const vocabStr = "💡 高频核心单字：" + itemData.vocab.map(v => `${v.word}（${v.mean}）`).join(" · ");
+      const vocabLines = wrapPlainText(ctx, vocabStr, textMaxW, fontBody);
+
+      const knowledgeH = 12
+        + stuTransLines.length * lineHPlain + 6
+        + literalLines.length * lineHPlain + 6
+        + grammarLines.length * lineHPlain + 6
+        + vocabLines.length * lineHPlain + 8;
+
+      const userTokens = buildDiagnosticTokens(rec.words, rec.userCutSet, rec.targetCutSet);
+      const userLines = layoutTokens(ctx, userTokens, textMaxW);
+      const lineH = 22;
+
+      if (rec.isPerfect) {
+        const diagBoxH = 22 + userLines.length * lineH + 4;
+        const height = 46 + diagBoxH + 8 + knowledgeH + 10;
+        return { rec, height, userLines, stdLines: [], diagBoxH, stuTransLines, literalLines, grammarLines, vocabLines, knowledgeH };
+      } else {
+        const stdTokens = buildStandardTokens(rec.words, rec.targetCutSet);
+        const stdLines = layoutTokens(ctx, stdTokens, textMaxW);
+        const diagBoxH = 20 + userLines.length * lineH + 22 + stdLines.length * lineH + 6;
+        const height = 46 + diagBoxH + 8 + knowledgeH + 10;
+        return { rec, height, userLines, stdLines, diagBoxH, stuTransLines, literalLines, grammarLines, vocabLines, knowledgeH };
+      }
+    });
+
+    const noteLines = wrapPlainText(ctx, customNote, cardW - 84, "500 11px -apple-system, PingFang SC, sans-serif");
+    const headerH = 175;
+    const statsH = 88;
+    const listHeaderH = 46;
+    const itemsTotalH = itemLayouts.reduce((s, it) => s + it.height + 12, 0);
+    const footerH = 65 + noteLines.length * 16;
+    const H = headerH + statsH + listHeaderH + itemsTotalH + footerH;
+
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.scale(dpr, dpr);
+
+    ctx.fillStyle = "#F1F5F9";
+    ctx.fillRect(0, 0, W, H);
+
+    const grad = ctx.createLinearGradient(0, 0, W, headerH);
+    grad.addColorStop(0, "#08182B");
+    grad.addColorStop(1, "#11294D");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, headerH);
+
+    drawRoundedRect(ctx, padX, 20, 74, 22, 5);
+    ctx.fillStyle = "#E2C08D";
+    ctx.fill();
+    ctx.fillStyle = "#08182B";
+    ctx.font = "800 11px -apple-system, PingFang SC, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("学途卫士", padX + 37, 31);
+
+    ctx.fillStyle = "#CBD5E1";
+    ctx.font = "600 11px -apple-system, PingFang SC, sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText("高中英语教研组 · 专属名师精批诊断书", padX + 84, 31);
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "800 20px -apple-system, PingFang SC, sans-serif";
+    ctx.fillText(QUIZ_CONFIG.taskTitle, padX, 66);
+
+    ctx.fillStyle = "#94A3B8";
+    ctx.font = "500 11px -apple-system, PingFang SC, sans-serif";
+    ctx.fillText(`学员交卷时间：${payload.d}`, padX, 92);
+
+    drawRoundedRect(ctx, padX, 112, cardW, 42, 9);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(226, 192, 141, 0.35)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "700 13px -apple-system, PingFang SC, sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText(`学员：${payload.n}`, padX + 14, 133);
+
+    ctx.fillStyle = "#E2C08D";
+    ctx.font = "600 12px -apple-system, PingFang SC, sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText(payload.c, W - padX - 14, 133);
+
+    const statsY = headerH + 14;
+    drawRoundedRect(ctx, padX, statsY, cardW, 72, 12);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fill();
+
+    const colW = cardW / 3;
+    const metrics = [
+      { val: `${avgAcc}%`, label: "意群切分准确率", color: "#2C55A0" },
+      { val: timeStr, label: "专注思考总耗时", color: "#0F172A" },
+      { val: rankTitle, label: "教研综合评级", color: "#B68B4C" }
+    ];
+
+    metrics.forEach((m, i) => {
+      const cx = padX + colW * i + colW / 2;
+      ctx.textAlign = "center";
+      ctx.fillStyle = m.color;
+      ctx.font = "800 19px -apple-system, PingFang SC, sans-serif";
+      ctx.fillText(m.val, cx, statsY + 28);
+
+      ctx.fillStyle = "#64748B";
+      ctx.font = "500 11px -apple-system, PingFang SC, sans-serif";
+      ctx.fillText(m.label, cx, statsY + 52);
+
+      if (i < 2) {
+        ctx.strokeStyle = "#E2E8F0";
+        ctx.beginPath();
+        ctx.moveTo(padX + colW * (i + 1), statsY + 16);
+        ctx.lineTo(padX + colW * (i + 1), statsY + 56);
+        ctx.stroke();
+      }
+    });
+
+    let curY = statsY + 72 + 22;
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#0F172A";
+    ctx.font = "800 14px -apple-system, PingFang SC, sans-serif";
+    ctx.fillText("逐句切分与顺句直译精批明细", padX, curY);
+
+    ctx.textAlign = "right";
+    ctx.font = "600 10px -apple-system, PingFang SC, sans-serif";
+    ctx.fillStyle = "#64748B";
+    ctx.fillText("🟢切对  🔴✗/误切  🟠[漏]漏切", W - padX, curY);
+
+    curY += 16;
+
+    itemLayouts.forEach(({ rec, height, userLines, stdLines, diagBoxH, stuTransLines, literalLines, grammarLines, vocabLines, knowledgeH }) => {
+      drawRoundedRect(ctx, padX, curY, cardW, height, 10);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fill();
+      ctx.strokeStyle = rec.isPerfect ? "#D1FAE5" : "#FDE68A";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      drawRoundedRect(ctx, padX + 12, curY + 12, 46, 22, 5);
+      ctx.fillStyle = "#0F172A";
+      ctx.fill();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "700 11px -apple-system, PingFang SC, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(`第 ${rec.index + 1} 句`, padX + 35, curY + 23);
+
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#475569";
+      ctx.font = "600 11px -apple-system, PingFang SC, sans-serif";
+      const shortSource = rec.source.length > 13 ? rec.source.slice(0, 13) + "..." : rec.source;
+      ctx.fillText(shortSource, padX + 64, curY + 23);
+
+      const badgeW = rec.isPerfect ? 104 : 138;
+      const badgeX = W - padX - 12 - badgeW;
+      drawRoundedRect(ctx, badgeX, curY + 12, badgeW, 22, 5);
+      ctx.fillStyle = rec.isPerfect ? "#ECFDF5" : "#FFFBEB";
+      ctx.fill();
+      ctx.fillStyle = rec.isPerfect ? "#059669" : "#D97706";
+      ctx.font = "700 10.5px -apple-system, PingFang SC, sans-serif";
+      ctx.textAlign = "center";
+      const badgeLabel = rec.isPerfect
+        ? `✓ 对${rec.correctCount}/漏0/误0`
+        : `对${rec.correctCount} · 漏${rec.missedCount} · 误${rec.wrongCount}`;
+      ctx.fillText(badgeLabel, badgeX + badgeW / 2, curY + 23);
+
+      let innerY = curY + 46;
+
+      drawRoundedRect(ctx, padX + 12, innerY, cardW - 24, diagBoxH, 8);
+      ctx.fillStyle = "#F8FAFC";
+      ctx.fill();
+
+      let dy = innerY + 12;
+      ctx.textAlign = "left";
+      ctx.fillStyle = rec.isPerfect ? "#059669" : "#DC2626";
+      ctx.font = "700 11px -apple-system, PingFang SC, sans-serif";
+      ctx.fillText(rec.isPerfect ? "▸ 英文原句与精准意群切分：" : "▸ 学员切分现场批注：", padX + 20, dy);
+
+      dy += 18;
+      userLines.forEach(line => {
+        let lx = padX + 20;
+        line.forEach(tok => {
+          if (tok.type === "word") {
+            ctx.fillStyle = "#1E293B";
+            ctx.font = "600 13px -apple-system, PingFang SC, sans-serif";
+            ctx.fillText(tok.text, lx, dy);
+          } else {
+            const pillH = 17;
+            drawRoundedRect(ctx, lx, dy - 9, tok.width, pillH, 4);
+            if (tok.type === "correct") {
+              ctx.fillStyle = "#DCFCE7";
+              ctx.fill();
+              ctx.fillStyle = "#059669";
+            } else if (tok.type === "wrong") {
+              ctx.fillStyle = "#FEE2E2";
+              ctx.fill();
+              ctx.fillStyle = "#DC2626";
+            } else {
+              ctx.fillStyle = "#FEF3C7";
+              ctx.fill();
+              ctx.fillStyle = "#D97706";
+            }
+            ctx.font = "800 11px -apple-system, PingFang SC, sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(tok.text, lx + tok.width / 2, dy);
+            ctx.textAlign = "left";
+          }
+          lx += tok.width + 5;
+        });
+        dy += 22;
+      });
+
+      if (!rec.isPerfect) {
+        dy += 4;
+        ctx.fillStyle = "#059669";
+        ctx.font = "700 11px -apple-system, PingFang SC, sans-serif";
+        ctx.fillText("▸ 教研标准意群：", padX + 20, dy);
+
+        dy += 18;
+        stdLines.forEach(line => {
+          let lx = padX + 20;
+          line.forEach(tok => {
+            if (tok.type === "word") {
+              ctx.fillStyle = "#475569";
+              ctx.font = "500 12.5px -apple-system, PingFang SC, sans-serif";
+              ctx.fillText(tok.text, lx, dy);
+            } else {
+              ctx.fillStyle = "#059669";
+              ctx.font = "800 13px -apple-system, PingFang SC, sans-serif";
+              ctx.fillText("/", lx + 2, dy);
+            }
+            lx += tok.width + 5;
+          });
+          dy += 22;
+        });
+      }
+
+      innerY += diagBoxH + 8;
+
+      drawRoundedRect(ctx, padX + 12, innerY, cardW - 24, knowledgeH, 8);
+      ctx.fillStyle = "#F0F5FF";
+      ctx.fill();
+
+      let ky = innerY + 13;
+      ctx.textAlign = "left";
+      ctx.font = fontBody;
+
+      ctx.fillStyle = "#B45309";
+      stuTransLines.forEach(line => {
+        ctx.fillText(line, padX + 20, ky);
+        ky += lineHPlain;
+      });
+
+      ky += 5;
+      ctx.fillStyle = "#059669";
+      literalLines.forEach(line => {
+        ctx.fillText(line, padX + 20, ky);
+        ky += lineHPlain;
+      });
+
+      ky += 5;
+      ctx.fillStyle = "#334155";
+      grammarLines.forEach(line => {
+        ctx.fillText(line, padX + 20, ky);
+        ky += lineHPlain;
+      });
+
+      ky += 5;
+      ctx.fillStyle = "#2C55A0";
+      vocabLines.forEach(line => {
+        ctx.fillText(line, padX + 20, ky);
+        ky += lineHPlain;
+      });
+
+      curY += height + 12;
+    });
+
+    curY += 4;
+    drawRoundedRect(ctx, padX, curY, 64, 22, 5);
+    ctx.fillStyle = "#0F172A";
+    ctx.fill();
+    ctx.fillStyle = "#E2C08D";
+    ctx.font = "700 11px -apple-system, PingFang SC, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("名师寄语", padX + 32, curY + 11);
+
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#334155";
+    ctx.font = "500 11px -apple-system, PingFang SC, sans-serif";
+    let ny = curY + 11;
+    noteLines.forEach(line => {
+      ctx.fillText(line, padX + 72, ny);
+      ny += 16;
+    });
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#94A3B8";
+    ctx.font = "500 10.5px -apple-system, PingFang SC, sans-serif";
+    ctx.fillText("学途卫士高中英语教研组 · 精细化课后诊断反馈", W / 2, ny + 22);
+
+    const imgEl = document.getElementById("teacherPosterImg");
+    imgEl.dataset.student = payload.n;
+    imgEl.src = canvas.toDataURL("image/png");
+  }
+
+  function downloadTeacherPoster() {
+    const img = document.getElementById("teacherPosterImg");
+    const sName = img.dataset.student || "学员";
+    const link = document.createElement("a");
+    link.download = `学途卫士_名师精批诊断_${sName}.png`;
+    link.href = img.src;
+    link.click();
+  }
+
+  function openTeacherModal() {
+    document.getElementById("editTaskTitle").value = QUIZ_CONFIG.taskTitle;
+    document.getElementById("teacherJsonInput").value = JSON.stringify(QUIZ_CONFIG.sentences, null, 2);
+    document.getElementById("teacherModal").classList.add("show");
+  }
+
+  function closeTeacherModal() {
+    document.getElementById("teacherModal").classList.remove("show");
+  }
+
+  function applyTeacherData() {
+    try {
+      const newTitle = document.getElementById("editTaskTitle").value.trim();
+      const parsed = JSON.parse(document.getElementById("teacherJsonInput").value);
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        alert("题目数组不能为空！");
+        return;
+      }
+      QUIZ_CONFIG.taskTitle = newTitle || QUIZ_CONFIG.taskTitle;
+      QUIZ_CONFIG.sentences = parsed;
+      document.getElementById("headerTaskTitle").textContent = QUIZ_CONFIG.taskTitle;
+      closeTeacherModal();
+      alert("题库已更新！");
+    } catch (e) {
+      alert("JSON 格式有误，请检查引号或逗号是否匹配：\n" + e.message);
+    }
+  }
+
+  function exportUpdatedHtml() {
+    applyTeacherData();
+    const docHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    const blob = new Blob([docHtml], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "长难句0002.html";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  let tapCount = 0;
+  let tapTimer = null;
+
+  function enableTeacherMode() {
+    const actions = document.getElementById("teacherTopActions");
+    if (actions) actions.classList.remove("hidden");
+  }
+
+  function secretTapUnlock() {
+    tapCount++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(() => { tapCount = 0; }, 1500);
+    if (tapCount >= 5) {
+      tapCount = 0;
+      enableTeacherMode();
+      alert("已进入教研老师工作模式！");
+    }
+  }
+
+  (function checkRoleParam() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("role") === "teacher") {
+      enableTeacherMode();
+    }
+  })();
+</script>
+</body>
+</html>
