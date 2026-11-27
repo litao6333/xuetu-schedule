@@ -416,7 +416,7 @@
         <span>📋 教务与财务管理（内部专用）</span>
       </div>
 
-      <a class="nav-card" href="./index.html">
+      <a class="nav-card" href="./schedule.html">
         <div class="nav-left">
           <div class="nav-icon-box icon-navy">📅</div>
           <div class="nav-info">
@@ -464,7 +464,7 @@
 
       <div class="tip-footer">
         💡 建议将本页面添加到手机浏览器「主屏幕」或收藏夹<br/>
-        外部学生打卡请直接发送具体关卡链接（如 长难句0001 / 代码1号.html），勿发本工作台网址
+        外部学生打卡请直接发送具体关卡链接（如 work.xtwsedu.com/cnj0001.html），勿发本工作台网址
       </div>
     </div>
   </main>
@@ -473,49 +473,49 @@
 <script>
   const DEFAULT_PIN = "6333";
   const STORAGE_KEY_AUTH = "xuetu_hub_unlocked";
-  const STORAGE_KEY_DAYS = "xuetu_english_days_v2";
+  const STORAGE_KEY_DAYS = "xuetu_english_days_v3";
 
   const DEFAULT_DAYS = [
-    { "title": "长难句0001 · 批改台", "file": "代码1号.html", "badge": "2008-17真题" },
-    { "title": "长难句0002 · 批改台", "file": "代码2号.html", "badge": "2008-17真题" },
-    { "title": "长难句0003 · 批改台", "file": "代码3号.html", "badge": "2008-17真题" },
-    { "title": "长难句0004 · 批改台", "file": "代码4号.html", "badge": "2008-17真题" },
-    { "title": "长难句0005 · 批改台", "file": "代码5号.html", "badge": "2008-17真题" },
-    { "title": "长难句0006 · 批改台", "file": "代码6号.html", "badge": "2008-17真题" },
-    { "title": "长难句0007 · 批改台", "file": "代码7号.html", "badge": "2008-17真题" },
-    { "title": "长难句0008 · 批改台", "file": "代码8号.html", "badge": "2008-17真题" },
-    { "title": "长难句0009 · 批改台", "file": "代码9号.html", "badge": "2008-17真题" },
-    { "title": "长难句0010 · 批改台", "file": "代码10号.html", "badge": "2008-17真题" },
-    { "title": "长难句0011 · 批改台", "file": "代码11号.html", "badge": "2008-17真题" },
-    { "title": "长难句0012 · 批改台", "file": "代码12号.html", "badge": "2008-17真题" },
-    { "title": "长难句0013 · 批改台", "file": "代码13号.html", "badge": "2008-17真题" },
-    { "title": "长难句0014 · 批改台", "file": "代码14号.html", "badge": "2008-17真题" },
-    { "title": "长难句0015 · 批改台", "file": "代码15号.html", "badge": "2008-17真题" },
-    { "title": "长难句0016 · 批改台", "file": "代码16号.html", "badge": "2008-17真题" },
-    { "title": "长难句0017 · 批改台", "file": "代码17号.html", "badge": "2008-17真题" },
-    { "title": "长难句0018 · 批改台", "file": "代码18号.html", "badge": "2008-17真题" },
-    { "title": "长难句0019 · 批改台", "file": "代码19号.html", "badge": "2008-17真题" },
-    { "title": "长难句0020 · 批改台", "file": "代码20号.html", "badge": "2008-17真题" },
-    { "title": "长难句0021 · 批改台", "file": "代码21号.html", "badge": "2008-17真题" },
-    { "title": "长难句0022 · 批改台", "file": "代码22号.html", "badge": "2008-17真题" },
-    { "title": "长难句0023 · 批改台", "file": "代码23号.html", "badge": "2008-17真题" },
-    { "title": "长难句0024 · 批改台", "file": "代码24号.html", "badge": "2008-17真题" },
-    { "title": "长难句0025 · 批改台", "file": "代码25号.html", "badge": "2008-17真题" },
-    { "title": "长难句0026 · 批改台", "file": "代码26号.html", "badge": "2008-17真题" },
-    { "title": "长难句0027 · 批改台", "file": "代码27号.html", "badge": "2008-17真题" },
-    { "title": "长难句0028 · 批改台", "file": "代码28号.html", "badge": "2008-17真题" },
-    { "title": "长难句0029 · 批改台", "file": "代码29号.html", "badge": "2008-17真题" },
-    { "title": "长难句0030 · 批改台", "file": "代码30号.html", "badge": "2008-17真题" },
-    { "title": "长难句0031 · 批改台", "file": "代码31号.html", "badge": "2008-17真题" },
-    { "title": "长难句0032 · 批改台", "file": "代码32号.html", "badge": "2008-17真题" },
-    { "title": "长难句0033 · 批改台", "file": "代码33号.html", "badge": "2008-17真题" },
-    { "title": "长难句0034 · 批改台", "file": "代码34号.html", "badge": "2008-17真题" },
-    { "title": "长难句0035 · 批改台", "file": "代码35号.html", "badge": "2008-17真题" },
-    { "title": "长难句0036 · 批改台", "file": "代码36号.html", "badge": "2008-17真题" },
-    { "title": "长难句0037 · 批改台", "file": "代码37号.html", "badge": "2008-17真题" },
-    { "title": "长难句0038 · 批改台", "file": "代码38号.html", "badge": "2008-17真题" },
-    { "title": "长难句0039 · 批改台", "file": "代码39号.html", "badge": "2008-17真题" },
-    { "title": "长难句0040 · 批改台", "file": "代码40号.html", "badge": "2008-17真题" }
+    { "title": "长难句0001 · 批改台", "file": "cnj0001.html", "badge": "2008-17真题" },
+    { "title": "长难句0002 · 批改台", "file": "cnj0002.html", "badge": "2008-17真题" },
+    { "title": "长难句0003 · 批改台", "file": "cnj0003.html", "badge": "2008-17真题" },
+    { "title": "长难句0004 · 批改台", "file": "cnj0004.html", "badge": "2008-17真题" },
+    { "title": "长难句0005 · 批改台", "file": "cnj0005.html", "badge": "2008-17真题" },
+    { "title": "长难句0006 · 批改台", "file": "cnj0006.html", "badge": "2008-17真题" },
+    { "title": "长难句0007 · 批改台", "file": "cnj0007.html", "badge": "2008-17真题" },
+    { "title": "长难句0008 · 批改台", "file": "cnj0008.html", "badge": "2008-17真题" },
+    { "title": "长难句0009 · 批改台", "file": "cnj0009.html", "badge": "2008-17真题" },
+    { "title": "长难句0010 · 批改台", "file": "cnj0010.html", "badge": "2008-17真题" },
+    { "title": "长难句0011 · 批改台", "file": "cnj0011.html", "badge": "2008-17真题" },
+    { "title": "长难句0012 · 批改台", "file": "cnj0012.html", "badge": "2008-17真题" },
+    { "title": "长难句0013 · 批改台", "file": "cnj0013.html", "badge": "2008-17真题" },
+    { "title": "长难句0014 · 批改台", "file": "cnj0014.html", "badge": "2008-17真题" },
+    { "title": "长难句0015 · 批改台", "file": "cnj0015.html", "badge": "2008-17真题" },
+    { "title": "长难句0016 · 批改台", "file": "cnj0016.html", "badge": "2008-17真题" },
+    { "title": "长难句0017 · 批改台", "file": "cnj0017.html", "badge": "2008-17真题" },
+    { "title": "长难句0018 · 批改台", "file": "cnj0018.html", "badge": "2008-17真题" },
+    { "title": "长难句0019 · 批改台", "file": "cnj0019.html", "badge": "2008-17真题" },
+    { "title": "长难句0020 · 批改台", "file": "cnj0020.html", "badge": "2008-17真题" },
+    { "title": "长难句0021 · 批改台", "file": "cnj0021.html", "badge": "2008-17真题" },
+    { "title": "长难句0022 · 批改台", "file": "cnj0022.html", "badge": "2008-17真题" },
+    { "title": "长难句0023 · 批改台", "file": "cnj0023.html", "badge": "2008-17真题" },
+    { "title": "长难句0024 · 批改台", "file": "cnj0024.html", "badge": "2008-17真题" },
+    { "title": "长难句0025 · 批改台", "file": "cnj0025.html", "badge": "2008-17真题" },
+    { "title": "长难句0026 · 批改台", "file": "cnj0026.html", "badge": "2008-17真题" },
+    { "title": "长难句0027 · 批改台", "file": "cnj0027.html", "badge": "2008-17真题" },
+    { "title": "长难句0028 · 批改台", "file": "cnj0028.html", "badge": "2008-17真题" },
+    { "title": "长难句0029 · 批改台", "file": "cnj0029.html", "badge": "2008-17真题" },
+    { "title": "长难句0030 · 批改台", "file": "cnj0030.html", "badge": "2008-17真题" },
+    { "title": "长难句0031 · 批改台", "file": "cnj0031.html", "badge": "2008-17真题" },
+    { "title": "长难句0032 · 批改台", "file": "cnj0032.html", "badge": "2008-17真题" },
+    { "title": "长难句0033 · 批改台", "file": "cnj0033.html", "badge": "2008-17真题" },
+    { "title": "长难句0034 · 批改台", "file": "cnj0034.html", "badge": "2008-17真题" },
+    { "title": "长难句0035 · 批改台", "file": "cnj0035.html", "badge": "2008-17真题" },
+    { "title": "长难句0036 · 批改台", "file": "cnj0036.html", "badge": "2008-17真题" },
+    { "title": "长难句0037 · 批改台", "file": "cnj0037.html", "badge": "2008-17真题" },
+    { "title": "长难句0038 · 批改台", "file": "cnj0038.html", "badge": "2008-17真题" },
+    { "title": "长难句0039 · 批改台", "file": "cnj0039.html", "badge": "2008-17真题" },
+    { "title": "长难句0040 · 批改台", "file": "cnj0040.html", "badge": "2008-17真题" }
   ];
 
   function getSavedDays() {
@@ -550,7 +550,7 @@
   }
 
   function addCustomDay() {
-    const file = prompt("请输入你上传到 GitHub 仓库的新 HTML 文件名（例如：代码41号.html）：");
+    const file = prompt("请输入你上传到 GitHub 仓库的新 HTML 文件名（例如：cnj0041.html）：");
     if (!file || !file.trim()) return;
     const cleanFile = file.trim();
     const title = prompt("请输入显示名称（例如：长难句0041 · 批改台）：", cleanFile.replace(".html", ""));
