@@ -192,6 +192,16 @@
       border-radius: 5px;
     }
 
+    .reviewed-pill {
+      background: var(--emerald-bg);
+      color: var(--emerald);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 5px;
+      border: 1px solid #A7F3D0;
+    }
+
     .sub-info-line {
       font-size: 12.5px;
       color: var(--text-sub);
@@ -223,6 +233,21 @@
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
+    }
+
+    .btn-save-sm {
+      background: var(--emerald-bg);
+      color: var(--emerald);
+      border: 1px solid #6EE7B7;
+      padding: 8px 13px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-save-sm:hover {
+      background: #D1FAE5;
     }
 
     .btn-danger-sm {
@@ -257,6 +282,21 @@
       padding: 9px 12px;
       border-radius: 8px;
       font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .save-status-badge {
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 5px;
+      background: #FFFFFF;
+      color: var(--emerald);
+      border: 1px solid #A7F3D0;
     }
 
     .sentence-review-box {
@@ -332,10 +372,12 @@
       gap: 8px;
       align-items: center;
       margin-top: 4px;
+      flex-wrap: wrap;
     }
 
     .note-input {
       flex: 1;
+      min-width: 240px;
       padding: 9px 11px;
       border: 1.5px solid #CBD5E1;
       border-radius: 8px;
@@ -469,10 +511,12 @@
 <script>
   const SUPABASE_URL = "https://db.litao1986.ccwu.cc";
   const SUPABASE_ANON_KEY = "sb_publishable_NBhQ-TR8nlGx4A_-VeIYlw_X2IjXc5Z";
+  const LOCAL_BACKUP_KEY = "xuetu_teacher_reviews_backup_v1";
 
   let allRecords = [];
   let expandedIds = new Set();
   let pendingDeleteIndex = -1;
+  let autoSaveTimers = {};
 
   function escapeHtml(str) {
     if (!str) return "";
@@ -491,6 +535,46 @@
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
+  function getRecordStorageId(row) {
+    if (row.id !== undefined && row.id !== null) return "id_" + row.id;
+    return "ts_" + (row.created_at || "") + "_" + (row.student_name || "");
+  }
+
+  function getLocalBackups() {
+    try {
+      return JSON.parse(localStorage.getItem(LOCAL_BACKUP_KEY) || "{}");
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveLocalBackup(row) {
+    try {
+      const backups = getLocalBackups();
+      const key = getRecordStorageId(row);
+      backups[key] = {
+        savedAt: Date.now(),
+        detail: row.detail
+      };
+      localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(backups));
+    } catch (e) {
+      console.warn("本地缓存写入失败", e);
+    }
+  }
+
+  function mergeLocalBackupIfNeeded(records) {
+    const backups = getLocalBackups();
+    records.forEach(row => {
+      const key = getRecordStorageId(row);
+      const bk = backups[key];
+      if (!bk || !bk.detail) return;
+      const cloudSavedAt = (row.detail && row.detail._teacherSavedAt) || 0;
+      if (bk.savedAt > cloudSavedAt) {
+        row.detail = bk.detail;
+      }
+    });
+  }
+
   async function fetchSubmissions() {
     const listEl = document.getElementById("submissionList");
     document.getElementById("recordCountText").textContent = "加载中...";
@@ -507,11 +591,85 @@
         throw new Error(`HTTP ${res.status}: ${txt}`);
       }
       allRecords = await res.json();
+      mergeLocalBackupIfNeeded(allRecords);
       renderList();
     } catch (err) {
       console.error(err);
       document.getElementById("recordCountText").textContent = "加载失败";
       listEl.innerHTML = `<div class="empty-state" style="color: #DC2626;">❌ 云端数据拉取失败：${err.message}<br/><br/><button class="btn-primary-sm" onclick="fetchSubmissions()">重新加载</button></div>`;
+    }
+  }
+
+  function setStatusText(idx, text, isError) {
+    const el = document.getElementById(`saveStatus_${idx}`);
+    if (!el) return;
+    el.textContent = text;
+    el.style.color = isError ? "#DC2626" : "#059669";
+    el.style.borderColor = isError ? "#FECACA" : "#A7F3D0";
+  }
+
+  function triggerAutoSave(idx) {
+    const row = allRecords[idx];
+    if (!row) return;
+    if (!row.detail) row.detail = {};
+    row.detail._teacherSavedAt = Date.now();
+    saveLocalBackup(row);
+
+    setStatusText(idx, "⏳ 正在自动保存...", false);
+    if (autoSaveTimers[idx]) clearTimeout(autoSaveTimers[idx]);
+    autoSaveTimers[idx] = setTimeout(() => {
+      persistReviewToCloud(idx, true);
+    }, 800);
+  }
+
+  async function persistReviewToCloud(idx, isSilent) {
+    const row = allRecords[idx];
+    if (!row) return;
+    if (!row.detail) row.detail = {};
+    row.detail._teacherSavedAt = Date.now();
+    saveLocalBackup(row);
+
+    setStatusText(idx, "☁️ 正在同步云端...", false);
+
+    try {
+      let filterQuery = "";
+      if (row.id !== undefined && row.id !== null) {
+        filterQuery = `id=eq.${encodeURIComponent(row.id)}`;
+      } else if (row.created_at) {
+        filterQuery = `created_at=eq.${encodeURIComponent(row.created_at)}`;
+      } else {
+        throw new Error("缺少记录主键字段");
+      }
+
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/sentence_submissions?${filterQuery}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+          "Prefer": "return=representation"
+        },
+        body: JSON.stringify({ detail: row.detail })
+      });
+
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`HTTP ${res.status}: ${txt}`);
+      }
+
+      const updatedRows = await res.json();
+      if (!updatedRows || updatedRows.length === 0) {
+        throw new Error("云端未放行更新权限（请在 Supabase 执行 GRANT UPDATE ON TABLE public.sentence_submissions TO anon;）");
+      }
+
+      const nowStr = new Date().toTimeString().slice(0, 5);
+      setStatusText(idx, `✅ 已同步云端与本机 (${nowStr})`, false);
+    } catch (err) {
+      console.error("云端同步失败：", err);
+      setStatusText(idx, "⚠️ 已暂存本机（云端同步受阻）", true);
+      if (!isSilent) {
+        alert("批改内容已安全保存在当前电脑浏览器中，但同步到云端数据库失败：\n" + err.message + "\n\n如需跨设备永久同步，请在 Supabase SQL Editor 执行：\nGRANT UPDATE ON TABLE public.sentence_submissions TO anon;");
+      }
     }
   }
 
@@ -584,14 +742,25 @@
     const row = allRecords[recIdx];
     if (row && row.detail && row.detail.items && row.detail.items[itemIdx]) {
       row.detail.items[itemIdx][field] = value;
+      triggerAutoSave(recIdx);
     }
   }
 
   function updateOverallNote(recIdx, value) {
     const row = allRecords[recIdx];
     if (row) {
-      row._customOverallNote = value;
+      if (!row.detail) row.detail = {};
+      row.detail.overallTeacherNote = value;
+      triggerAutoSave(recIdx);
     }
+  }
+
+  function hasCustomReview(row) {
+    const detail = row.detail || {};
+    if (detail._teacherSavedAt) return true;
+    if (detail.overallTeacherNote) return true;
+    const items = detail.items || [];
+    return items.some(it => it.teacherComment && it.teacherComment.trim().length > 0);
   }
 
   function renderList() {
@@ -620,8 +789,9 @@
       const timeLabel = detail.submittedAtLocal || formatChinaTime(row.created_at);
       const rowKey = String(row.id ?? row.created_at ?? idx);
       const isExpanded = expandedIds.has(rowKey);
-      const overallNote = row._customOverallNote !== undefined
-        ? row._customOverallNote
+      const reviewed = hasCustomReview(row);
+      const overallNote = detail.overallTeacherNote !== undefined
+        ? detail.overallTeacherNote
         : "红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。";
 
       const card = document.createElement("div");
@@ -664,10 +834,14 @@
 
         drawerHtml = `
           <div class="sub-detail-drawer">
-            <div class="edit-tip-banner">✏️ 提示：下方所有批注均可直接打字删改或补充，修改完成后点击「✨ 出诊断长图」即可生成最新版海报。</div>
+            <div class="edit-tip-banner">
+              <span>✏️ 打字修改后会自动保存到本机并同步云端，刷新不丢失</span>
+              <span class="save-status-badge" id="saveStatus_${idx}">${reviewed ? "✅ 已有保存记录" : "等待编辑"}</span>
+            </div>
             ${sentencesHtml}
             <div class="note-edit-row">
               <input type="text" class="note-input" id="noteInput_${idx}" value="${escapeHtml(overallNote)}" oninput="updateOverallNote(${idx}, this.value)" placeholder="输入文末名师总评寄语..." />
+              <button class="btn-save-sm" onclick="persistReviewToCloud(${idx}, false)">💾 立即保存批改</button>
               <button class="btn-primary-sm" onclick="generatePosterByIndex(${idx})">✨ 出诊断长图</button>
             </div>
           </div>
@@ -681,6 +855,7 @@
               <span class="stu-name">${row.student_name || "未命名学员"}</span>
               <span class="grade-pill">${row.grade || "未填年级"}</span>
               <span class="code-pill">${row.code_id || "未标注关卡"}</span>
+              ${reviewed ? `<span class="reviewed-pill">✓ 已精批存档</span>` : ""}
             </div>
             <div class="sub-info-line">交卷时间：${timeLabel} &nbsp;|&nbsp; ${row.summary || ""}</div>
           </div>
@@ -791,12 +966,12 @@
       return;
     }
 
+    const detail = row.detail;
     const noteInp = document.getElementById(`noteInput_${idx}`);
     const customNote = noteInp
       ? (noteInp.value.trim() || "红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。")
-      : (row._customOverallNote || "红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。");
+      : (detail.overallTeacherNote || "红/橙标记处为意群边界薄弱点，请对照标准直译检查译文偏差并朗读三遍。");
 
-    const detail = row.detail;
     const items = detail.items || [];
     const canvas = document.getElementById("reportCanvas");
     const ctx = canvas.getContext("2d");
