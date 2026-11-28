@@ -264,10 +264,70 @@
     }
 
     .date-logger-row input[type="date"] {
-      flex: 1;
-      min-width: 130px;
+      flex: 1.2;
+      min-width: 126px;
       padding: 6px 8px;
       font-size: 13px;
+    }
+
+    .unit-picker-wrap {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-radius: 6px;
+      padding: 2px 6px;
+    }
+
+    .unit-picker-wrap span {
+      font-size: 11.5px;
+      color: var(--text-sub);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .unit-input {
+      width: 54px !important;
+      padding: 4px 4px !important;
+      border: none !important;
+      background: transparent !important;
+      font-size: 13px !important;
+      font-weight: 700;
+      color: var(--navy-dark) !important;
+      text-align: center;
+    }
+
+    .unit-input:focus {
+      box-shadow: none !important;
+    }
+
+    .unit-quick-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .unit-quick-label {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .unit-pill {
+      background: #F1F5F9;
+      border: 1px solid #CBD5E1;
+      color: var(--text-main);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .unit-pill:hover {
+      background: #E2E8F0;
     }
 
     .btn-add-consumed {
@@ -769,7 +829,7 @@
   <div class="topbar">
     <div class="topbar-title">
       <h1>学途卫士 · 课时费用核销单</h1>
-      <span>总预收资金池 · 分科自定义单价消课 · 精确日期</span>
+      <span>总预收资金池 · 支持0.5 / 0.75等小数课时核销 · 精确日期</span>
     </div>
     <div class="topbar-actions">
       <button class="btn-top" onclick="saveCurrentStudent()">💾 保存学员</button>
@@ -821,7 +881,7 @@
       <!-- 多科目正课区 -->
       <div class="panel" style="margin-bottom: 14px;">
         <h2 class="section-title">
-          <span>2. 正课科目消课明细（自定义单次费用）</span>
+          <span>2. 正课科目消课明细（支持整节 / 0.5 / 0.75节）</span>
           <span style="font-size:11px;font-weight:500;color:#64748B;">点击下方快速加科</span>
         </h2>
 
@@ -831,7 +891,7 @@
           <button class="tag-btn" onclick="addSubject('化学', '杨老师', 400)">+ 化学(杨老师)</button>
           <button class="tag-btn" onclick="addSubject('英语', '董老师', 400)">+ 英语(董老师)</button>
           <button class="tag-btn" onclick="addSubject('英语', '姚老师', 400)">+ 英语(姚老师)</button>
-          <button class="tag-btn" onclick="addSubject('自定义科目', '', 400)">+ 其他科目</button>
+          <button class="tag-btn" onclick="addSubject('自定义科目', '', 900)">+ 其他科目</button>
         </div>
 
         <div id="subjectsContainer"></div>
@@ -865,8 +925,19 @@
           <div class="date-logger">
             <div class="date-logger-row">
               <input type="date" id="evDatePicker" />
-              <button class="btn-add-consumed" onclick="addEveningLog('consumed')">+ 记1次已消晚辅</button>
-              <button class="btn-add-leave" onclick="addEveningLog('leave')">+ 记1次请假顺延</button>
+              <div class="unit-picker-wrap">
+                <span>课时</span>
+                <input type="number" id="evUnitInput" class="unit-input" value="1" min="0.1" step="0.25" />
+              </div>
+              <button class="btn-add-consumed" onclick="addEveningLog('consumed')">+ 记消课</button>
+              <button class="btn-add-leave" onclick="addEveningLog('leave')">+ 记请假</button>
+            </div>
+            <div class="unit-quick-row">
+              <span class="unit-quick-label">快捷选课时：</span>
+              <button type="button" class="unit-pill" onclick="setEveningUnit(0.5)">0.5节</button>
+              <button type="button" class="unit-pill" onclick="setEveningUnit(0.75)">0.75节</button>
+              <button type="button" class="unit-pill" onclick="setEveningUnit(1)">1节(整次)</button>
+              <button type="button" class="unit-pill" onclick="setEveningUnit(1.5)">1.5节</button>
             </div>
             <div id="evChips" class="chips-area"></div>
           </div>
@@ -879,7 +950,7 @@
         <h2 class="section-title">4. 温馨提示与校区落款</h2>
         <div class="field">
           <label>给家长的温馨提示（请假顺延规则/续费提醒）</label>
-          <textarea id="remarkText" rows="2" oninput="renderAll()">注：以上各项按实际签到次数与对应单价核销，学员提前请假均已顺延不扣费。账户结余用于后续各科正课及晚辅抵扣，如结余不足一次课时费请及时联系教务老师续费衔接。</textarea>
+          <textarea id="remarkText" rows="2" oninput="renderAll()">注：以上各项按实际签到课时（含半节0.5次、1.5小时0.75次等实际时长折算）与对应单价核销，学员提前请假均已顺延不扣费。账户结余用于后续各科正课及晚辅抵扣，如结余不足一次课时费请及时联系教务老师续费衔接。</textarea>
         </div>
         <div class="field" style="margin-bottom:0;">
           <label>校区地址 / 落款</label>
@@ -987,10 +1058,11 @@
           teacher: '浩然老师',
           price: 400,
           pickerDate: todayStr,
+          pickerUnits: 1,
           logs: [
-            { date: '2026-11-01', type: 'consumed' },
-            { date: '2026-11-08', type: 'leave' },
-            { date: '2026-11-15', type: 'consumed' }
+            { date: '2026-11-01', type: 'consumed', units: 1 },
+            { date: '2026-11-08', type: 'leave', units: 1 },
+            { date: '2026-11-15', type: 'consumed', units: 1 }
           ]
         },
         {
@@ -999,20 +1071,31 @@
           teacher: '郭超老师',
           price: 400,
           pickerDate: todayStr,
+          pickerUnits: 1,
           logs: [
-            { date: '2026-11-02', type: 'consumed' }
+            { date: '2026-11-02', type: 'consumed', units: 1 }
           ]
         }
       ],
       eveningLogs: [
-        { date: '2026-11-04', type: 'consumed' },
-        { date: '2026-11-11', type: 'consumed' },
-        { date: '2026-11-18', type: 'leave' }
+        { date: '2026-11-04', type: 'consumed', units: 1 },
+        { date: '2026-11-11', type: 'consumed', units: 1 },
+        { date: '2026-11-18', type: 'leave', units: 1 }
       ]
     };
 
     document.getElementById('reportDate').value = todayStr;
     document.getElementById('evDatePicker').value = todayStr;
+
+    function formatNum(num) {
+      const rounded = Math.round((Number(num) || 0) * 1000) / 1000;
+      return String(rounded);
+    }
+
+    function formatMoney(num) {
+      const rounded = Math.round((Number(num) || 0) * 100) / 100;
+      return rounded.toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    }
 
     function formatCNDate(isoStr) {
       if (!isoStr) return '';
@@ -1032,6 +1115,15 @@
       return `${parseInt(parts[0], 10)}年${parseInt(parts[1], 10)}月${parseInt(parts[2], 10)}日`;
     }
 
+    function formatLogLabel(log, useFullDate) {
+      const dateStr = useFullDate ? formatFullCNDate(log.date) : formatCNDate(log.date);
+      const u = log.units !== undefined ? Number(log.units) : 1;
+      if (u !== 1) {
+        return `${dateStr}(${formatNum(u)}节)`;
+      }
+      return dateStr;
+    }
+
     function sortLogs(logs) {
       return logs.sort((a, b) => a.date.localeCompare(b.date));
     }
@@ -1043,6 +1135,7 @@
         teacher: teacher,
         price: price,
         pickerDate: document.getElementById('reportDate').value || todayStr,
+        pickerUnits: 1,
         logs: []
       });
       renderAll();
@@ -1059,19 +1152,36 @@
       if (field === 'price') {
         sub[field] = Math.max(0, Number(val) || 0);
         renderAll();
+      } else if (field === 'pickerUnits') {
+        sub[field] = Math.max(0.05, Number(val) || 1);
       } else {
         sub[field] = val;
         renderPreviewOnly();
       }
     }
 
+    function setSubjectUnit(id, unitVal) {
+      const sub = state.subjects.find(s => s.id === id);
+      if (sub) sub.pickerUnits = unitVal;
+      const inp = document.getElementById('unit_' + id);
+      if (inp) inp.value = unitVal;
+    }
+
+    function setEveningUnit(unitVal) {
+      const inp = document.getElementById('evUnitInput');
+      if (inp) inp.value = unitVal;
+    }
+
     function addSubjectLog(id, type) {
       const sub = state.subjects.find(s => s.id === id);
       if (!sub) return;
       const dateInput = document.getElementById('picker_' + id);
+      const unitInput = document.getElementById('unit_' + id);
       const d = (dateInput && dateInput.value) ? dateInput.value : todayStr;
+      const u = unitInput ? Math.max(0.05, Number(unitInput.value) || 1) : 1;
       sub.pickerDate = d;
-      sub.logs.push({ date: d, type: type });
+      sub.pickerUnits = u;
+      sub.logs.push({ date: d, type: type, units: u });
       sortLogs(sub.logs);
       renderAll();
     }
@@ -1085,7 +1195,9 @@
 
     function addEveningLog(type) {
       const d = document.getElementById('evDatePicker').value || todayStr;
-      state.eveningLogs.push({ date: d, type: type });
+      const unitInput = document.getElementById('evUnitInput');
+      const u = unitInput ? Math.max(0.05, Number(unitInput.value) || 1) : 1;
+      state.eveningLogs.push({ date: d, type: type, units: u });
       sortLogs(state.eveningLogs);
       renderAll();
     }
@@ -1095,19 +1207,26 @@
       renderAll();
     }
 
+    function sumUnits(logs, type) {
+      const total = logs
+        .filter(l => l.type === type)
+        .reduce((acc, l) => acc + (l.units !== undefined ? Number(l.units) : 1), 0);
+      return Math.round(total * 1000) / 1000;
+    }
+
     function renderEditors() {
       const container = document.getElementById('subjectsContainer');
       if (state.subjects.length === 0) {
         container.innerHTML = `<div style="text-align:center;padding:16px;color:#94A3B8;font-size:13px;border:1px dashed #CBD5E1;border-radius:8px;">暂无正课科目，请点击上方科目按钮添加</div>`;
       } else {
         container.innerHTML = state.subjects.map((sub, index) => {
-          const consumedCount = sub.logs.filter(l => l.type === 'consumed').length;
-          const leaveCount = sub.logs.filter(l => l.type === 'leave').length;
-          const consumedMoney = consumedCount * sub.price;
+          const consumedUnits = sumUnits(sub.logs, 'consumed');
+          const leaveUnits = sumUnits(sub.logs, 'leave');
+          const consumedMoney = Math.round(consumedUnits * sub.price * 100) / 100;
 
           const chipsHtml = sub.logs.map((l, i) => `
             <span class="chip ${l.type === 'consumed' ? 'chip-consumed' : 'chip-leave'}">
-              ${l.type === 'consumed' ? '✓ 消课' : '⏸ 请假'} ${formatFullCNDate(l.date)}
+              ${l.type === 'consumed' ? '✓ 消课' : '⏸ 请假'} ${formatLogLabel(l, true)}
               <button onclick="removeSubjectLog('${sub.id}', ${i})" title="删除">×</button>
             </span>
           `).join('');
@@ -1128,21 +1247,32 @@
                   <input type="text" value="${sub.teacher}" placeholder="如：浩然老师" oninput="updateSubjectField('${sub.id}', 'teacher', this.value)" />
                 </div>
                 <div class="field">
-                  <label>单次费用(元)</label>
+                  <label>整节单价(元)</label>
                   <input type="number" value="${sub.price}" min="0" oninput="updateSubjectField('${sub.id}', 'price', this.value)" />
                 </div>
               </div>
               <div class="date-logger">
                 <div class="date-logger-row">
                   <input type="date" id="picker_${sub.id}" value="${sub.pickerDate || todayStr}" onchange="updateSubjectField('${sub.id}', 'pickerDate', this.value)" />
-                  <button class="btn-add-consumed" onclick="addSubjectLog('${sub.id}', 'consumed')">+ 记1次已消课</button>
-                  <button class="btn-add-leave" onclick="addSubjectLog('${sub.id}', 'leave')">+ 记1次请假</button>
+                  <div class="unit-picker-wrap">
+                    <span>课时</span>
+                    <input type="number" id="unit_${sub.id}" class="unit-input" value="${sub.pickerUnits || 1}" min="0.05" step="0.25" onchange="updateSubjectField('${sub.id}', 'pickerUnits', this.value)" />
+                  </div>
+                  <button class="btn-add-consumed" onclick="addSubjectLog('${sub.id}', 'consumed')">+ 记消课</button>
+                  <button class="btn-add-leave" onclick="addSubjectLog('${sub.id}', 'leave')">+ 记请假</button>
                 </div>
-                <div class="chips-area">${chipsHtml || '<span style="font-size:11.5px;color:#94A3B8;">选择日期后点击上方按钮记录消课或请假</span>'}</div>
+                <div class="unit-quick-row">
+                  <span class="unit-quick-label">快捷选课时：</span>
+                  <button type="button" class="unit-pill" onclick="setSubjectUnit('${sub.id}', 0.5)">0.5节(半节)</button>
+                  <button type="button" class="unit-pill" onclick="setSubjectUnit('${sub.id}', 0.75)">0.75节(1.5h)</button>
+                  <button type="button" class="unit-pill" onclick="setSubjectUnit('${sub.id}', 1)">1节(整节)</button>
+                  <button type="button" class="unit-pill" onclick="setSubjectUnit('${sub.id}', 1.5)">1.5节</button>
+                </div>
+                <div class="chips-area">${chipsHtml || '<span style="font-size:11.5px;color:#94A3B8;">选好日期与课时数（默认1节，支持0.5/0.75）后点击记消课</span>'}</div>
               </div>
               <div class="summary-strip">
-                <span>已消 ${consumedCount} 次 · 请假 ${leaveCount} 次（不扣费）</span>
-                <span>本科目课消：<strong>¥${consumedMoney.toLocaleString()}</strong></span>
+                <span>累计已消 ${formatNum(consumedUnits)} 节 · 请假 ${formatNum(leaveUnits)} 节（不扣费）</span>
+                <span>本科目课消：<strong>¥${formatMoney(consumedMoney)}</strong></span>
               </div>
             </div>
           `;
@@ -1155,17 +1285,18 @@
       const evChips = document.getElementById('evChips');
       evChips.innerHTML = state.eveningLogs.map((l, i) => `
         <span class="chip ${l.type === 'consumed' ? 'chip-consumed' : 'chip-leave'}">
-          ${l.type === 'consumed' ? '✓ 晚辅' : '⏸ 请假'} ${formatFullCNDate(l.date)}
+          ${l.type === 'consumed' ? '✓ 晚辅' : '⏸ 请假'} ${formatLogLabel(l, true)}
           <button onclick="removeEveningLog(${i})" title="删除">×</button>
         </span>
-      `).join('') || '<span style="font-size:11.5px;color:#94A3B8;">选择日期后点击上方按钮记录晚辅消课或请假</span>';
+      `).join('') || '<span style="font-size:11.5px;color:#94A3B8;">选择日期与课时后点击上方按钮记录晚辅消课或请假</span>';
 
       const evPrice = Math.max(0, Number(document.getElementById('evPrice').value) || 0);
-      const evConsumed = state.eveningLogs.filter(l => l.type === 'consumed').length;
-      const evLeave = state.eveningLogs.filter(l => l.type === 'leave').length;
+      const evConsumed = sumUnits(state.eveningLogs, 'consumed');
+      const evLeave = sumUnits(state.eveningLogs, 'leave');
+      const evMoney = Math.round(evConsumed * evPrice * 100) / 100;
       document.getElementById('evSummaryStrip').innerHTML = `
-        <span>已消晚辅 ${evConsumed} 次 · 请假 ${evLeave} 次（不扣费）</span>
-        <span>晚辅课消：<strong>¥${(evConsumed * evPrice).toLocaleString()}</strong></span>
+        <span>已消晚辅 ${formatNum(evConsumed)} 次 · 请假 ${formatNum(evLeave)} 次（不扣费）</span>
+        <span>晚辅课消：<strong>¥${formatMoney(evMoney)}</strong></span>
       `;
     }
 
@@ -1174,13 +1305,13 @@
       let totalConsumedMoney = 0;
 
       state.subjects.forEach(sub => {
-        const consumedDates = sub.logs.filter(l => l.type === 'consumed').map(l => formatCNDate(l.date));
-        const leaveDates = sub.logs.filter(l => l.type === 'leave').map(l => formatCNDate(l.date));
-        const consumedCount = consumedDates.length;
-        const leaveCount = leaveDates.length;
-        const consumedMoney = consumedCount * sub.price;
+        const consumedDates = sub.logs.filter(l => l.type === 'consumed').map(l => formatLogLabel(l, false));
+        const leaveDates = sub.logs.filter(l => l.type === 'leave').map(l => formatLogLabel(l, false));
+        const consumedCount = sumUnits(sub.logs, 'consumed');
+        const leaveCount = sumUnits(sub.logs, 'leave');
+        const consumedMoney = Math.round(consumedCount * sub.price * 100) / 100;
 
-        totalConsumedMoney += consumedMoney;
+        totalConsumedMoney = Math.round((totalConsumedMoney + consumedMoney) * 100) / 100;
 
         items.push({
           title: sub.name || '正课',
@@ -1197,13 +1328,13 @@
       if (document.getElementById('enableEvening').checked) {
         const evTitle = document.getElementById('evTitle').value || '晚间自习答疑';
         const evPrice = Math.max(0, Number(document.getElementById('evPrice').value) || 0);
-        const consumedDates = state.eveningLogs.filter(l => l.type === 'consumed').map(l => formatCNDate(l.date));
-        const leaveDates = state.eveningLogs.filter(l => l.type === 'leave').map(l => formatCNDate(l.date));
-        const consumedCount = consumedDates.length;
-        const leaveCount = leaveDates.length;
-        const consumedMoney = consumedCount * evPrice;
+        const consumedDates = state.eveningLogs.filter(l => l.type === 'consumed').map(l => formatLogLabel(l, false));
+        const leaveDates = state.eveningLogs.filter(l => l.type === 'leave').map(l => formatLogLabel(l, false));
+        const consumedCount = sumUnits(state.eveningLogs, 'consumed');
+        const leaveCount = sumUnits(state.eveningLogs, 'leave');
+        const consumedMoney = Math.round(consumedCount * evPrice * 100) / 100;
 
-        totalConsumedMoney += consumedMoney;
+        totalConsumedMoney = Math.round((totalConsumedMoney + consumedMoney) * 100) / 100;
 
         items.push({
           title: evTitle,
@@ -1218,7 +1349,7 @@
       }
 
       const totalPrepaid = Math.max(0, Number(document.getElementById('totalPrepaid').value) || 0);
-      const balanceMoney = totalPrepaid - totalConsumedMoney;
+      const balanceMoney = Math.round((totalPrepaid - totalConsumedMoney) * 100) / 100;
 
       return {
         orgName: document.getElementById('orgName').value || '学途卫士',
@@ -1235,8 +1366,8 @@
     }
 
     function formatSignedMoney(val) {
-      if (val < 0) return `-¥${Math.abs(val).toLocaleString()}`;
-      return `¥${val.toLocaleString()}`;
+      if (val < 0) return `-¥${formatMoney(Math.abs(val))}`;
+      return `¥${formatMoney(val)}`;
     }
 
     function renderPreviewOnly() {
@@ -1248,8 +1379,8 @@
       document.getElementById('pvCampus').textContent = data.campus;
 
       // 顶部三栏资金总览
-      document.getElementById('pvTopPrepaid').textContent = `¥${data.totalPrepaid.toLocaleString()}`;
-      document.getElementById('pvTopConsumed').textContent = `¥${data.totalConsumedMoney.toLocaleString()}`;
+      document.getElementById('pvTopPrepaid').textContent = `¥${formatMoney(data.totalPrepaid)}`;
+      document.getElementById('pvTopConsumed').textContent = `¥${formatMoney(data.totalConsumedMoney)}`;
       const topBalEl = document.getElementById('pvTopBalance');
       topBalEl.textContent = formatSignedMoney(data.balanceMoney);
       topBalEl.className = data.balanceMoney <= 400 ? 'low' : '';
@@ -1258,7 +1389,7 @@
       const totMoneyEl = document.getElementById('pvTotalMoney');
       totMoneyEl.textContent = formatSignedMoney(data.balanceMoney);
       totMoneyEl.className = 'bal-num' + (data.balanceMoney <= 400 ? ' low' : '');
-      document.getElementById('pvTotalSub').textContent = `总计预收 ¥${data.totalPrepaid.toLocaleString()} － 总计课消 ¥${data.totalConsumedMoney.toLocaleString()}`;
+      document.getElementById('pvTotalSub').textContent = `总计预收 ¥${formatMoney(data.totalPrepaid)} － 总计课消 ¥${formatMoney(data.totalConsumedMoney)}`;
       document.getElementById('pvTotalTip').textContent = data.balanceMoney < 0
         ? '已超出预收金额，请及时补缴'
         : (data.balanceMoney <= 400 ? '余额不足一节课，建议及时续费' : `共 ${data.items.length} 项课消明细汇总`);
@@ -1280,14 +1411,14 @@
               <span class="nc-item-tag">${item.tag}</span>
             </div>
             <div class="nc-item-bal">
-              <div class="money">课消 ¥${item.consumedMoney.toLocaleString()}</div>
-              <div class="sub-calc">${item.consumedCount}次 × ¥${item.price}</div>
+              <div class="money">课消 ¥${formatMoney(item.consumedMoney)}</div>
+              <div class="sub-calc">${formatNum(item.consumedCount)}次 × ¥${formatMoney(item.price)}</div>
             </div>
           </div>
           <div class="nc-stats">
-            <div class="nc-stat-cell"><span>单次费用</span><strong>¥${item.price}</strong></div>
-            <div class="nc-stat-cell"><span>已消次数</span><strong>${item.consumedCount} 次</strong></div>
-            <div class="nc-stat-cell"><span>请假顺延</span><strong>${item.leaveCount}次(不扣费)</strong></div>
+            <div class="nc-stat-cell"><span>整节单价</span><strong>¥${formatMoney(item.price)}</strong></div>
+            <div class="nc-stat-cell"><span>累计已消</span><strong>${formatNum(item.consumedCount)} 节</strong></div>
+            <div class="nc-stat-cell"><span>请假顺延</span><strong>${formatNum(item.leaveCount)}节(不扣费)</strong></div>
           </div>
           <div class="nc-dates">
             <div class="nc-dates-row">
@@ -1433,8 +1564,8 @@
       const lGap = 8;
       const lCellW = (innerW - lGap * 2) / 3;
       const ledgerItems = [
-        { label: '总计预收', val: `¥${data.totalPrepaid.toLocaleString()}`, bg: '#F8FAFC', border: '#E2E8F0', labelColor: '#64748B', valColor: '#08182B' },
-        { label: '总计课消', val: `¥${data.totalConsumedMoney.toLocaleString()}`, bg: '#F8FAFC', border: '#E2E8F0', labelColor: '#64748B', valColor: '#2C55A0' },
+        { label: '总计预收', val: `¥${formatMoney(data.totalPrepaid)}`, bg: '#F8FAFC', border: '#E2E8F0', labelColor: '#64748B', valColor: '#08182B' },
+        { label: '总计课消', val: `¥${formatMoney(data.totalConsumedMoney)}`, bg: '#F8FAFC', border: '#E2E8F0', labelColor: '#64748B', valColor: '#2C55A0' },
         { label: '当前结余', val: formatSignedMoney(data.balanceMoney), bg: '#08182B', border: '#08182B', labelColor: 'rgba(255,255,255,0.82)', valColor: data.balanceMoney <= 400 ? '#FCA5A5' : '#E2C08D' }
       ];
 
@@ -1490,11 +1621,11 @@
         ctx.textAlign = 'right';
         ctx.fillStyle = '#08182B';
         ctx.font = `800 15.5px ${fontBase}`;
-        ctx.fillText(`课消 ¥${item.consumedMoney.toLocaleString()}`, W - pad - 12, curY + 23);
+        ctx.fillText(`课消 ¥${formatMoney(item.consumedMoney)}`, W - pad - 12, curY + 23);
 
         ctx.fillStyle = '#64748B';
         ctx.font = `600 11px ${fontBase}`;
-        ctx.fillText(`${item.consumedCount}次 × ¥${item.price}`, W - pad - 12, curY + 39);
+        ctx.fillText(`${formatNum(item.consumedCount)}次 × ¥${formatMoney(item.price)}`, W - pad - 12, curY + 39);
         ctx.textAlign = 'left';
 
         // 3格数据栏
@@ -1504,9 +1635,9 @@
         ctx.fill();
 
         const cols = [
-          { label: '单次费用', val: `¥${item.price}` },
-          { label: '已消次数', val: `${item.consumedCount} 次` },
-          { label: '请假顺延', val: `${item.leaveCount}次(不扣费)` }
+          { label: '整节单价', val: `¥${formatMoney(item.price)}` },
+          { label: '累计已消', val: `${formatNum(item.consumedCount)} 节` },
+          { label: '请假顺延', val: `${formatNum(item.leaveCount)}节(不扣费)` }
         ];
         const colW = (innerW - 20) / 3;
         cols.forEach((c, idx) => {
@@ -1555,7 +1686,7 @@
       ctx.fillText('当前账户结余费用', pad + 14, curY + 26);
       ctx.fillStyle = 'rgba(255,255,255,0.85)';
       ctx.font = `400 11px ${fontBase}`;
-      ctx.fillText(`总计预收 ¥${data.totalPrepaid.toLocaleString()} － 总计课消 ¥${data.totalConsumedMoney.toLocaleString()}`, pad + 14, curY + 47);
+      ctx.fillText(`总计预收 ¥${formatMoney(data.totalPrepaid)} － 总计课消 ¥${formatMoney(data.totalConsumedMoney)}`, pad + 14, curY + 47);
 
       ctx.textAlign = 'right';
       ctx.fillStyle = data.balanceMoney <= 400 ? '#FCA5A5' : '#E2C08D';
